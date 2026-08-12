@@ -3,18 +3,43 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GhostMark</title>
-  <link rel="stylesheet" href="/static/style.css" />
+  <title>GhostMark — Free AI Watermark &amp; Metadata Cleaner</title>
+  <meta name="description" content="Inspect, remove and independently verify supported AI metadata and provenance signals from PDFs, images and text. Free and open source." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://moseisley.sh/ghostmark" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="GhostMark — Free AI Watermark & Metadata Cleaner" />
+  <meta property="og:description" content="Inspect, remove and independently verify supported AI metadata and provenance signals from PDFs, images and text. Free and open source." />
+  <meta property="og:url" content="https://moseisley.sh/ghostmark" />
+  <meta property="og:site_name" content="GhostMark" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="GhostMark — Free AI Watermark & Metadata Cleaner" />
+  <meta name="twitter:description" content="Inspect, remove and independently verify supported AI metadata and provenance signals from PDFs, images and text." />
+
+  <link rel="stylesheet" href="static/style.css" />
 </head>
 <body>
   <main class="wrap">
+    <p class="promo-top hosted-only hidden">
+      Free open-source tool by <a href="https://moseisley.sh" rel="noopener">Moseisley.sh</a>
+    </p>
+
     <header>
       <h1>👻 GhostMark</h1>
-      <p class="tagline">AI watermark &amp; provenance cleaner</p>
-      <p class="privacy-note">100% local &middot; no uploads leave this computer &middot; no telemetry</p>
+      <p class="tagline">Free AI Metadata &amp; Provenance Cleaner</p>
+      <p class="subheadline">Inspect, clean and independently verify metadata and supported provenance signals in AI-generated files.</p>
+
+      <ul class="trust-bar">
+        <li>Free</li>
+        <li>Open source</li>
+        <li>No account required</li>
+        <li id="trust-privacy">Files automatically deleted after processing</li>
+      </ul>
+      <p id="privacy-note" class="privacy-note"></p>
     </header>
 
-    <section class="input-section">
+    <section class="input-section card">
       <div class="tabs">
         <button id="tab-text" class="tab active" type="button">Paste Text</button>
         <button id="tab-file" class="tab" type="button">Upload File</button>
@@ -25,42 +50,83 @@
       </div>
 
       <div id="panel-file" class="panel hidden">
-        <input id="file-input" type="file" accept=".txt,.md,.json,.csv,.pdf,.png,.jpg,.jpeg,.webp" />
-        <p class="hint">Supported: .txt .md .json .csv .pdf .png .jpg .jpeg .webp (max 50 MB)</p>
+        <label id="dropzone" for="file-input" class="dropzone">
+          <span>Drag a file here</span>
+          <span class="dropzone-or">or</span>
+          <span class="btn secondary" id="choose-file-label">Choose File</span>
+        </label>
+        <input id="file-input" type="file" accept=".txt,.md,.json,.csv,.pdf,.png,.jpg,.jpeg,.webp" class="visually-hidden" />
+        <p id="chosen-file-name" class="hint hidden"></p>
+        <p class="hint">Supported: PDF &middot; JPG &middot; JPEG &middot; PNG &middot; WEBP &middot; TXT &middot; MD &middot; JSON &middot; CSV</p>
+        <p id="upload-limit-hint" class="hint"></p>
       </div>
 
       <button id="btn-inspect" class="btn primary" type="button">Inspect</button>
       <p id="input-error" class="error hidden"></p>
     </section>
 
+    <div class="flow-arrow hidden" id="arrow-1">↓</div>
+
     <section id="results-section" class="card hidden">
-      <h2>Inspection results</h2>
+      <h2>STEP 1 — INSPECTION</h2>
       <div id="results-table" class="signal-table"></div>
-      <button id="btn-clean" class="btn primary" type="button">Clean</button>
+      <p id="results-count" class="summary"></p>
+      <button id="btn-clean" class="btn primary" type="button">Clean File</button>
     </section>
 
+    <div class="flow-arrow hidden" id="arrow-2">↓</div>
+
     <section id="clean-section" class="card hidden">
-      <h2>Clean results</h2>
+      <h2>STEP 2 — CLEANING</h2>
       <div id="clean-table" class="signal-table"></div>
       <div id="cleaned-text-wrap" class="hidden">
         <label for="cleaned-text-output">Cleaned text</label>
         <textarea id="cleaned-text-output" rows="8" readonly></textarea>
       </div>
-      <button id="btn-verify" class="btn primary" type="button">Verify</button>
+      <p class="original-preserved">Original file <strong>PRESERVED</strong> — GhostMark never modifies your original.</p>
+      <button id="btn-verify" class="btn primary" type="button">Verify Independently</button>
     </section>
 
+    <div class="flow-arrow hidden" id="arrow-3">↓</div>
+
     <section id="verify-section" class="card hidden">
-      <h2>Verification</h2>
-      <div id="verify-table" class="signal-table"></div>
-      <p id="verify-summary" class="summary"></p>
+      <h2>STEP 3 — INDEPENDENT VERIFICATION</h2>
+
+      <div id="verify-before-after">
+        <div class="verify-column">
+          <h3>Before</h3>
+          <div id="verify-before-table" class="signal-table"></div>
+        </div>
+        <div class="verify-column">
+          <h3>After</h3>
+          <div id="verify-after-table" class="signal-table"></div>
+        </div>
+      </div>
+
+      <div id="exiftool-panel" class="exiftool-panel"></div>
+
+      <div id="verdict-panel" class="verdict-panel"></div>
+
+      <p class="watermark-note">
+        Metadata / file provenance: <strong>supported</strong> &middot;
+        Statistical model-level watermark (Claude / Gemini / GPT): <strong>NOT CURRENTLY VERIFIABLE</strong>
+      </p>
+
       <button id="btn-save" class="btn primary hidden" type="button">Download Clean File</button>
     </section>
 
+    <div class="promo-bottom hosted-only hidden">
+      <h2>Building with AI?</h2>
+      <p>Explore Moseisley.sh</p>
+      <a class="btn primary" href="https://moseisley.sh" rel="noopener">Visit Moseisley →</a>
+    </div>
+
     <footer>
-      <p>GhostMark is open source (MIT). Files never leave your computer.</p>
+      <p>GhostMark is open source (MIT). <a href="https://github.com/bens777/ghostmark" rel="noopener">Source on GitHub</a>.</p>
+      <p id="footer-privacy"></p>
     </footer>
   </main>
 
-  <script src="/static/app.js"></script>
+  <script src="static/app.js"></script>
 </body>
 </html>
