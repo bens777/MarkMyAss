@@ -38,10 +38,14 @@ def sanitize_filename(name: str) -> str:
     """Strip any path component and unsafe characters from a user-supplied filename.
 
     Never trust a client-supplied filename as a filesystem path -- this
-    collapses it to a bare, safe basename.
+    collapses it to a bare, safe basename. A client-supplied filename may
+    use either slash convention regardless of the OS GhostMark is running
+    on, so both are normalized before using ``Path.name`` (which only
+    treats "\\" as a separator on Windows).
     """
 
-    base = Path(name).name  # drops any directory components, defeats ../ traversal
+    normalized = name.replace("\\", "/")
+    base = Path(normalized).name  # drops any directory components, defeats ../ traversal
     base = _UNSAFE_CHARS.sub("_", base)
     if not base or base in (".", ".."):
         base = "file"
