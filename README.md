@@ -49,7 +49,7 @@ fabricated result.
 ## Quick start
 
 ```bash
-git clone https://github.com/ghostmark-project/ghostmark.git
+git clone https://github.com/bens777/ghostmark.git
 cd ghostmark
 pip install -e .
 

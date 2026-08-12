@@ -55,9 +55,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ghostmark-project/ghostmark"
-Repository = "https://github.com/ghostmark-project/ghostmark"
-Issues = "https://github.com/ghostmark-project/ghostmark/issues"
+Homepage = "https://github.com/bens777/ghostmark"
+Repository = "https://github.com/bens777/ghostmark"
+Issues = "https://github.com/bens777/ghostmark/issues"
 
 [project.scripts]
 ghostmark = "ghostmark.cli:app"
