@@ -66,10 +66,47 @@ def test_inspect_clean_verify_download_file_flow(client):
 
     verify_resp = client.post(f"/api/verify/{session_id}")
     assert verify_resp.status_code == 200
+    verify_body = verify_resp.json()
+    assert any(d["detector"] == "exiftool_independent" for d in verify_body["after"]["detections"])
+
+    workdir = client.app.state.store.get(session_id).workdir
+    assert workdir.exists()
 
     download_resp = client.get(f"/api/download/{session_id}")
     assert download_resp.status_code == 200
-    assert "photo.ghostmark.png" in download_resp.headers["content-disposition"]
+    disposition = download_resp.headers["content-disposition"]
+    assert disposition.startswith("attachment;")
+    assert "photo.ghostmark.png" in disposition
+
+    assert not workdir.exists(), "temp session directory must be removed right after download completes"
+
+
+def test_download_is_single_use(client):
+    resp = client.post("/api/inspect/file", files={"file": ("photo.png", _png_bytes(), "image/png")})
+    session_id = resp.json()["session_id"]
+    client.post(f"/api/clean/{session_id}")
+
+    first = client.get(f"/api/download/{session_id}")
+    assert first.status_code == 200
+
+    second = client.get(f"/api/download/{session_id}")
+    assert second.status_code == 404, "cleaned file must not be downloadable again after the session is consumed"
+
+
+def test_ttl_sweep_removes_expired_sessions(client):
+    import time
+
+    store = client.app.state.store
+    session_id, session = store.create("file")
+    session.created_at = time.time() - 999999  # force expiry
+    workdir = session.workdir
+    assert workdir.exists()
+
+    store.sweep_expired()
+
+    assert not workdir.exists()
+    with pytest.raises(Exception):  # noqa: B017 - HTTPException from a live app.state store
+        store.get(session_id)
 
 
 def test_download_before_clean_returns_400(client):

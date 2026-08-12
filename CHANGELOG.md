@@ -2,6 +2,30 @@
 
 All notable changes to GhostMark are documented in this file.
 
+## [Unreleased]
+
+### Fixed
+
+- `sanitize_filename` now strips backslash path components on every OS,
+  not just Windows (`pathlib.Path.name` only treats `\` as a separator on
+  Windows, so a crafted filename could survive mostly intact on
+  Linux/macOS). Caught by CI on `ubuntu-latest`/`macos-latest`.
+
+### Added
+
+- Independent verification: `ghostmark verify` and the web UI's Verify
+  step now additionally cross-check the cleaned file with
+  [ExifTool](https://exiftool.org/), if installed, as a second opinion
+  GhostMark doesn't control the outcome of. Reported honestly as
+  `unknown` when ExifTool isn't available -- never faked.
+- Web UI downloads are now single-use: the cleaned file (and the rest of
+  that session's temp directory) is deleted immediately after the
+  download completes, and any session that's never downloaded is purged
+  automatically after 30 minutes.
+- Download responses set `Content-Disposition: attachment` explicitly
+  with a `name.ghostmark.ext` filename.
+- Web UI's final button relabeled "Download Clean File".
+
 ## [0.1.0] - 2026-08-12
 
 Initial open-source release.

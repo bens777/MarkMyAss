@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from ghostmark.independent_verify import exiftool_check
 from ghostmark.inspector import inspect_file, inspect_text
 from ghostmark.models import InspectionReport, Status, VerifyResult
 
@@ -33,7 +34,18 @@ def _compare(before: InspectionReport, after: InspectionReport) -> VerifyResult:
 
 
 def verify_file(original: Path, cleaned: Path) -> VerifyResult:
-    return _compare(inspect_file(original), inspect_file(cleaned))
+    """Re-inspect the cleaned file with GhostMark's own detectors, then cross-check
+    it independently with ExifTool (if installed) as a second opinion GhostMark
+    doesn't control the outcome of.
+    """
+
+    before = inspect_file(original)
+    after = inspect_file(cleaned)
+
+    before.detections.append(exiftool_check(original))
+    after.detections.append(exiftool_check(cleaned))
+
+    return _compare(before, after)
 
 
 def verify_text(original_text: str, cleaned_text: str) -> VerifyResult:

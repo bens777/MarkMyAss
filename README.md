@@ -87,16 +87,26 @@ Statistical watermark  UNKNOWN
 ---------------------------------
 Verification
 
-Hidden Unicode         REMOVED
-Metadata               REMOVED
-C2PA                   UNSUPPORTED
-Statistical watermark  UNVERIFIED
+Hidden Unicode                       REMOVED
+Metadata                             REMOVED
+C2PA                                 UNSUPPORTED
+Independent verification (ExifTool)  UNVERIFIED / REMOVED
+Statistical watermark                UNVERIFIED
 
-[ Save cleaned file ]
+[ Download Clean File ]
 ```
 
 The server binds to `127.0.0.1` only -- it is never reachable from other
 devices, and nothing is ever uploaded anywhere outside your machine.
+
+Verification runs GhostMark's own detectors again on the cleaned output
+*and*, if [ExifTool](https://exiftool.org/) is installed, independently
+cross-checks it with that separate, widely trusted tool -- so you don't
+have to take GhostMark's own word for it. Downloading the cleaned file
+serves it with `Content-Disposition: attachment` and a name like
+`document.ghostmark.pdf`; the temporary copy on the server is deleted
+immediately after the download completes (or automatically after 30
+minutes if it's never downloaded).
 
 ## CLI
 
@@ -155,6 +165,7 @@ file too large, demo failure), non-zero on usage errors.
 | GPT statistical watermark      |                          Unverified |     Not implemented |    Not applicable |
 | Visible image watermark        |                        Not implemented |     Not implemented |    Not applicable |
 | DOCX                            |                        Not implemented (roadmap) |            -- |               -- |
+| Independent cross-check (ExifTool, images/PDF) |                    N/A | N/A | Yes, if ExifTool installed -- otherwise reported as unknown, never faked |
 
 "Partial" for C2PA means: GhostMark scans for the JUMBF container structure
 (JPEG APP11 segment, PNG `caBX` chunk) a C2PA manifest is embedded in, and

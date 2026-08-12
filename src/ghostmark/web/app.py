@@ -4,8 +4,9 @@ Design constraints enforced here:
   - No route ever proxies or fetches anything over the network.
   - Uploaded files are stored only in a per-session temp directory under the
     OS temp dir, with a randomized session id and a sanitized filename.
-  - Sessions (and their temp files) are cleaned up on delete and on
-    process exit -- nothing lingers on disk after the server stops.
+  - Sessions (and their temp files) are cleaned up: immediately after the
+    cleaned file is downloaded, after a TTL if never downloaded, on
+    explicit delete, and on process exit -- nothing lingers on disk.
   - The caller (ghostmark.cli.ui) is responsible for binding to
     127.0.0.1 only; this module never chooses the bind address itself.
 """
@@ -17,6 +18,7 @@ import secrets
 import shutil
 import tempfile
 import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +26,7 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from starlette.background import BackgroundTask
 
 from ghostmark import __version__
 from ghostmark.cleaner import clean_file, clean_text_content
@@ -39,6 +42,11 @@ from ghostmark.verifier import verify_file, verify_text
 
 STATIC_DIR = Path(__file__).parent / "static"
 
+# How long an unclaimed session (never downloaded) is kept before its temp
+# files are purged automatically.
+SESSION_TTL_SECONDS = 30 * 60
+TTL_SWEEP_INTERVAL_SECONDS = 60
+
 
 class _Session:
     def __init__(self, kind: str) -> None:
@@ -49,6 +57,10 @@ class _Session:
         self.original_path: Path | None = None
         self.cleaned_path: Path | None = None
         self.original_name: str = ""
+        self.created_at = time.time()
+
+    def is_expired(self, ttl: float = SESSION_TTL_SECONDS) -> bool:
+        return (time.time() - self.created_at) > ttl
 
     def cleanup(self) -> None:
         shutil.rmtree(self.workdir, ignore_errors=True)
@@ -79,6 +91,13 @@ class _SessionStore:
         if session is not None:
             session.cleanup()
 
+    def sweep_expired(self) -> None:
+        with self._lock:
+            expired_ids = [sid for sid, s in self._sessions.items() if s.is_expired()]
+            expired = [self._sessions.pop(sid) for sid in expired_ids]
+        for session in expired:
+            session.cleanup()
+
     def cleanup_all(self) -> None:
         with self._lock:
             sessions = list(self._sessions.values())
@@ -94,7 +113,18 @@ class TextIn(BaseModel):
 def create_app() -> FastAPI:
     app = FastAPI(title="GhostMark", version=__version__, docs_url=None, redoc_url=None)
     store = _SessionStore()
+    app.state.store = store  # exposed for tests/introspection, not used by any route
     atexit.register(store.cleanup_all)
+
+    stop_sweeper = threading.Event()
+
+    def _sweep_loop() -> None:
+        while not stop_sweeper.wait(TTL_SWEEP_INTERVAL_SECONDS):
+            store.sweep_expired()
+
+    sweeper_thread = threading.Thread(target=_sweep_loop, daemon=True, name="ghostmark-session-ttl-sweeper")
+    sweeper_thread.start()
+    atexit.register(stop_sweeper.set)
 
     if STATIC_DIR.exists():
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -185,7 +215,18 @@ def create_app() -> FastAPI:
         stem = Path(session.original_name).stem
         suffix = Path(session.original_name).suffix
         download_name = f"{stem}.ghostmark{suffix}"
-        return FileResponse(session.cleaned_path, filename=download_name, media_type="application/octet-stream")
+
+        # The cleaned file is single-use: once the download has been sent to
+        # the client, the whole session (including the temp copy on disk) is
+        # deleted. BackgroundTask runs only after the response has finished
+        # streaming, so this never truncates the download.
+        return FileResponse(
+            session.cleaned_path,
+            filename=download_name,
+            media_type="application/octet-stream",
+            headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
+            background=BackgroundTask(store.drop, session_id),
+        )
 
     @app.delete("/api/session/{session_id}")
     def delete_session(session_id: str) -> dict[str, bool]:
