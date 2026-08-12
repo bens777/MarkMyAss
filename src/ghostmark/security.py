@@ -8,6 +8,7 @@ enforced consistently rather than re-implemented per call site.
 
 from __future__ import annotations
 
+import os
 import re
 import secrets
 import tempfile
@@ -15,12 +16,42 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 
-MAX_UPLOAD_BYTES = 50 * 1024 * 1024  # 50 MB
+_DEFAULT_MAX_UPLOAD_MB = 50
+
+
+def _max_upload_bytes() -> int:
+    """Upload size limit, configurable via GHOSTMARK_MAX_UPLOAD_MB.
+
+    Defaults to 50 MB for local/CLI use. The production web deployment
+    sets this lower (see docker-compose.prod.yml) since it's exposed to
+    the public internet.
+    """
+
+    raw = os.environ.get("GHOSTMARK_MAX_UPLOAD_MB", "").strip()
+    try:
+        mb = int(raw) if raw else _DEFAULT_MAX_UPLOAD_MB
+    except ValueError:
+        mb = _DEFAULT_MAX_UPLOAD_MB
+    return max(1, mb) * 1024 * 1024
+
+
+MAX_UPLOAD_BYTES = _max_upload_bytes()
 
 SUPPORTED_EXTENSIONS = {
     ".txt", ".md", ".json", ".csv",
     ".pdf",
     ".png", ".jpg", ".jpeg", ".webp",
+}
+
+# Magic-byte sniffing for defense-in-depth against a disguised upload (e.g.
+# an executable renamed to .png). Text formats have no reliable magic bytes
+# and are intentionally not checked here.
+_MAGIC_BYTES: dict[str, tuple[bytes, ...]] = {
+    ".pdf": (b"%PDF-",),
+    ".png": (b"\x89PNG\r\n\x1a\n",),
+    ".jpg": (b"\xff\xd8\xff",),
+    ".jpeg": (b"\xff\xd8\xff",),
+    ".webp": (b"RIFF",),  # full check also requires b"WEBP" at offset 8, see below
 }
 
 _UNSAFE_CHARS = re.compile(r"[^A-Za-z0-9._-]")
@@ -65,12 +96,43 @@ def check_supported(name: str) -> None:
         )
 
 
-def check_size(num_bytes: int) -> None:
-    if num_bytes > MAX_UPLOAD_BYTES:
+def check_size(num_bytes: int, *, max_bytes: int | None = None) -> None:
+    """Enforce an upload size limit.
+
+    ``max_bytes`` lets a caller with its own resolved config (the web app's
+    ``WebConfig.max_upload_mb``) pass the exact limit it is already using
+    elsewhere, so there is exactly one source of truth instead of two
+    independent readers of the same environment variable. Falls back to
+    ``GHOSTMARK_MAX_UPLOAD_MB`` (read live) for callers -- e.g. the CLI --
+    that have no config object of their own.
+    """
+
+    limit = max_bytes if max_bytes is not None else _max_upload_bytes()
+    if num_bytes > limit:
         raise FileTooLargeError(
             f"File is {num_bytes / (1024 * 1024):.1f} MB, which exceeds the "
-            f"{MAX_UPLOAD_BYTES / (1024 * 1024):.0f} MB limit."
+            f"{limit / (1024 * 1024):.0f} MB limit."
         )
+
+
+def sniff_mime_matches_extension(data: bytes, ext: str) -> bool:
+    """Best-effort magic-byte check that file content roughly matches its extension.
+
+    Defense in depth only -- a missing/unknown signature (e.g. plain text
+    formats) is treated as OK rather than rejected, since GhostMark's real
+    parsers (Pillow/pikepdf/our own segment parsers) will reject genuinely
+    malformed content anyway.
+    """
+
+    ext = ext.lower()
+    signatures = _MAGIC_BYTES.get(ext)
+    if signatures is None:
+        return True
+    if not any(data.startswith(sig) for sig in signatures):
+        return False
+    if ext == ".webp":
+        return len(data) >= 12 and data[8:12] == b"WEBP"
+    return True
 
 
 def random_suffix_name(suffix: str) -> str:

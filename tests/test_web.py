@@ -24,7 +24,11 @@ def test_health(client):
     assert resp.status_code == 200
     body = resp.json()
     assert body["status"] == "ok"
-    assert body["local_only"] is True
+    assert "ghostmark" in body
+    assert "exiftool_available" in body
+    # Never leak filesystem paths or secrets in the health payload.
+    assert "path" not in str(body).lower()
+    assert "temp" not in str(body).lower()
 
 
 def test_index_serves_html(client):
@@ -67,7 +71,9 @@ def test_inspect_clean_verify_download_file_flow(client):
     verify_resp = client.post(f"/api/verify/{session_id}")
     assert verify_resp.status_code == 200
     verify_body = verify_resp.json()
-    assert any(d["detector"] == "exiftool_independent" for d in verify_body["after"]["detections"])
+    assert verify_body["verification_summary"] is not None
+    assert verify_body["external_after"] is not None
+    assert verify_body["external_after"]["tool"] == "exiftool"
 
     workdir = client.app.state.store.get(session_id).workdir
     assert workdir.exists()
