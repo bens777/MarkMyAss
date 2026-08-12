@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GhostMark</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <h1>👻 GhostMark</h1>
+      <p class="tagline">AI watermark &amp; provenance cleaner</p>
+      <p class="privacy-note">100% local &middot; no uploads leave this computer &middot; no telemetry</p>
+    </header>
+
+    <section class="input-section">
+      <div class="tabs">
+        <button id="tab-text" class="tab active" type="button">Paste Text</button>
+        <button id="tab-file" class="tab" type="button">Upload File</button>
+      </div>
+
+      <div id="panel-text" class="panel">
+        <textarea id="text-input" rows="8" placeholder="Paste text to inspect..."></textarea>
+      </div>
+
+      <div id="panel-file" class="panel hidden">
+        <input id="file-input" type="file" accept=".txt,.md,.json,.csv,.pdf,.png,.jpg,.jpeg,.webp" />
+        <p class="hint">Supported: .txt .md .json .csv .pdf .png .jpg .jpeg .webp (max 50 MB)</p>
+      </div>
+
+      <button id="btn-inspect" class="btn primary" type="button">Inspect</button>
+      <p id="input-error" class="error hidden"></p>
+    </section>
+
+    <section id="results-section" class="card hidden">
+      <h2>Inspection results</h2>
+      <div id="results-table" class="signal-table"></div>
+      <button id="btn-clean" class="btn primary" type="button">Clean</button>
+    </section>
+
+    <section id="clean-section" class="card hidden">
+      <h2>Clean results</h2>
+      <div id="clean-table" class="signal-table"></div>
+      <div id="cleaned-text-wrap" class="hidden">
+        <label for="cleaned-text-output">Cleaned text</label>
+        <textarea id="cleaned-text-output" rows="8" readonly></textarea>
+      </div>
+      <button id="btn-verify" class="btn primary" type="button">Verify</button>
+    </section>
+
+    <section id="verify-section" class="card hidden">
+      <h2>Verification</h2>
+      <div id="verify-table" class="signal-table"></div>
+      <p id="verify-summary" class="summary"></p>
+      <button id="btn-save" class="btn primary hidden" type="button">Save cleaned file</button>
+    </section>
+
+    <footer>
+      <p>GhostMark is open source (MIT). Files never leave your computer.</p>
+    </footer>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
