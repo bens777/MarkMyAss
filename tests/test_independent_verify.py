@@ -1,4 +1,4 @@
-"""Independent ExifTool cross-check: graceful when absent, correct when present."""
+"""Independent ExifTool cross-check: graceful when absent, correct categorization when present."""
 
 from __future__ import annotations
 
@@ -6,77 +6,140 @@ import json
 import subprocess
 from pathlib import Path
 
-from ghostmark import independent_verify as iv
-from ghostmark.models import Status
+from ghostmark.independent_verify import ExifToolVerifier, categorize_tag
+from ghostmark.models import MetadataOrigin
+
+
+def _fake_run(monkeypatch, module, *, returncode=0, stdout=b"", stderr=b""):
+    fake_proc = subprocess.CompletedProcess(args=[], returncode=returncode, stdout=stdout, stderr=stderr)
+    monkeypatch.setattr(module, "shutil", module.shutil)
+    monkeypatch.setattr(module.shutil, "which", lambda name: "/usr/bin/exiftool")
+    monkeypatch.setattr(module.subprocess, "run", lambda *a, **kw: fake_proc)
+
+
+def test_categorize_embedded_metadata_groups():
+    assert categorize_tag("EXIF:Make") is MetadataOrigin.EMBEDDED_METADATA
+    assert categorize_tag("GPS:GPSLatitude") is MetadataOrigin.EMBEDDED_METADATA
+    assert categorize_tag("IPTC:Keywords") is MetadataOrigin.EMBEDDED_METADATA
+    assert categorize_tag("XMP-dc:Creator") is MetadataOrigin.EMBEDDED_METADATA
+    assert categorize_tag("Photoshop:CaptionWriter") is MetadataOrigin.EMBEDDED_METADATA
+
+
+def test_categorize_pdf_splits_metadata_from_structural():
+    assert categorize_tag("PDF:Author") is MetadataOrigin.EMBEDDED_METADATA
+    assert categorize_tag("PDF:Producer") is MetadataOrigin.EMBEDDED_METADATA
+    assert categorize_tag("PDF:PageCount") is MetadataOrigin.STRUCTURAL
+    assert categorize_tag("PDF:Linearized") is MetadataOrigin.STRUCTURAL
+
+
+def test_categorize_png_splits_metadata_from_structural():
+    assert categorize_tag("PNG:Comment") is MetadataOrigin.EMBEDDED_METADATA
+    assert categorize_tag("PNG:ImageWidth") is MetadataOrigin.STRUCTURAL
+    assert categorize_tag("PNG:BitDepth") is MetadataOrigin.STRUCTURAL
+
+
+def test_categorize_filesystem_and_computed_never_metadata():
+    assert categorize_tag("File:FileSize") is MetadataOrigin.FILESYSTEM
+    assert categorize_tag("SourceFile") is MetadataOrigin.FILESYSTEM
+    assert categorize_tag("ExifTool:ExifToolVersion") is MetadataOrigin.COMPUTED
+    assert categorize_tag("Composite:ImageSize") is MetadataOrigin.COMPUTED
+
+
+def test_categorize_icc_profile_is_structural_not_metadata():
+    assert categorize_tag("ICC-header:ProfileVersion") is MetadataOrigin.STRUCTURAL
+
+
+def test_categorize_unknown_group_falls_back_to_unknown():
+    assert categorize_tag("SomeWeirdGroup:Whatever") is MetadataOrigin.UNKNOWN
 
 
 def test_not_applicable_for_text_files(tmp_path: Path):
     path = tmp_path / "notes.txt"
     path.write_text("hello", encoding="utf-8")
-    result = iv.exiftool_check(path)
-    assert result.status is Status.UNKNOWN
-    assert result.detector == "exiftool_independent"
+    verifier = ExifToolVerifier()
+    result = verifier.inspect(path)
+    assert result.applicable is False
 
 
 def test_unavailable_when_exiftool_not_installed(tmp_path: Path, monkeypatch):
     path = tmp_path / "photo.jpg"
     path.write_bytes(b"\xff\xd8\xff\xd9")
-    monkeypatch.setattr(iv, "exiftool_available", lambda: False)
-    result = iv.exiftool_check(path)
-    assert result.status is Status.UNKNOWN
-    assert "not installed" in result.details["note"]
+    monkeypatch.setattr(ExifToolVerifier, "available", lambda self: False)
+    verifier = ExifToolVerifier()
+    result = verifier.inspect(path)
+    assert result.available is False
+    assert result.applicable is True
+    assert "not installed" in result.note
 
 
-def test_reports_found_when_exiftool_sees_remaining_tags(tmp_path: Path, monkeypatch):
+def test_reports_embedded_metadata_when_present(tmp_path: Path, monkeypatch):
+    import ghostmark.independent_verify as iv
+
     path = tmp_path / "photo.jpg"
     path.write_bytes(b"\xff\xd8\xff\xd9")
-    monkeypatch.setattr(iv, "exiftool_available", lambda: True)
+    monkeypatch.setattr(ExifToolVerifier, "available", lambda self: True)
+    monkeypatch.setattr(ExifToolVerifier, "version", lambda self: "13.00")
 
-    fake_output = json.dumps([{"SourceFile": str(path), "File:FileSize": "123", "EXIF:Make": "Acme"}])
-    fake_proc = subprocess.CompletedProcess(args=[], returncode=0, stdout=fake_output.encode(), stderr=b"")
-    monkeypatch.setattr(iv.subprocess, "run", lambda *a, **kw: fake_proc)
+    fake_output = json.dumps(
+        [{"SourceFile": str(path), "File:FileSize": "123", "EXIF:Make": "Acme", "PDF:PageCount": "1"}]
+    )
+    _fake_run(monkeypatch, iv, stdout=fake_output.encode())
 
-    result = iv.exiftool_check(path)
-    assert result.status is Status.FOUND
-    assert "EXIF:Make" in result.details["remaining_tags"]
+    verifier = ExifToolVerifier()
+    result = verifier.inspect(path)
+    assert result.has_embedded_metadata is True
+    assert "EXIF:Make" in result.embedded_metadata_tags
+    assert "File:FileSize" not in result.embedded_metadata_tags
+    assert result.version == "13.00"
 
 
-def test_reports_not_found_when_only_structural_tags_remain(tmp_path: Path, monkeypatch):
+def test_reports_clean_when_only_structural_filesystem_computed_tags_remain(tmp_path: Path, monkeypatch):
+    import ghostmark.independent_verify as iv
+
     path = tmp_path / "photo.jpg"
     path.write_bytes(b"\xff\xd8\xff\xd9")
-    monkeypatch.setattr(iv, "exiftool_available", lambda: True)
+    monkeypatch.setattr(ExifToolVerifier, "available", lambda self: True)
+    monkeypatch.setattr(ExifToolVerifier, "version", lambda self: "13.00")
 
-    fake_output = json.dumps([{"SourceFile": str(path), "File:FileSize": "123", "ExifTool:Version": "12.0"}])
-    fake_proc = subprocess.CompletedProcess(args=[], returncode=0, stdout=fake_output.encode(), stderr=b"")
-    monkeypatch.setattr(iv.subprocess, "run", lambda *a, **kw: fake_proc)
+    fake_output = json.dumps(
+        [{"SourceFile": str(path), "File:FileSize": "123", "ExifTool:Version": "12.0", "Composite:ImageSize": "8x8"}]
+    )
+    _fake_run(monkeypatch, iv, stdout=fake_output.encode())
 
-    result = iv.exiftool_check(path)
-    assert result.status is Status.NOT_FOUND
+    verifier = ExifToolVerifier()
+    result = verifier.inspect(path)
+    assert result.has_embedded_metadata is False
 
 
-def test_nonzero_exit_code_reported_as_unknown_not_crash(tmp_path: Path, monkeypatch):
+def test_nonzero_exit_code_reported_gracefully_not_crash(tmp_path: Path, monkeypatch):
+    import ghostmark.independent_verify as iv
+
     path = tmp_path / "photo.jpg"
     path.write_bytes(b"\xff\xd8\xff\xd9")
-    monkeypatch.setattr(iv, "exiftool_available", lambda: True)
+    monkeypatch.setattr(ExifToolVerifier, "available", lambda self: True)
+    monkeypatch.setattr(ExifToolVerifier, "version", lambda self: "13.00")
+    _fake_run(monkeypatch, iv, returncode=1, stderr=b"bad file")
 
-    fake_proc = subprocess.CompletedProcess(args=[], returncode=1, stdout=b"", stderr=b"bad file")
-    monkeypatch.setattr(iv.subprocess, "run", lambda *a, **kw: fake_proc)
+    verifier = ExifToolVerifier()
+    result = verifier.inspect(path)
+    assert result.available is True
+    assert not result.tags_by_origin
 
-    result = iv.exiftool_check(path)
-    assert result.status is Status.UNKNOWN
 
-
-def test_verify_file_includes_independent_check(tmp_path: Path, monkeypatch):
+def test_verify_file_produces_verification_summary(tmp_path: Path, monkeypatch):
     from ghostmark.cleaner import clean_file
     from ghostmark.fixtures.generate import make_jpeg_fixture
     from ghostmark.verifier import verify_file
 
-    monkeypatch.setattr(iv, "exiftool_available", lambda: False)
+    monkeypatch.setattr(ExifToolVerifier, "available", lambda self: False)
 
     path = tmp_path / "demo.jpg"
     make_jpeg_fixture(path)
     result = clean_file(path)
 
     verify_result = verify_file(path, Path(result.output))
-    assert verify_result.after.get("exiftool_independent") is not None
-    assert "exiftool_independent" in verify_result.unknown
+    assert verify_result.external_after is not None
+    assert verify_result.summary_v2 is not None
+    assert verify_result.summary_v2.ghostmark_pass is True
+    assert verify_result.summary_v2.exiftool_pass is None  # unavailable in this test
+    assert verify_result.summary_v2.verdict.value == "partial"

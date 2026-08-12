@@ -66,6 +66,13 @@ def _print_report_human(report: InspectionReport) -> None:
             typer.echo(f"  - {w}")
 
 
+_VERDICT_WORD = {
+    "verified_clean": "VERIFIED CLEAN",
+    "partial": "PARTIAL",
+    "unverified": "UNVERIFIED",
+}
+
+
 def _print_verify_human(result: VerifyResult) -> None:
     typer.echo("Verification report\n")
     typer.echo("Before:")
@@ -77,6 +84,35 @@ def _print_verify_human(result: VerifyResult) -> None:
     typer.echo(f"\n{result.summary()}")
     if result.unknown:
         typer.echo("\nMechanisms GhostMark cannot verify: " + ", ".join(sorted(set(result.unknown))))
+
+    typer.echo("\nIndependent verification")
+    ext = result.external_after
+    if ext is not None:
+        if not ext.applicable:
+            typer.echo(f"ExifTool: NOT APPLICABLE -- {ext.note}")
+        elif not ext.available:
+            typer.echo("ExifTool: unavailable. GhostMark's internal verification above still applies, but an")
+            typer.echo("independent cross-check could not be performed. Install ExifTool from https://exiftool.org/.")
+        else:
+            version = ext.version or "unknown version"
+            typer.echo(f"Verified with ExifTool {version}")
+            if ext.has_embedded_metadata:
+                typer.echo(f"⚠ ExifTool still finds {len(ext.embedded_metadata_tags)} embedded metadata tag(s):")
+                for key in list(ext.embedded_metadata_tags)[:10]:
+                    typer.echo(f"    {key}")
+            else:
+                typer.echo("✓ ExifTool finds no remaining embedded metadata")
+
+    summary = result.summary_v2
+    if summary is not None:
+        typer.echo(f"\nGhostMark verification: {'PASS' if summary.ghostmark_pass else 'FAIL'}")
+        if summary.exiftool_pass is None:
+            typer.echo("ExifTool verification: NOT AVAILABLE / NOT APPLICABLE")
+        else:
+            typer.echo(f"ExifTool verification: {'PASS' if summary.exiftool_pass else 'FAIL'}")
+        typer.echo(f"\nOverall: {_VERDICT_WORD[summary.verdict.value]}")
+        typer.echo(f"C2PA support: {summary.c2pa_status.upper()}")
+        typer.echo("Statistical AI watermark: UNKNOWN / NOT CURRENTLY VERIFIABLE")
 
 
 @app.command()

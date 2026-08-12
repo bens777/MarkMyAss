@@ -158,6 +158,111 @@ class CleanResult:
         }
 
 
+class MetadataOrigin(StrEnum):
+    """How an independent tool's reported property relates to GhostMark's cleaning claims.
+
+    Only ``EMBEDDED_METADATA`` is counted when deciding whether a cleaned
+    file independently verifies as clean -- the rest (file size, computed
+    composite values, structural facts a file needs to render/open) are
+    not privacy/provenance signals GhostMark claims to remove.
+    """
+
+    EMBEDDED_METADATA = "embedded_metadata"
+    STRUCTURAL = "structural"
+    FILESYSTEM = "filesystem"
+    COMPUTED = "computed"
+    UNKNOWN = "unknown"
+
+
+class VerificationVerdict(StrEnum):
+    VERIFIED_CLEAN = "verified_clean"
+    PARTIAL = "partial"
+    UNVERIFIED = "unverified"
+
+
+@dataclass
+class ExternalVerificationResult:
+    """Result of an independent, third-party cross-check (currently: ExifTool).
+
+    GhostMark's own detectors are pure Python and always run. This is a
+    *second opinion* from a separate, independently-trusted tool, so a
+    user doesn't have to take GhostMark's word for it.
+    """
+
+    tool: str
+    available: bool
+    applicable: bool = True
+    version: str | None = None
+    tags_by_origin: dict[str, dict[str, str]] = field(default_factory=dict)
+    note: str = ""
+
+    @property
+    def embedded_metadata_tags(self) -> dict[str, str]:
+        return self.tags_by_origin.get(MetadataOrigin.EMBEDDED_METADATA.value, {})
+
+    @property
+    def has_embedded_metadata(self) -> bool:
+        return bool(self.embedded_metadata_tags)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "tool": self.tool,
+            "available": self.available,
+            "applicable": self.applicable,
+            "version": self.version,
+            "tags_by_origin": self.tags_by_origin,
+            "has_embedded_metadata": self.has_embedded_metadata,
+            "note": self.note,
+        }
+
+
+@dataclass
+class VerificationSummary:
+    """The headline verdict for a clean: PASS only when GhostMark's own
+    re-inspection AND an independent tool both agree nothing supported
+    remains. This is NOT a claim that the file contains no possible
+    identifying signal whatsoever -- only that the specific, supported
+    metadata categories GhostMark targets are independently confirmed gone.
+    """
+
+    ghostmark_pass: bool
+    exiftool_pass: bool | None  # None = not run / not applicable / unavailable
+    statistical_watermark_verified: bool = False
+    c2pa_status: str = "partial"
+    exiftool_available: bool = False
+    exiftool_applicable: bool = True
+    exiftool_version: str | None = None
+    note: str = ""
+
+    @property
+    def supported_metadata_clean(self) -> bool:
+        return self.ghostmark_pass and self.exiftool_pass is not False
+
+    @property
+    def verdict(self) -> VerificationVerdict:
+        if self.exiftool_pass is None:
+            return VerificationVerdict.PARTIAL if self.ghostmark_pass else VerificationVerdict.UNVERIFIED
+        if self.ghostmark_pass and self.exiftool_pass:
+            return VerificationVerdict.VERIFIED_CLEAN
+        if self.ghostmark_pass or self.exiftool_pass:
+            return VerificationVerdict.PARTIAL
+        return VerificationVerdict.UNVERIFIED
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "ghostmark_pass": self.ghostmark_pass,
+            "exiftool_pass": self.exiftool_pass,
+            "supported_metadata_clean": self.supported_metadata_clean,
+            "statistical_watermark_verified": self.statistical_watermark_verified,
+            "c2pa_status": self.c2pa_status,
+            "exiftool_available": self.exiftool_available,
+            "exiftool_applicable": self.exiftool_applicable,
+            "exiftool_version": self.exiftool_version,
+            "verdict": self.verdict.value,
+            "note": self.note,
+        }
+
+
 @dataclass
 class VerifyResult:
     """Comparison between a pre-clean and post-clean inspection."""
@@ -167,6 +272,9 @@ class VerifyResult:
     resolved: list[str] = field(default_factory=list)
     remaining: list[str] = field(default_factory=list)
     unknown: list[str] = field(default_factory=list)
+    external_before: ExternalVerificationResult | None = None
+    external_after: ExternalVerificationResult | None = None
+    summary_v2: VerificationSummary | None = None
 
     @property
     def supported_found_before(self) -> int:
@@ -191,4 +299,7 @@ class VerifyResult:
             "remaining": self.remaining,
             "unknown": self.unknown,
             "summary": self.summary(),
+            "external_before": self.external_before.to_dict() if self.external_before else None,
+            "external_after": self.external_after.to_dict() if self.external_after else None,
+            "verification_summary": self.summary_v2.to_dict() if self.summary_v2 else None,
         }
