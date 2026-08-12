@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ghostmark"
-version = "0.1.0"
+version = "0.2.0"
 description = "Open-source AI watermark & provenance cleaner. Inspect, sanitize and verify metadata and supported watermark signals in AI-generated text, images and documents."
 readme = "README.md"
 license = "MIT"
@@ -64,9 +64,12 @@ ghostmark = "ghostmark.cli:app"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/ghostmark"]
-
-[tool.hatch.build.targets.wheel.force-include]
-"src/ghostmark/web/static" = "ghostmark/web/static"
+# Static frontend assets under src/ghostmark/web/static are already
+# included by `packages` above (hatchling includes all files in a package
+# tree, not just .py). Do NOT also list them under force-include -- that
+# adds the same files to the wheel twice at the same path and hatchling
+# refuses to build (surfaces only on a real, non-editable `pip install .`,
+# e.g. in Docker -- `pip install -e .` doesn't build a wheel the same way).
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

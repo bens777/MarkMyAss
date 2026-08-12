@@ -1,0 +1,40 @@
+# GhostMark -- insert into moseisley.sh's existing Caddyfile.
+#
+# IMPORTANT: place this block ABOVE (before) your site's existing
+# catch-all / fallback `reverse_proxy` or `handle { ... }` block in the
+# SAME site definition (the block for moseisley.sh). Caddy evaluates
+# handle/handle_path blocks in the order they appear in the file, so if
+# your fallback proxy comes first, it will swallow /ghostmark requests
+# before this block ever sees them.
+#
+# Do NOT paste this as a new standalone site block -- it must live
+# inside your existing `moseisley.sh { ... }` block, alongside (above)
+# whatever already serves the rest of the site.
+#
+# What each line does:
+#   - `redir` sends a visitor at the bare "/ghostmark" (no trailing
+#     slash) to "/ghostmark/" first. This matters because the page
+#     GhostMark serves assumes it's being loaded from a path ending in
+#     "/" (see <base href> in the page's <head>) -- without this redirect
+#     a bare "/ghostmark" request would not even match `handle_path`
+#     below (which requires the trailing "/*") and would fall through to
+#     your site's normal routing instead.
+#   - `handle_path /ghostmark/*` matches any request under /ghostmark/
+#     and STRIPS that prefix before forwarding, so GhostMark's own app
+#     (which knows nothing about "/ghostmark") sees plain paths like
+#     "/", "/api/inspect/text", "/static/app.js" -- exactly what it
+#     expects locally too. GhostMark's frontend is built so every link
+#     and API call is relative to a server-injected <base href="/ghostmark/">
+#     tag, which is what makes this stripping transparent: the browser
+#     resolves e.g. `api/inspect` against that base into
+#     "/ghostmark/api/inspect", Caddy strips the prefix, and GhostMark
+#     receives "/api/inspect" -- its real route.
+#   - `reverse_proxy 127.0.0.1:8765` forwards to the GhostMark container,
+#     which is the ONLY way GhostMark is reachable -- it is never bound
+#     to a public interface itself (see docker-compose.prod.yml).
+
+redir /ghostmark /ghostmark/ 308
+
+handle_path /ghostmark/* {
+    reverse_proxy 127.0.0.1:8765
+}

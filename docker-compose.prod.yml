@@ -1,0 +1,31 @@
+# Production deployment for https://moseisley.sh/ghostmark
+#
+# GhostMark itself is NEVER exposed directly to the internet -- it only
+# listens on 127.0.0.1 on the host, and a reverse proxy (Caddy; see
+# deploy/Caddyfile.snippet) is the sole public entry point. See
+# DEPLOY_MOSEISLEY.md for the full, plain-language deployment steps.
+services:
+  ghostmark:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8765:8765"
+    environment:
+      GHOSTMARK_MODE: "hosted"
+      GHOSTMARK_BASE_PATH: "/ghostmark/"
+      GHOSTMARK_PUBLIC_URL: "https://moseisley.sh/ghostmark"
+      # Public-web hardening -- see SECURITY.md for the full threat model.
+      GHOSTMARK_MAX_UPLOAD_MB: "20"
+      GHOSTMARK_SESSION_TTL_MINUTES: "12"
+      GHOSTMARK_RATE_LIMIT_PER_MINUTE: "20"
+      GHOSTMARK_MAX_CONCURRENT: "4"
+      GHOSTMARK_PROCESSING_TIMEOUT_SECONDS: "30"
+    # Basic resource safeguards so one bad actor can't exhaust the host.
+    mem_limit: 512m
+    pids_limit: 256
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
