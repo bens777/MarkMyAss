@@ -44,3 +44,43 @@ jobs:
         run: |
           ghostmark --help
           ghostmark --version
+
+  exiftool-verification:
+    name: "Independent ExifTool Verification"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install ExifTool
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libimage-exiftool-perl
+          exiftool -ver
+
+      - name: Install GhostMark (editable, with dev extras)
+        run: python -m pip install -e ".[dev]"
+
+      - name: Confirm GhostMark detects ExifTool
+        run: |
+          python -c "
+          from ghostmark.independent_verify import ExifToolVerifier
+          v = ExifToolVerifier()
+          assert v.available(), 'ExifTool was installed but GhostMark could not find it on PATH'
+          print(f'ExifTool {v.version()} detected by GhostMark')
+          "
+
+      - name: Run ExifTool integration suite (real binary, not mocked)
+        run: python -m pytest tests/integration -v -rA --no-header
+
+      - name: Confirm the suite actually ran (not silently skipped)
+        run: |
+          COUNT=$(python -m pytest tests/integration --collect-only -q | grep -c '::test_')
+          echo "Collected $COUNT integration tests"
+          test "$COUNT" -gt 0
