@@ -33,3 +33,32 @@ If this ever becomes a concern for a downstream user, `pikepdf`'s PDF
 functionality is isolated to `src/ghostmark/cleaners/pdf.py` and
 `inspect_pdf_metadata` in `src/ghostmark/detectors/metadata.py`, so PDF
 support could be made optional without touching the rest of GhostMark.
+
+## About ExifTool (GPL) -- external runtime dependency, never vendored
+
+[ExifTool](https://exiftool.org/) is licensed under your choice of the
+Perl "Artistic License" or the **GPL**. GhostMark treats it strictly as
+an **external, independently-installed runtime dependency**:
+
+- GhostMark's source tree (this repository) and its published Python
+  package **never include ExifTool's source or binary** -- there is
+  nothing to vendor, and `pip install ghostmark` does not install
+  ExifTool.
+- `ghostmark/independent_verify.py` only shells out to whatever
+  `exiftool` executable it finds on `PATH` at runtime (via
+  `shutil.which` + `subprocess.run` with a fixed argv, `shell=False`).
+  If it's absent, GhostMark says so honestly (`exiftool_available:
+  false`) and continues to work without it -- ExifTool is never a hard
+  requirement.
+- In the production Docker image, ExifTool is installed via the
+  Debian/apt package `libimage-exiftool-perl` **during the image build**,
+  as a separate, independently-licensed OS package -- see `Dockerfile`.
+  Anyone can rebuild the image without that step and GhostMark still
+  runs, just without independent verification.
+
+This "shell out to a separately-installed binary" pattern is the
+standard way to use a GPL tool from a permissively-licensed project
+without GPL's copyleft extending to the calling program -- there is no
+linking, no vendored/derived code, and no distribution of ExifTool
+alongside GhostMark's own source. GhostMark's own code remains
+100% MIT-licensed.

@@ -7,7 +7,7 @@ network calls, telemetry, or new mandatory dependencies.
 ## Development setup
 
 ```bash
-git clone https://github.com/ghostmark-project/ghostmark.git
+git clone https://github.com/bens777/ghostmark.git
 cd ghostmark
 python -m venv .venv
 
@@ -38,15 +38,24 @@ src/ghostmark/
     models.py       # shared result types (DetectionResult, CleanResult, VerifyResult, ...)
     inspector.py     # dispatches a text/file input to the right detectors
     cleaner.py       # dispatches a text/file input to the right cleaners
-    verifier.py      # compares a before/after inspection
+    verifier.py      # compares a before/after inspection, builds VerificationSummary
     security.py      # filename sanitization, size limits, temp file safety
+    independent_verify.py  # ExifToolVerifier: external cross-check + tag categorization
     detectors/        # unicode.py, metadata.py, c2pa.py, statistical.py
     cleaners/          # text.py, image.py, pdf.py, c2pa.py
     formats/            # low-level JPEG/PNG/WebP byte parsers (no recompression)
     experimental/        # opt-in, clearly-labeled unproven features
     fixtures/              # synthetic fixture generation for demo/tests
     cli.py                  # Typer CLI
-    web/                     # FastAPI local UI + static frontend
+    web/                     # FastAPI app (shared by local `ghostmark ui` and hosted deploy)
+        app.py                  # routes, session lifecycle
+        config.py                # env-driven WebConfig (local vs hosted mode, limits)
+        security_middleware.py    # rate limiting, security headers
+        concurrency.py             # bounded/timed job runner
+        static/                     # vanilla HTML/CSS/JS frontend
+
+tests/
+    integration/      # tests against the REAL exiftool binary (skip if not installed)
 ```
 
 The CLI and the web UI both call into `inspector.py` / `cleaner.py` /

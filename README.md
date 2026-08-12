@@ -1,21 +1,49 @@
 # 👻 GhostMark
 
-**Open-source AI watermark & provenance cleaner.**
+**Free AI Metadata & Provenance Cleaner.** Open source.
 
 Inspect → Clean → Verify
 
-**100% local. No uploads. No telemetry. Free and open source.**
-
 GhostMark inspects files and text for hidden Unicode characters, embedded
 metadata, and provenance signals, removes the ones it can safely remove,
-and then re-inspects its own output so it can tell you -- with evidence,
-not vibes -- what actually changed.
+and then independently re-verifies its own output -- with GhostMark's own
+detectors *and*, where applicable, [ExifTool](https://exiftool.org/) -- so
+it can tell you what actually changed, with evidence, not vibes.
+
+## Use GhostMark online
+
+```text
+https://moseisley.sh/ghostmark
+```
+
+No installation. Free, open source tool by [Moseisley.sh](https://moseisley.sh).
+Files are processed temporarily on the server and deleted automatically
+-- see "Privacy" below for exactly what that means.
+
+## Run GhostMark locally
+
+For anyone who'd rather not upload anything anywhere:
+
+```bash
+git clone https://github.com/bens777/ghostmark.git
+cd ghostmark
+pip install -e .
+
+ghostmark demo     # generates synthetic fixtures and proves the pipeline works
+ghostmark ui       # opens http://127.0.0.1:8765 -- 100% local, nothing uploaded
+```
+
+Or from the CLI directly:
 
 ```bash
 ghostmark inspect document.pdf
 ghostmark clean document.pdf
 ghostmark verify document.ghostmark.pdf
 ```
+
+Both the hosted site and the local tool run the exact same open-source
+code. The only difference is where processing happens -- see
+[`PRIVACY.md`](PRIVACY.md) for the precise distinction.
 
 ---
 
@@ -46,67 +74,72 @@ fabricated result.
 
 ---
 
-## Quick start
-
-```bash
-git clone https://github.com/bens777/ghostmark.git
-cd ghostmark
-pip install -e .
-
-ghostmark demo     # generates synthetic fixtures and proves the pipeline works
-ghostmark ui       # opens http://127.0.0.1:8765 in your browser
-```
-
-Not comfortable with a terminal? Double-click:
+Not comfortable with a terminal? Double-click, instead of the `pip
+install` step above:
 
 - **Windows:** `START-GHOSTMARK.bat` (or `START-GHOSTMARK.ps1`)
 - **Linux / macOS:** `start-ghostmark.sh`
 
 These scripts check for Python, set up a virtual environment, install
-GhostMark, and open the web UI for you -- with plain-language errors if
-something's missing.
+GhostMark, and open the local web UI for you -- with plain-language
+errors if something's missing.
 
 ## The web UI
 
 ```text
 👻 GhostMark
-AI watermark & provenance cleaner
+Free AI Metadata & Provenance Cleaner
 
 [ Paste Text ]  [ Upload File ]
 
 ---------------------------------
-Inspection results
+STEP 1 — INSPECTION
 
-Hidden Unicode         FOUND
-Document metadata      FOUND
-XMP metadata           FOUND
-C2PA / provenance      NOT DETECTED
-Statistical watermark  UNKNOWN
+Document metadata       FOUND
+XMP metadata             NOT FOUND
+EXIF metadata             FOUND
+Hidden Unicode              NOT FOUND
+C2PA / provenance            NOT FOUND
+Statistical watermark          UNKNOWN
 
-[ Clean ]
+[ Clean File ]
 ---------------------------------
-Verification
+STEP 2 — CLEANING
 
-Hidden Unicode                       REMOVED
-Metadata                             REMOVED
-C2PA                                 UNSUPPORTED
-Independent verification (ExifTool)  UNVERIFIED / REMOVED
-Statistical watermark                UNVERIFIED
+Document metadata      REMOVED
+EXIF metadata            REMOVED
+Original file               PRESERVED
+
+[ Verify Independently ]
+---------------------------------
+STEP 3 — INDEPENDENT VERIFICATION
+
+Verified with ExifTool 13.x
+✓ No embedded metadata found
+
+GhostMark verification:  PASS
+ExifTool verification:   PASS
+Overall:                  VERIFIED CLEAN
+
+Statistical AI watermark: NOT CURRENTLY VERIFIABLE
 
 [ Download Clean File ]
 ```
 
-The server binds to `127.0.0.1` only -- it is never reachable from other
-devices, and nothing is ever uploaded anywhere outside your machine.
+Locally, the server binds to `127.0.0.1` only -- never reachable from
+other devices, nothing uploaded anywhere. The hosted deployment is only
+reachable through its reverse proxy (see `DEPLOY_MOSEISLEY.md`).
 
-Verification runs GhostMark's own detectors again on the cleaned output
-*and*, if [ExifTool](https://exiftool.org/) is installed, independently
-cross-checks it with that separate, widely trusted tool -- so you don't
-have to take GhostMark's own word for it. Downloading the cleaned file
-serves it with `Content-Disposition: attachment` and a name like
-`document.ghostmark.pdf`; the temporary copy on the server is deleted
-immediately after the download completes (or automatically after 30
-minutes if it's never downloaded).
+Verification always re-runs GhostMark's own detectors on the cleaned
+output *and*, if [ExifTool](https://exiftool.org/) is installed,
+independently cross-checks it with that separate, widely trusted tool --
+so you don't have to take GhostMark's own word for it. The verdict is
+only **VERIFIED CLEAN** when both agree; otherwise it's reported as
+**PARTIAL** or **UNVERIFIED**, never inflated. Downloading the cleaned
+file serves it with `Content-Disposition: attachment` and a name like
+`document.ghostmark.pdf`; on the hosted deployment the temporary copy on
+the server is deleted immediately after the download completes (or
+automatically within 10-15 minutes if it's never downloaded).
 
 ## CLI
 
@@ -230,59 +263,80 @@ suite specifically to make sure cleaning doesn't mangle legitimate content.
 
 ## Privacy
 
+GhostMark has two modes with different privacy guarantees -- see
+[`PRIVACY.md`](PRIVACY.md) for the full explanation.
+
+**Local mode** (`ghostmark ui` on your own computer):
+
 - **Local-only.** No uploads, no cloud processing, no external API calls.
 - **No telemetry, analytics, or tracking** of any kind.
 - **No user accounts.**
 - **No CDN JavaScript or remote fonts** -- the web UI is self-contained
   vanilla HTML/CSS/JS.
-- The web server binds to `127.0.0.1` only, never `0.0.0.0`.
+- The web server binds to `127.0.0.1` only, never `0.0.0.0` by default.
 - Uploaded files live only in a randomized per-session temp directory and
   are deleted when the session ends or the process exits.
 
-If a future optional feature ever needs network access, it will be
-disabled by default and clearly labeled.
+**Hosted mode** (https://moseisley.sh/ghostmark): files ARE temporarily
+uploaded to and processed on the server, then deleted automatically --
+immediately after download, or within 10-15 minutes regardless. Never
+stored in a database, never included in logs. See `PRIVACY.md` for the
+exact policy.
+
+If a future optional feature ever needs network access it isn't already
+documented to use, it will be disabled by default and clearly labeled.
 
 ## Security
 
-- Upload size limit (50 MB) enforced before any parsing.
 - Filenames are sanitized (path components and unsafe characters stripped)
   before ever touching the filesystem -- no path traversal via a crafted
   filename.
-- File extension is checked against an explicit allow-list.
+- File extension is checked against an explicit allow-list, plus a
+  magic-byte sanity check that content roughly matches the claimed type.
 - Temp files use randomized names in a per-session directory, cleaned up on
   completion and on process exit.
 - Untrusted file content is never executed, and parsing failures return a
   clean error instead of a stack trace with local filesystem paths.
+- Upload size limit enforced via a bounded/streaming reader (50 MB local
+  default; 20 MB on the hosted deployment).
+- The hosted deployment additionally adds per-IP rate limiting, a
+  concurrent-job cap with per-job timeouts, security response headers, and
+  no CORS -- see `SECURITY.md`.
 
-See [`SECURITY.md`](SECURITY.md) for the full threat model and how to
-report a vulnerability.
+See [`SECURITY.md`](SECURITY.md) for the full threat model (local and
+hosted) and how to report a vulnerability.
 
-## Enhanced metadata support (optional)
+## Independent verification (ExifTool)
 
 GhostMark's core detectors are pure Python and need nothing extra. If
-[ExifTool](https://exiftool.org/) is installed and on your `PATH`,
-GhostMark reports:
+[ExifTool](https://exiftool.org/) is installed and on `PATH`, `ghostmark
+verify` (CLI and web UI) additionally cross-checks the cleaned file with
+it as an independent second opinion -- every property ExifTool reports is
+categorized (embedded metadata vs. structural/filesystem/computed
+information) so file size or a preserved ICC profile is never mistaken
+for "metadata GhostMark failed to remove." See
+[`src/ghostmark/independent_verify.py`](src/ghostmark/independent_verify.py).
 
-```text
-Enhanced metadata support: available
-```
+If ExifTool isn't installed, GhostMark says so honestly and continues to
+work without it -- it is never a hard requirement. The production Docker
+image installs it automatically (see below).
 
-Nothing in V0 currently shells out to it -- the flag exists so the
-CLI/UI are honest about what's available, and so a future contributor has
-a documented place to wire in deeper inspection.
+## Docker
 
-## Docker (optional)
-
-Docker is not required and not the primary way to run GhostMark -- use the
-launch scripts or `pip install -e .` above. If you'd like to run the web UI
-in a container anyway:
+For local use, Docker is optional -- prefer the launch scripts or `pip
+install -e .` above. If you'd like to run the local web UI in a container
+anyway:
 
 ```bash
 docker compose up
 ```
 
 This maps the UI to `127.0.0.1:8765` on your host only (see
-`docker-compose.yml`); it is not exposed to your network.
+`docker-compose.yml`); it is not exposed to your network. The image
+installs ExifTool automatically during build.
+
+For the production/hosted deployment (`docker-compose.prod.yml`), see
+[`DEPLOY_MOSEISLEY.md`](DEPLOY_MOSEISLEY.md).
 
 ## Development
 
@@ -299,7 +353,6 @@ add a new detector or cleaner.
 
 - DOCX metadata support.
 - Full C2PA manifest parsing/validation (not just container detection).
-- Optional ExifTool integration for deeper metadata inspection.
 - Real statistical watermark detectors, if/when providers publish
   reproducible methodology.
 
