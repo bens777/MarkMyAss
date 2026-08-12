@@ -1,0 +1,7 @@
+services:
+  ghostmark:
+    build: .
+    ports:
+      # Bound to 127.0.0.1 on the HOST so the UI is not reachable from other
+      # devices on your network, matching GhostMark's localhost-only policy.
+      - "127.0.0.1:8765:8765"
