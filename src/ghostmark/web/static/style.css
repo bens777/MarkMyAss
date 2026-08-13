@@ -56,19 +56,27 @@ body {
 
 .top-nav {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap: 1.25rem;
   font-size: 0.85rem;
   margin-bottom: 1.5rem;
 }
 .top-nav a { color: var(--muted); text-decoration: none; }
 .top-nav a:hover { color: var(--accent); }
+.top-nav .brand-link {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.top-nav .brand-link:hover { color: var(--accent); }
 
 header { text-align: center; margin-bottom: 1.5rem; }
-header h1 { font-size: 2rem; margin: 0 0 0.25rem; }
-.tagline { margin: 0; font-size: 1.3rem; font-weight: 700; }
+header h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 0.5rem; }
+.hero-flow { margin: 0; font-size: 1.3rem; font-weight: 700; color: var(--accent); }
 .subheadline { margin: 0.35rem 0 0; color: var(--text); }
-.sub-subheadline { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
+.tagline { margin: 0.3rem 0 0; color: var(--muted); font-size: 0.95rem; font-style: italic; }
 .honesty-note { margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--muted); font-style: italic; }
 
 .trust-bar {
@@ -250,6 +258,15 @@ textarea {
 
 footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 2rem; }
 footer a { color: var(--accent); }
+.footer-sitemap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 0.9rem;
+  margin: 0.6rem 0;
+}
+.footer-sitemap a { color: var(--muted); }
+.footer-sitemap a:hover { color: var(--accent); }
 
 .run-local-teaser {
   text-align: center;

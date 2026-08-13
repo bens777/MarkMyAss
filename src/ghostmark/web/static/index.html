@@ -3,21 +3,24 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GhostMark — Free Claude Watermark Remover &amp; AI Metadata Cleaner</title>
-  <meta name="description" content="Inspect, clean and independently verify AI metadata, hidden Unicode and supported provenance signals in PDFs, images and text. Proof, not promises. Free and open source." />
+  <title>Claude Watermark Remover &amp; AI Metadata Cleaner | GhostMark</title>
+  <meta name="description" content="Free open-source tool to inspect, remove and independently verify supported Claude and AI metadata, hidden Unicode and C2PA provenance signals." />
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://moseisley.sh/ghostmark" />
+  <link rel="canonical" href="{{PUBLIC_URL}}" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="GhostMark — Proof, Not Promises" />
-  <meta property="og:description" content="The open-source AI watermark verification lab. GhostMark shows exactly what it found, what it removed, what was independently verified, and what cannot currently be proven." />
-  <meta property="og:url" content="https://moseisley.sh/ghostmark" />
+  <meta property="og:title" content="Claude Watermark Remover & AI Metadata Cleaner | GhostMark" />
+  <meta property="og:description" content="GhostMark shows exactly what it removed — and what it cannot verify. Free, open source, no account, independently verified." />
+  <meta property="og:url" content="{{PUBLIC_URL}}" />
   <meta property="og:site_name" content="GhostMark" />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="GhostMark — Proof, Not Promises" />
+  <meta property="og:image" content="static/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Claude Watermark Remover & AI Metadata Cleaner | GhostMark" />
   <meta name="twitter:description" content="Inspect, clean and independently verify AI metadata and supported provenance signals. Free and open source." />
+  <meta name="twitter:image" content="static/og-image.png" />
 
   <link rel="stylesheet" href="static/style.css" />
+  {{JSONLD}}
 </head>
 <body>
   <main class="wrap">
@@ -26,16 +29,17 @@
     </p>
 
     <nav class="top-nav">
+      <a href="." class="brand-link">👻 GhostMark</a>
       <a href="lab">AI Watermark Lab</a>
       <a href="benchmarks">Benchmarks</a>
-      <a href="run-local">Run Models Locally</a>
+      <a href="run-ai-locally">Run Models Locally</a>
     </nav>
 
     <header>
-      <h1>👻 GhostMark</h1>
-      <p class="tagline">Proof, not promises.</p>
+      <h1>Claude Watermark Remover &amp; AI Provenance Cleaner</h1>
+      <p class="hero-flow">Inspect <span aria-hidden="true">→</span> Clean <span aria-hidden="true">→</span> Verify</p>
       <p class="subheadline">GhostMark shows exactly what it removed — and what it cannot verify.</p>
-      <p class="sub-subheadline">The open-source AI watermark verification lab.</p>
+      <p class="tagline">Proof, not promises.</p>
 
       <ul class="trust-bar">
         <li>Free</li>
@@ -147,12 +151,23 @@
 
     <p class="run-local-teaser">
       Want to avoid provider-side provenance at the source?
-      <a href="run-local">Learn how to run models locally →</a>
+      <a href="run-ai-locally">Learn how to run models locally →</a>
     </p>
 
     <footer>
       <p>GhostMark is open source (MIT). <a href="https://github.com/bens777/ghostmark" rel="noopener">Source on GitHub</a>.</p>
-      <p><a href="lab">AI Watermark Lab</a> &middot; <a href="benchmarks">Benchmarks</a></p>
+      <nav class="footer-sitemap" aria-label="More GhostMark pages">
+        <a href="lab">AI Watermark Lab</a>
+        <a href="benchmarks">Benchmarks</a>
+        <a href="run-ai-locally">Run Models Locally</a>
+        <a href="claude-watermark-remover">Claude Watermark Remover</a>
+        <a href="claude-watermark-detector">Claude Watermark Detector</a>
+        <a href="ai-watermark-remover">AI Watermark Remover</a>
+        <a href="ai-metadata-cleaner">AI Metadata Cleaner</a>
+        <a href="c2pa-remover">C2PA Remover</a>
+        <a href="content-credentials-remover">Content Credentials Remover</a>
+        <a href="hidden-unicode-remover">Hidden Unicode Remover</a>
+      </nav>
       <p id="footer-privacy"></p>
     </footer>
   </main>

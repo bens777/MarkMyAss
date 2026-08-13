@@ -43,7 +43,7 @@ def test_homepage_links_to_lab_and_benchmarks_and_run_local():
     html = client.get("/").text
     assert 'href="lab"' in html
     assert 'href="benchmarks"' in html
-    assert 'href="run-local"' in html
+    assert 'href="run-ai-locally"' in html
 
 
 def test_homepage_moseisley_copy_updated():
