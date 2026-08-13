@@ -1,26 +1,49 @@
 :root {
   --bg: #0f1115;
+  --bg-void: #0a0b0f;
   --surface: #171a21;
+  --surface-2: #1d212b;
   --border: #2a2e38;
   --text: #e7e9ee;
   --muted: #9aa1ad;
   --accent: #7c8cff;
+  --brass: #c9a44c;
+  --spectral: #b9f5ff;
+  --parchment: #efe6d8;
+  --parchment-ink: #2a2114;
   --found: #ffb454;
   --notfound: #5fd08a;
   --unknown: #9aa1ad;
   --danger: #ff6b6b;
   --pass: #5fd08a;
   --partial: #ffb454;
+
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", monospace;
+
+  /* Micro-interaction timing -- see DESIGN_SYSTEM.md's Motion section.
+     Overridden to 0 under prefers-reduced-motion below, so any element
+     using these variables in a transition/animation is automatically
+     motion-safe without needing its own media query. */
+  --dur-fast: 180ms;
+  --dur-base: 260ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
 }
 
 @media (prefers-color-scheme: light) {
   :root {
     --bg: #f6f7fb;
+    --bg-void: #eef0f6;
     --surface: #ffffff;
+    --surface-2: #f6f7fb;
     --border: #dfe2ea;
     --text: #1c1f26;
     --muted: #5b6270;
     --accent: #4a5bd6;
+    --brass: #946f0f;
+    --spectral: #2f8fa8;
     --found: #b5670a;
     --notfound: #1f8f5a;
     --unknown: #6b7280;
@@ -30,15 +53,33 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur-base: 0ms; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  font-family: var(--font-body);
   background: var(--bg);
   color: var(--text);
   line-height: 1.5;
+  /* Safety net: nothing on this site is meant to require horizontal
+     scroll on any viewport. A flex child with a large intrinsic size
+     (e.g. an <img width> attribute) can otherwise force the whole page
+     wider than the viewport even when max-width:100% is set on the
+     image itself, because flex items default to min-width:auto. */
+  overflow-x: hidden;
 }
+
+img, svg { max-width: 100%; height: auto; }
 
 .wrap {
   max-width: 720px;
@@ -66,14 +107,32 @@ body {
 .top-nav a { color: var(--muted); text-decoration: none; }
 .top-nav a:hover { color: var(--accent); }
 .top-nav .brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--text);
   font-weight: 700;
   font-size: 0.95rem;
 }
-.top-nav .brand-link:hover { color: var(--accent); }
+.top-nav .brand-link:hover { color: var(--brass); }
+.brand-mark { color: var(--spectral); flex-shrink: 0; }
+
+.hero-art {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  min-width: 0;
+}
+.hero-art img { max-width: 100%; width: auto; height: auto; min-width: 0; }
 
 header { text-align: center; margin-bottom: 1.5rem; }
-header h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 0.5rem; }
+header h1 {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  margin: 0 0 0.5rem;
+}
 .hero-flow { margin: 0; font-size: 1.3rem; font-weight: 700; color: var(--accent); }
 .subheadline { margin: 0.35rem 0 0; color: var(--text); }
 .tagline { margin: 0.3rem 0 0; color: var(--muted); font-size: 0.95rem; font-style: italic; }
@@ -115,6 +174,20 @@ header h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 0.5rem; }
   font-size: 0.95rem;
 }
 .tab.active { background: var(--accent); border-color: var(--accent); color: white; }
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 0.5rem;
+  background: var(--accent);
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 0 0 8px 8px;
+  z-index: 100;
+  text-decoration: none;
+  transition: top var(--dur-fast) var(--ease-out);
+}
+.skip-link:focus { top: 0; }
 
 .panel.hidden, .hidden { display: none !important; }
 .visually-hidden {
@@ -160,10 +233,15 @@ textarea {
   font-size: 1rem;
   cursor: pointer;
   text-decoration: none;
+  transition: background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
 .btn.primary { background: var(--accent); color: white; }
+.btn.primary:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 85%, white); }
+.btn.primary:active:not(:disabled) { transform: scale(0.97); }
 .btn.primary:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn.secondary { background: var(--border); color: var(--text); margin-top: 0; padding: 0.5rem 1rem; font-size: 0.9rem; }
+.btn.secondary:hover { background: color-mix(in srgb, var(--border) 70%, var(--text)); }
+.btn:focus-visible { outline: 2px solid var(--spectral); outline-offset: 2px; }
 
 .error { color: var(--danger); margin-top: 0.75rem; }
 
@@ -189,6 +267,25 @@ textarea {
 .summary { font-weight: 600; margin-top: 1rem; }
 .original-preserved { color: var(--notfound); font-size: 0.9rem; }
 
+/* Secondary, in-theme flavor line under a STEP heading -- never replaces
+   the precise technical heading/status text next to it. */
+.section-flavor {
+  margin: -0.4rem 0 0.9rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.ghost-glyph { color: var(--spectral); vertical-align: -2px; margin-right: 0.35rem; }
+
+.lab-teaser {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 1rem 0 0;
+}
+.lab-teaser a { color: var(--accent); }
+
 #verify-before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .verify-column h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 0 0 0.5rem; }
 @media (max-width: 560px) {
@@ -202,6 +299,7 @@ textarea {
   border: 1px solid var(--border);
 }
 .exiftool-panel h3, .verdict-panel h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
+.exiftool-panel div { font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.7; }
 .verdict-badge {
   display: inline-block;
   font-weight: 800;
@@ -209,6 +307,39 @@ textarea {
   padding: 0.3rem 0.9rem;
   border-radius: 999px;
   font-size: 0.95rem;
+  animation: seal-stamp var(--dur-base) var(--ease-out);
+}
+/* The verdict badge "stamps in" once when a result appears -- a single,
+   short, non-looping animation (never re-triggers on its own; disabled
+   entirely under prefers-reduced-motion via the global rule above). */
+@keyframes seal-stamp {
+  from { transform: scale(1.4); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* Signal detected: a small ghost glyph briefly appears next to a FOUND
+   row (see app.js). Single play, not a loop. */
+.ghost-appear { animation: ghost-in var(--dur-base) var(--ease-out); }
+@keyframes ghost-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.85); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Cleaning: a detected signal row dissolves as it's removed. */
+.ghost-dissolve { animation: ghost-out calc(var(--dur-base) * 1.1) var(--ease-in) forwards; }
+@keyframes ghost-out {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.9); }
+}
+
+/* Hero mascot: settles into view once on page load, then stops -- no
+   infinite loop. ui-ux-pro-max's own animation guidance flags continuous
+   decorative motion as distracting ("use for loading indicators only,
+   not decorative elements"), so this plays exactly once. */
+.mascot-idle { animation: mascot-settle var(--dur-base) var(--ease-out); transform-origin: 50% 90%; }
+@keyframes mascot-settle {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .verdict-verified_clean { background: color-mix(in srgb, var(--pass) 18%, transparent); color: var(--pass); }
 .verdict-partial { background: color-mix(in srgb, var(--partial) 18%, transparent); color: var(--partial); }
@@ -253,7 +384,7 @@ textarea {
   border-radius: 12px;
   margin-bottom: 1.5rem;
 }
-.promo-bottom h2 { margin: 0 0 0.25rem; font-size: 1.3rem; }
+.promo-bottom h2 { margin: 0 0 0.25rem; font-size: 1.3rem; font-family: var(--font-display); }
 .promo-bottom p { margin: 0 0 1rem; color: var(--muted); }
 
 footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 2rem; }

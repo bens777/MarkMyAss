@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="A compass rose, GhostMark AI Watermark Lab's icon for charting AI provenance signals">
+  <!-- Original artwork for GhostMark. -->
+  <style>
+    .gm-line { stroke: #9aa1ad; }
+    .gm-brass { fill: #c9a44c; stroke: #c9a44c; }
+    .gm-ghost { fill: #b9f5ff; }
+    @media (prefers-color-scheme: light) {
+      .gm-line { stroke: #5b6270; }
+      .gm-brass { fill: #946f0f; stroke: #946f0f; }
+      .gm-ghost { fill: #2f8fa8; }
+    }
+  </style>
+  <g class="gm-line" fill="none" stroke-width="1.5">
+    <circle cx="60" cy="60" r="48" />
+    <circle cx="60" cy="60" r="36" />
+  </g>
+  <g class="gm-brass" stroke-width="1">
+    <path d="M60 16 L68 56 L60 60 L52 56 Z" />
+    <path d="M60 104 L68 64 L60 60 L52 64 Z" opacity="0.55" />
+  </g>
+  <g class="gm-ghost" opacity="0.85">
+    <path d="M16 60 L56 68 L60 60 L56 52 Z" />
+    <path d="M104 60 L64 52 L60 60 L64 68 Z" opacity="0.55" />
+  </g>
+  <circle cx="60" cy="60" r="3.5" class="gm-brass" />
+</svg>

@@ -14,7 +14,7 @@
   text-decoration: none;
 }
 .article-header .brand-link:hover {
-  color: var(--accent);
+  color: var(--brass);
 }
 
 .breadcrumbs {
@@ -43,8 +43,10 @@
   margin: 0 0 1rem;
 }
 .hero-illustration {
-  color: var(--muted);
-  opacity: 0.85;
+  /* These are <img>-embedded SVGs, which don't inherit the host page's
+     CSS (color/custom properties) -- each SVG under static/art/ and
+     run-local-hero.svg is self-theming via an internal <style> with its
+     own light/dark media query instead. See DESIGN_SYSTEM.md. */
   max-width: 100%;
   height: auto;
 }
@@ -53,8 +55,20 @@
   line-height: 1.65;
 }
 
+.kicker {
+  text-align: center;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--brass);
+  font-size: 1rem;
+  margin: 0 0 0.25rem;
+}
+
 .article h1 {
+  font-family: var(--font-display);
   font-size: 1.9rem;
+  line-height: 1.25;
+  letter-spacing: 0.005em;
   margin: 0.2rem 0 0.1rem;
 }
 .article h1 + h3 {
@@ -88,6 +102,7 @@
   border-radius: 4px;
   padding: 0.1rem 0.35rem;
   font-size: 0.9em;
+  font-family: var(--font-mono);
 }
 
 .article pre {
@@ -96,6 +111,7 @@
   border-radius: 8px;
   padding: 0.9rem 1rem;
   overflow-x: auto;
+  font-family: var(--font-mono);
 }
 .article pre code {
   background: none;
@@ -130,6 +146,40 @@
 .article blockquote {
   margin: 1rem 0;
   padding: 0.5rem 1rem;
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--brass);
   color: var(--muted);
+}
+
+/* A "ship's log" callout -- sparing, decorative-only use of the parchment
+   surface. See DESIGN_SYSTEM.md: text on parchment is always
+   --parchment-ink, never --brass (fails contrast). */
+.log-entry {
+  background: var(--parchment);
+  color: var(--parchment-ink);
+  border-left: 4px solid var(--brass);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0;
+}
+.log-entry p, .log-entry li { color: var(--parchment-ink); }
+.log-entry a { color: #5a4210; }
+.log-entry .log-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.4rem;
+  color: #5a4210;
+}
+
+/* Section-break motif -- a low-key fog/wave divider between major
+   sections. Purely decorative (aria-hidden in markup). */
+.wave-divider {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 2rem 0;
+  color: var(--border);
+  opacity: 0.6;
 }
