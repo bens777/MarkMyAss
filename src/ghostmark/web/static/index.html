@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Claude Watermark Remover &amp; AI Metadata Cleaner | GhostMark</title>
+  <title>Claude Watermark Remover &amp; AI Metadata Cleaner | MarkMyAss</title>
   <meta name="description" content="Free open-source tool to inspect, remove and independently verify supported Claude and AI metadata, hidden Unicode and C2PA provenance signals." />
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="{{PUBLIC_URL}}" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Claude Watermark Remover & AI Metadata Cleaner | GhostMark" />
-  <meta property="og:description" content="GhostMark shows exactly what it removed — and what it cannot verify. Free, open source, no account, independently verified." />
+  <meta property="og:title" content="Claude Watermark Remover & AI Metadata Cleaner | MarkMyAss" />
+  <meta property="og:description" content="MarkMyAss shows exactly what it removed — and what it cannot verify. Free, open source, no account, independently verified." />
   <meta property="og:url" content="{{PUBLIC_URL}}" />
-  <meta property="og:site_name" content="GhostMark" />
+  <meta property="og:site_name" content="MarkMyAss" />
   <meta property="og:image" content="static/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Claude Watermark Remover & AI Metadata Cleaner | GhostMark" />
+  <meta name="twitter:title" content="Claude Watermark Remover & AI Metadata Cleaner | MarkMyAss" />
   <meta name="twitter:description" content="Inspect, clean and independently verify AI metadata and supported provenance signals. Free and open source." />
   <meta name="twitter:image" content="static/og-image.png" />
 
@@ -36,7 +36,7 @@
           <circle cx="9.5" cy="10" r="1" fill="var(--bg)" />
           <circle cx="14.5" cy="10" r="1" fill="var(--bg)" />
         </svg>
-        GhostMark
+        MarkMyAss
       </a>
       <a href="#input-section">Cleaner</a>
       <a href="lab">AI Watermark Lab</a>
@@ -48,9 +48,10 @@
     <section class="hero-banner">
       <div class="hero-copy">
         <div class="inner">
+          <p class="brand-kicker">MarkMyAss</p>
           <h1>Claude Watermark Remover &amp; AI Provenance Cleaner</h1>
           <p class="hero-flow">Inspect <span aria-hidden="true">→</span> Clean <span aria-hidden="true">→</span> Verify</p>
-          <p class="subheadline">GhostMark shows exactly what it removed — and what it cannot verify.</p>
+          <p class="subheadline">MarkMyAss shows exactly what it removed — and what it cannot verify.</p>
           <p class="tagline">Proof, not promises.</p>
 
           <div class="hero-cta-row">
@@ -67,7 +68,7 @@
           </ul>
           <p id="privacy-note" class="privacy-note"></p>
           <p class="honesty-note">No fake "100% undetectable" scores.</p>
-          <p class="scope-note"><strong>Works beyond Claude.</strong> GhostMark analyzes supported watermark and provenance signals regardless of which AI created the content — including hidden Unicode, EXIF/XMP/IPTC metadata, PDF metadata, PNG metadata, and supported provenance structures.</p>
+          <p class="scope-note"><strong>Works beyond Claude.</strong> MarkMyAss analyzes supported watermark and provenance signals regardless of which AI created the content — including hidden Unicode, EXIF/XMP/IPTC metadata, PDF metadata, PNG metadata, and supported provenance structures.</p>
         </div>
       </div>
     </section>
@@ -129,7 +130,7 @@
         <label for="cleaned-text-output">Cleaned text</label>
         <textarea id="cleaned-text-output" rows="8" readonly></textarea>
       </div>
-      <p class="original-preserved">Original file <strong>PRESERVED</strong> — GhostMark never modifies your original.</p>
+      <p class="original-preserved">Original file <strong>PRESERVED</strong> — MarkMyAss never modifies your original.</p>
       <button id="btn-verify" class="btn primary" type="button">Verify Independently</button>
     </section>
 
@@ -172,13 +173,13 @@
       </div>
 
       <p id="lab-teaser" class="lab-teaser hidden">
-        Curious what GhostMark can and can't verify? <a href="lab">Explore the GhostMark Lab →</a>
+        Curious what MarkMyAss can and can't verify? <a href="lab">Explore the AI Watermark Lab →</a>
       </p>
     </section>
     </div>
 
     <section class="card info-section">
-      <h2>What GhostMark actually removes</h2>
+      <h2>What MarkMyAss actually removes</h2>
       <p class="section-flavor">Signal-based, not provider-magic — support depends on the signal type, not just which AI made the file.</p>
 
       <div class="capability-columns">
@@ -198,25 +199,25 @@
           <ul class="capability-list capability-list--limit">
             <li>C2PA / Content Credentials support is partial</li>
             <li>Claude, Gemini, and GPT statistical model-level watermarks are currently <strong>UNKNOWN</strong> — no public verifier exists to confirm removal</li>
-            <li>GhostMark never claims "100% AI-undetectable"</li>
+            <li>MarkMyAss never claims "100% AI-undetectable"</li>
           </ul>
         </div>
       </div>
 
       <div class="explain-panel">
         <h3>What "VERIFIED CLEAN" means</h3>
-        <p>GhostMark shows <strong>VERIFIED CLEAN</strong> only when a supported signal was actually found before cleaning, GhostMark's own re-inspection confirms it's gone, and every independent verifier that could run (ExifTool, and c2patool where applicable) agrees too. It is not a claim that the file contains no possible identifying signal whatsoever — only that the specific, supported metadata categories GhostMark targets are independently confirmed gone. See the <a href="lab">AI Watermark Lab</a> for the full, honestly-scored capability matrix.</p>
+        <p>MarkMyAss shows <strong>VERIFIED CLEAN</strong> only when a supported signal was actually found before cleaning, its own re-inspection confirms it's gone, and every independent verifier that could run (ExifTool, and c2patool where applicable) agrees too. It is not a claim that the file contains no possible identifying signal whatsoever — only that the specific, supported metadata categories MarkMyAss targets are independently confirmed gone. See the <a href="lab">AI Watermark Lab</a> for the full, honestly-scored capability matrix.</p>
       </div>
 
       <div class="explain-panel">
-        <h3>Is GhostMark only for Claude?</h3>
-        <p>No. GhostMark is not limited to Claude. It works across supported watermark and provenance signal types, including hidden Unicode and common file metadata. Its support depends on the signal type, not just the AI provider.</p>
+        <h3>Is MarkMyAss only for Claude?</h3>
+        <p>No. MarkMyAss is not limited to Claude. It works across supported watermark and provenance signal types, including hidden Unicode and common file metadata. Its support depends on the signal type, not just the AI provider.</p>
       </div>
     </section>
 
     <section class="card info-section">
       <h2>Best use cases</h2>
-      <p class="section-flavor">Where GhostMark is genuinely reliable — not a universal AI-detection eraser, but strong at what it actually does.</p>
+      <p class="section-flavor">Where MarkMyAss is genuinely reliable — not a universal AI-detection eraser, but strong at what it actually does.</p>
       <ul class="capability-list capability-list--good">
         <li>Cleaning metadata before publishing PDFs or images</li>
         <li>Removing author, creator, GPS, and related metadata fields</li>
@@ -226,7 +227,7 @@
       </ul>
     </section>
 
-    <section class="preview-grid" aria-label="Explore GhostMark">
+    <section class="preview-grid" aria-label="Explore MarkMyAss">
       <a class="preview-card" href="lab">
         <img src="static/art/compass-rose.svg" alt="" width="40" height="40" />
         <h3>AI Watermark Lab</h3>
@@ -254,8 +255,8 @@
     </div>
 
     <footer>
-      <p>GhostMark is open source (MIT). <a href="https://github.com/bens777/ghostmark" rel="noopener">Source on GitHub</a>.</p>
-      <nav class="footer-sitemap" aria-label="More GhostMark pages">
+      <p>MarkMyAss is open source (MIT), powered by the GhostMark engine. <a href="https://github.com/bens777/ghostmark" rel="noopener">Source on GitHub</a>.</p>
+      <nav class="footer-sitemap" aria-label="More MarkMyAss pages">
         <a href="lab">AI Watermark Lab</a>
         <a href="benchmarks">Benchmarks</a>
         <a href="run-ai-locally">Run Models Locally</a>

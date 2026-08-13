@@ -29,7 +29,7 @@
     comment: "A comment segment was found embedded in this file.",
     pdf_info: "This PDF's document-info fields (Title, Author, Producer, etc.) contain data.",
     pdf_xmp: "This PDF has an embedded XMP metadata stream.",
-    c2pa: "A C2PA/JUMBF provenance container was found. GhostMark's detection here is heuristic, not a full manifest validation -- see the AI Watermark Lab for details.",
+    c2pa: "A C2PA/JUMBF provenance container was found. MarkMyAss's detection here is heuristic, not a full manifest validation -- see the AI Watermark Lab for details.",
   };
 
   function explanationFor(detector) {
@@ -95,13 +95,13 @@
     document.querySelectorAll(".hosted-only").forEach((elm) => elm.classList.toggle("hidden", !hosted));
 
     if (hosted) {
-      const text = "Files are processed temporarily on the GhostMark server and automatically deleted. We do not retain uploaded files.";
+      const text = "Files are processed temporarily on the MarkMyAss server and automatically deleted. We do not retain uploaded files.";
       privacyNote.textContent = text;
       footerPrivacy.textContent = `Hosted version: files are deleted automatically after processing (max ${config.session_ttl_minutes} minutes).`;
     } else {
-      const text = "100% local — this copy of GhostMark runs on your own computer. Files never leave your device.";
+      const text = "100% local — this copy of MarkMyAss runs on your own computer. Files never leave your device.";
       privacyNote.textContent = text;
-      footerPrivacy.textContent = "Local GhostMark: nothing is ever uploaded anywhere.";
+      footerPrivacy.textContent = "Local MarkMyAss: nothing is ever uploaded anywhere.";
     }
     if (config.max_upload_mb) {
       uploadLimitHint.textContent = `Maximum file size: ${config.max_upload_mb} MB.`;
@@ -249,7 +249,7 @@
     if (!external || !external.applicable) {
       lines.push(external && external.note ? external.note : "ExifTool: not applicable to this input.");
     } else if (!external.available) {
-      lines.push("ExifTool: unavailable. GhostMark's own verification above still applies, but this independent cross-check could not run.");
+      lines.push("ExifTool: unavailable. MarkMyAss's own verification above still applies, but this independent cross-check could not run.");
     } else {
       const version = external.version || "unknown version";
       lines.push(`Verified with ExifTool ${version}`);
@@ -304,7 +304,7 @@
     const lines = document.createElement("div");
     lines.style.marginTop = "0.75rem";
     lines.style.fontSize = "0.9rem";
-    const detailLines = [`GhostMark verification: ${summary.ghostmark_pass ? "PASS" : "FAIL"}`];
+    const detailLines = [`MarkMyAss verification: ${summary.ghostmark_pass ? "PASS" : "FAIL"}`];
     for (const verifier of summary.external_verifiers || []) {
       if (verifier.passed === null || verifier.passed === undefined) {
         detailLines.push(`${verifier.label} verification: NOT AVAILABLE / NOT APPLICABLE`);

@@ -27,7 +27,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-SITE_NAME = "GhostMark"
+SITE_NAME = "MarkMyAss"
 GITHUB_URL = "https://github.com/bens777/ghostmark"
 MOSEISLEY_URL = "https://moseisley.sh"
 

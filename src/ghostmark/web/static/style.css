@@ -222,7 +222,7 @@ img, svg { max-width: 100%; height: auto; }
     max-height: none;
     min-height: 0;
     background-size: cover;
-    background-position: 62% 38%;
+    background-position: 78% 45%;
   }
   .hero-banner::before {
     background: linear-gradient(180deg, transparent 0%, transparent 62%, var(--bg) 88%, var(--bg) 100%);
@@ -238,6 +238,18 @@ img, svg { max-width: 100%; height: auto; }
   .hero-cta-row, .trust-bar { justify-content: center; }
 }
 
+/* Public brand wordmark -- sits above the SEO-focused H1 rather than
+   replacing it, so the H1 keeps its exact, unchanged, search-friendly
+   text ("Claude Watermark Remover & AI Provenance Cleaner"). */
+.brand-kicker {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
 .hero-copy h1 {
   font-family: var(--font-display);
   font-weight: 700;

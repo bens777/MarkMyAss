@@ -8,7 +8,7 @@
 
 ### A practical guide to avoiding provider-side provenance at the source
 
-GhostMark's main tool cleans up supported metadata and provenance signals
+MarkMyAss's main tool cleans up supported metadata and provenance signals
 **after** a file already exists — it inspects, cleans, and verifies what a
 hosted AI provider (or any tool) left behind. That's useful, but it's
 downstream of the problem.
@@ -26,7 +26,7 @@ which current models and tools are worth using, and when renting a GPU
 beats buying one. It's written for developers, not for people looking for
 a five-minute miracle.
 
-[← Back to the GhostMark cleaner](.)
+[← Back to the MarkMyAss cleaner](.)
 
 ---
 
@@ -42,7 +42,7 @@ what's logged, and what (if anything) is embedded in what comes back --
 including any provenance or watermarking signal the provider chooses to
 attach, such as [C2PA Content Credentials](https://c2pa.org/) on
 generated images, or a statistical bias in how the model samples tokens
-for text (see GhostMark's main page for why that specific mechanism can't
+for text (see MarkMyAss's main page for why that specific mechanism can't
 currently be verified by anyone outside the provider).
 
 ### Open-weight models, run yourself
@@ -345,7 +345,7 @@ support matter more to you than the lowest hourly rate.
   possible setup. It removes your dependence on a hosted provider's
   generation pipeline -- but the actual result still depends on your
   specific software stack, model, workflow, and output format. Verify
-  your own output the way GhostMark's main tool does: inspect it.
+  your own output the way MarkMyAss's main tool does: inspect it.
 - The current frontier **closed** models from Anthropic, OpenAI, and
   Google are generally **not** available to run locally at all -- only
   their providers' own infrastructure runs them.

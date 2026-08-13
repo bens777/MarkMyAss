@@ -1,15 +1,15 @@
-# Captain's Log — GhostMark Benchmarks
+# Captain's Log — MarkMyAss Benchmarks
 
 ### Every supported test. Every failure. Nothing hidden.
 
-This page is the ship's log: generated at server startup by actually running GhostMark's
+This page is the ship's log: generated at server startup by actually running MarkMyAss's
 [public, reproducible test corpus](https://github.com/bens777/ghostmark/tree/main/src/ghostmark/corpus)
 through the real inspect → clean → verify pipeline -- the same one you get
 from `ghostmark inspect` / `ghostmark clean` / `ghostmark verify`. Nothing
 on this page is a hand-typed number. Failures, if any, are shown here,
 not hidden.
 
-[← Back to the GhostMark cleaner](.) &middot; [AI Watermark Lab →](lab)
+[← Back to the MarkMyAss cleaner](.) &middot; [AI Watermark Lab →](lab)
 
 ---
 
@@ -27,7 +27,7 @@ not hidden.
 
 The corpus currently covers **hidden Unicode (text), EXIF/XMP/IPTC
 (JPEG), EXIF/XMP/PNG-text (PNG), and DocInfo/XMP (PDF)** -- the
-mechanisms GhostMark's support matrix lists as **Verified**. It does
+mechanisms MarkMyAss's support matrix lists as **Verified**. It does
 **not** currently include synthetic C2PA/JUMBF fixtures, so this page
 makes no pass/fail claim about C2PA -- that mechanism's status remains
 what [/lab/c2pa](lab/c2pa) says it is: **Partial**, regardless of what
