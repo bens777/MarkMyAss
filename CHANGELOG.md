@@ -2,6 +2,79 @@
 
 All notable changes to GhostMark are documented in this file.
 
+## [0.4.0] - 2026-08-13
+
+The "moat build": GhostMark repositions from a metadata cleaner to a
+public reference lab for AI watermark and provenance verification --
+"Proof, not promises." Every claim GhostMark makes is now backed by an
+independent check, a reproducible corpus, or an honest "unverified"/
+"unknown" label instead of a bare assertion.
+
+### Added
+
+- **Verification Receipt.** `ghostmark verify --receipt PATH` (CLI) and
+  `GET /api/receipt/{session}/download?format=json|html|txt` (web) produce
+  a downloadable receipt with before/after signal tables, independent
+  verifier results, SHA-256 hashes of the original and cleaned files, the
+  GhostMark version, and a timestamp. Explicitly labeled a "Verification
+  Receipt," not a certificate of authorship -- `receipt.py` bakes in a
+  disclaimer that it "is not a certificate of authorship or a claim that
+  no other signal could exist." Statistical/model-level watermarks
+  (Claude, Gemini, GPT) always render as unverified on the receipt; there
+  is no code path that can mark them removed.
+- **Five-state verdict system.** `VerificationVerdict` is now
+  `VERIFIED_CLEAN` / `PARTIAL` / `UNVERIFIED` / `NOT_APPLICABLE` /
+  `FAILED`, computed by `VerificationSummary.verdict` from GhostMark's own
+  result plus whichever independent verifiers actually ran. GhostMark can
+  never award itself `VERIFIED_CLEAN` -- that requires at least one
+  available, applicable external verifier and full agreement; disagreement
+  is `PARTIAL`; no verifier able to run at all is `UNVERIFIED`, not
+  `PARTIAL`. See `tests/test_verdict.py` for the full decision table.
+- **c2patool as a second, optional independent verifier**
+  (`C2paToolVerifier` in `independent_verify.py`), alongside ExifTool.
+  Runs the official `c2patool` binary read-only against JPEG/PNG/PDF to
+  check for a C2PA manifest. Explicitly documented as *not* a
+  cryptographic trust/signature validator -- it only reports whether a
+  manifest is present, and GhostMark never treats a clean c2patool result
+  as proof that a statistical text watermark was removed. Degrades to
+  "unavailable" gracefully when the binary isn't installed, and never
+  guesses when the tool errors ambiguously. Installed via a multi-stage
+  Docker build (`cargo install c2patool` in a throwaway Rust build stage;
+  only the compiled binary is copied into the final image).
+- **AI Watermark Lab** at `/lab`, with a capability matrix (signal /
+  detect / remove / independent verification / status / last tested)
+  driven entirely by `web/lab_data.py` -- the same data backs the HTML
+  table, the Markdown table, and the new `/api/lab/status` JSON endpoint,
+  so they can't drift apart. No signal is ever marked "Yes" for
+  independent verification unless a real external tool actually checks
+  it. Individual pages at `/lab/claude-watermark`, `/lab/c2pa`,
+  `/lab/hidden-unicode`, and `/lab/pdf-metadata`, each with a "Last
+  reviewed" date and a correction CTA linking to GitHub issues/PRs. The
+  Claude page explicitly separates file/metadata provenance, hidden
+  Unicode, and statistical model-level watermarking, and states plainly
+  that hidden Unicode is not the Claude statistical watermark.
+- **Reproducible benchmark corpus.** Synthetic-only fixtures (no
+  copyrighted material) now ship inside the installed package at
+  `src/ghostmark/corpus/` (moved from `tests/corpus/` so they're actually
+  present in the Docker image, not just the source checkout), with a
+  `manifest.json` documenting expected detections before and after
+  cleaning. `web/benchmarks.py` runs the real inspect -> clean -> inspect
+  -> independently-verify pipeline against every fixture and publishes
+  the actual results at `/benchmarks` (human-readable) and
+  `/api/benchmarks` (JSON) -- failures are reported, not hidden. The page
+  explicitly discloses that the corpus does not include C2PA fixtures.
+- **Homepage repositioning**: new headline "Proof, not promises.", trust
+  bar (Free / Open source / No account / Independent verification /
+  Download your cleaned file), an explicit "No fake '100% undetectable'
+  scores" note, an "Explain" panel that translates each detected signal
+  into a plain-English sentence, and receipt download buttons
+  (JSON/HTML/TXT) alongside the existing cleaned-file download -- the
+  cleaned file remains downloadable in every case; nothing was replaced
+  with a report-only flow.
+- `/health` and `/api/config` now also report `c2patool_available` (and
+  `/api/config` reports `c2patool_version`), alongside the existing
+  ExifTool fields.
+
 ## [0.3.0] - 2026-08-13
 
 ### Added

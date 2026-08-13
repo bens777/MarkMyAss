@@ -61,9 +61,17 @@ it's reachable by the public internet:
   `X-Frame-Options: DENY`, no permissive CORS -- no
   `Access-Control-Allow-Origin` is ever sent).
 - Session data (uploaded + cleaned files) lives only in a randomized,
-  per-session temp directory; the cleaned file is deleted immediately
-  after download, and any session is purged automatically after a
-  10-15 minute TTL regardless.
+  per-session temp directory. Downloads are not single-use as of 0.4.0
+  (a session's cleaned file and its Verification Receipt are commonly
+  downloaded separately, in either order), so retention is enforced by an
+  automatic TTL purge instead: every session is deleted after a 10-15
+  minute TTL regardless of what was or wasn't downloaded.
+- ExifTool and c2patool, GhostMark's independent verifiers, are invoked
+  as separate OS processes with a fixed argument list and `shell=False`
+  (never string-interpolated into a shell command), and only ever read
+  the file being verified -- never passed untrusted user text. Both are
+  optional; their absence degrades verification results, it does not
+  break the app.
 - Unhandled exceptions return a generic error to the client; internals
   (paths, tracebacks) are never included in a response, and access logs
   record only the request path, never file contents or (where avoidable)
@@ -72,8 +80,10 @@ it's reachable by the public internet:
 Things that remain explicitly **out of scope** in both modes:
 
 - Cryptographic guarantees about C2PA manifest validity -- GhostMark's C2PA
-  support is a structural heuristic, not a conformant validator (see
-  README's support matrix).
+  support is a structural heuristic, not a conformant validator, and the
+  optional c2patool cross-check only reports whether a manifest is
+  present, not whether its signature/trust chain is valid (see README's
+  support matrix and `/lab/c2pa`).
 - Defeating statistical/model-level text watermarks -- GhostMark does not
   claim to do this (see README).
 - Running the hosted deployment behind anything other than the documented

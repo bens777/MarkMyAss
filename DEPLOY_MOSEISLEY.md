@@ -53,9 +53,10 @@ git pull
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-This builds the image (installing GhostMark and ExifTool inside it) and
-starts it in the background. The first build takes a minute or two;
-after that, `up -d --build` only rebuilds what changed.
+This builds the image (installing GhostMark, ExifTool, and c2patool inside
+it) and starts it in the background. The first build takes a few minutes
+(c2patool is compiled from source); after that, `up -d --build` only
+rebuilds what changed.
 
 **5. Confirm it's running correctly, from the VPS itself:**
 
@@ -66,11 +67,15 @@ curl http://127.0.0.1:8765/health
 You should see something like:
 
 ```json
-{"status": "ok", "ghostmark": "0.3.0", "exiftool_available": true}
+{"status": "ok", "ghostmark": "0.4.0", "exiftool_available": true, "c2patool_available": true}
 ```
 
-If `exiftool_available` is `false`, something went wrong with the Docker
-build -- re-run step 4 and check the output for errors.
+If `exiftool_available` or `c2patool_available` is `false`, something went
+wrong with the Docker build -- re-run step 4 and check the output for
+errors. GhostMark still runs fine with either one missing (it degrades to
+"unknown"/"unverified" for the checks that tool would have performed), so
+this isn't fatal, but you won't get independent verification for that
+signal.
 
 **6. Add GhostMark to your Caddy configuration.**
 

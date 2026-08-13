@@ -1,14 +1,21 @@
 # 👻 GhostMark
 
-**Free AI Metadata & Provenance Cleaner.** Open source.
+**Proof, not promises.** The open-source AI watermark & provenance
+verification lab. Free. Open source.
 
-Inspect → Clean → Verify
+Inspect → Clean → Verify → Download your cleaned file → Download a
+Verification Receipt
 
 GhostMark inspects files and text for hidden Unicode characters, embedded
 metadata, and provenance signals, removes the ones it can safely remove,
 and then independently re-verifies its own output -- with GhostMark's own
-detectors *and*, where applicable, [ExifTool](https://exiftool.org/) -- so
-it can tell you what actually changed, with evidence, not vibes.
+detectors *and*, where applicable, [ExifTool](https://exiftool.org/) and
+[c2patool](https://github.com/contentauth/c2pa-rs) -- so it can tell you
+what actually changed, with evidence, not vibes. No fake "100%
+undetectable" scores: a signal is only ever reported `VERIFIED CLEAN`
+when an independent tool agrees, and every claim GhostMark makes about a
+watermark or provenance mechanism is documented, sourced, and dated at
+[**/lab**](https://moseisley.sh/ghostmark/lab), the AI Watermark Lab.
 
 ## Use GhostMark online
 
@@ -100,6 +107,37 @@ https://moseisley.sh/ghostmark/run-local
 Locally, the same page is available at `http://127.0.0.1:8765/run-local`
 once you've run `ghostmark ui`. Source: [`src/ghostmark/web/content/run_local.md`](src/ghostmark/web/content/run_local.md).
 
+## The AI Watermark Lab and benchmarks
+
+`/lab` is a public capability matrix -- for every signal GhostMark knows
+about, whether it can detect it, remove it, and independently verify the
+removal, its current status, and when it was last checked. Individual
+pages go deeper on specific mechanisms:
+
+- [`/lab/claude-watermark`](https://moseisley.sh/ghostmark/lab/claude-watermark)
+  -- separates file/metadata provenance, hidden Unicode, and statistical
+  model-level watermarking, three genuinely different things people mean
+  by "Claude watermark."
+- [`/lab/c2pa`](https://moseisley.sh/ghostmark/lab/c2pa) -- what GhostMark's
+  heuristic JUMBF-container scan can and can't tell you, and why that's
+  not the same as cryptographic C2PA manifest validation.
+- [`/lab/hidden-unicode`](https://moseisley.sh/ghostmark/lab/hidden-unicode)
+  and [`/lab/pdf-metadata`](https://moseisley.sh/ghostmark/lab/pdf-metadata).
+
+Every Lab page ends with "Something outdated or inaccurate? Open an issue
+or submit a pull request" and a "Last reviewed" date -- see
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for how to update the underlying
+data (`src/ghostmark/web/lab_data.py`). Machine-readable version:
+`GET /api/lab/status`.
+
+[`/benchmarks`](https://moseisley.sh/ghostmark/benchmarks) is generated
+from a reproducible, synthetic-only test corpus
+(`src/ghostmark/corpus/`) -- not hand-written. It runs GhostMark's real
+inspect → clean → inspect → independently-verify pipeline against every
+fixture and reports the actual pass/fail counts, including any known
+failures (nothing is hidden). Machine-readable version:
+`GET /api/benchmarks`.
+
 ## The web UI
 
 ```text
@@ -135,11 +173,12 @@ Verified with ExifTool 13.x
 
 GhostMark verification:  PASS
 ExifTool verification:   PASS
+c2patool verification:   PASS
 Overall:                  VERIFIED CLEAN
 
 Statistical AI watermark: NOT CURRENTLY VERIFIABLE
 
-[ Download Clean File ]
+[ Download Clean File ]  [ Download Verification Receipt: JSON / HTML / TXT ]
 ```
 
 Locally, the server binds to `127.0.0.1` only -- never reachable from
@@ -147,22 +186,28 @@ other devices, nothing uploaded anywhere. The hosted deployment is only
 reachable through its reverse proxy (see `DEPLOY_MOSEISLEY.md`).
 
 Verification always re-runs GhostMark's own detectors on the cleaned
-output *and*, if [ExifTool](https://exiftool.org/) is installed,
-independently cross-checks it with that separate, widely trusted tool --
-so you don't have to take GhostMark's own word for it. The verdict is
-only **VERIFIED CLEAN** when both agree; otherwise it's reported as
-**PARTIAL** or **UNVERIFIED**, never inflated. Downloading the cleaned
-file serves it with `Content-Disposition: attachment` and a name like
-`document.ghostmark.pdf`; on the hosted deployment the temporary copy on
-the server is deleted immediately after the download completes (or
-automatically within 10-15 minutes if it's never downloaded).
+output *and*, if [ExifTool](https://exiftool.org/) and/or
+[c2patool](https://github.com/contentauth/c2pa-rs) are installed,
+independently cross-checks it with those separate, widely trusted tools --
+so you don't have to take GhostMark's own word for it. GhostMark can
+never award itself **VERIFIED CLEAN**: that verdict requires at least one
+available, applicable external verifier to agree. Disagreement is
+reported as **PARTIAL**; no verifier able to run at all is **UNVERIFIED**;
+nothing to check is **NOT APPLICABLE**; a failure in GhostMark's own
+cleaning is **FAILED** -- never inflated. See
+[`/lab`](https://moseisley.sh/ghostmark/lab) for what "independent
+verification" actually means per signal. Downloading the cleaned file
+serves it with `Content-Disposition: attachment` and a name like
+`document.ghostmark.pdf`; you can also download a Verification Receipt
+(JSON, HTML, or TXT) for the same session, in either order. On the hosted
+deployment, both are cleaned up automatically within 10-15 minutes.
 
 ## CLI
 
 ```bash
 ghostmark inspect FILE [--json]
 ghostmark clean FILE [--output PATH] [--json]
-ghostmark verify FILE [--original PATH] [--json]
+ghostmark verify FILE [--original PATH] [--json] [--receipt PATH]
 ghostmark inspect-text "TEXT" [--json]
 ghostmark clean-text "TEXT" [--json]
 ghostmark demo
@@ -193,6 +238,10 @@ document.pdf  →  document.ghostmark.pdf
 photo.png     →  photo.ghostmark.png
 ```
 
+`--receipt PATH` writes a Verification Receipt alongside the verify
+result; the format is inferred from the extension (`.json`, `.html`, or
+`.txt`).
+
 Exit codes: `0` on success, `1` on a handled error (unsupported file type,
 file too large, demo failure), non-zero on usage errors.
 
@@ -207,14 +256,17 @@ file too large, demo failure), non-zero on usage errors.
 | PNG text chunks                |                                 Yes |                 Yes |               Yes |
 | PDF DocInfo metadata           |                                 Yes |                 Yes |               Yes |
 | ICC color profile              |                     Yes (preserved) |     N/A (preserved) |               Yes |
-| C2PA / JUMBF (JPEG, PNG)       | Partial (heuristic byte-marker scan) |             Partial |           Partial |
-| C2PA / JUMBF (PDF)             |                    Partial (heuristic) |        Unsupported |     Unsupported |
+| C2PA / JUMBF (JPEG, PNG, PDF)  | Partial (heuristic byte-marker scan) |             Partial |           Partial (c2patool checks manifest presence only -- not a cryptographic trust validator) |
 | Claude statistical watermark   |                          Unverified |     Not implemented |    Not applicable |
 | Gemini statistical watermark   |                          Unverified |     Not implemented |    Not applicable |
 | GPT statistical watermark      |                          Unverified |     Not implemented |    Not applicable |
 | Visible image watermark        |                        Not implemented |     Not implemented |    Not applicable |
 | DOCX                            |                        Not implemented (roadmap) |            -- |               -- |
 | Independent cross-check (ExifTool, images/PDF) |                    N/A | N/A | Yes, if ExifTool installed -- otherwise reported as unknown, never faked |
+| Independent cross-check (c2patool, JPEG/PNG/PDF) |                    N/A | N/A | Yes, if c2patool installed -- otherwise reported as unknown, never faked |
+
+See [`/lab`](https://moseisley.sh/ghostmark/lab) for the live, per-signal
+version of this table with "last tested" dates.
 
 "Partial" for C2PA means: GhostMark scans for the JUMBF container structure
 (JPEG APP11 segment, PNG `caBX` chunk) a C2PA manifest is embedded in, and
@@ -322,7 +374,7 @@ documented to use, it will be disabled by default and clearly labeled.
 See [`SECURITY.md`](SECURITY.md) for the full threat model (local and
 hosted) and how to report a vulnerability.
 
-## Independent verification (ExifTool)
+## Independent verification (ExifTool + c2patool)
 
 GhostMark's core detectors are pure Python and need nothing extra. If
 [ExifTool](https://exiftool.org/) is installed and on `PATH`, `ghostmark
@@ -333,9 +385,17 @@ information) so file size or a preserved ICC profile is never mistaken
 for "metadata GhostMark failed to remove." See
 [`src/ghostmark/independent_verify.py`](src/ghostmark/independent_verify.py).
 
-If ExifTool isn't installed, GhostMark says so honestly and continues to
-work without it -- it is never a hard requirement. The production Docker
-image installs it automatically (see below).
+If [c2patool](https://github.com/contentauth/c2pa-rs) (the official C2PA
+CLI, Apache-2.0/MIT) is also installed, GhostMark runs it read-only
+against JPEG/PNG/PDF to check whether a C2PA manifest is present. This is
+explicitly *not* cryptographic trust/signature validation -- c2patool
+here only answers "is a manifest present," and a clean c2patool result is
+never treated as proof that a statistical text watermark was removed.
+
+Neither tool is a hard requirement -- if either (or both) aren't
+installed, GhostMark says so honestly, reports the relevant checks as
+unverified, and continues to work without them. The production Docker
+image installs both automatically (see below).
 
 ## Docker
 
@@ -349,7 +409,9 @@ docker compose up
 
 This maps the UI to `127.0.0.1:8765` on your host only (see
 `docker-compose.yml`); it is not exposed to your network. The image
-installs ExifTool automatically during build.
+installs ExifTool and c2patool automatically during build (c2patool is
+compiled from source in a throwaway build stage, so the first build takes
+a few minutes longer than a pure-Python image would).
 
 For the production/hosted deployment (`docker-compose.prod.yml`), see
 [`DEPLOY_MOSEISLEY.md`](DEPLOY_MOSEISLEY.md).

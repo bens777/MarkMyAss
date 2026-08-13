@@ -35,6 +35,36 @@ functionality is isolated to `src/ghostmark/cleaners/pdf.py` and
 `inspect_pdf_metadata` in `src/ghostmark/detectors/metadata.py`, so PDF
 support could be made optional without touching the rest of GhostMark.
 
+## About c2patool (Apache-2.0 / MIT) -- external runtime dependency, never vendored
+
+[c2patool](https://github.com/contentauth/c2pa-rs) is the official
+Content Authenticity Initiative CLI for reading C2PA manifests, dual
+licensed under Apache-2.0 and MIT (both permissive). GhostMark treats it
+the same way it treats ExifTool -- as an **external, independently
+installed runtime dependency**, never vendored:
+
+- GhostMark's source tree and published Python package **never include
+  c2patool's source or binary**. `pip install ghostmark` does not install
+  it.
+- `ghostmark/independent_verify.py`'s `C2paToolVerifier` only shells out
+  to whatever `c2patool` executable it finds on `PATH` at runtime (via
+  `shutil.which` + `subprocess.run` with a fixed argv, `shell=False`),
+  read-only (it never writes or signs anything). If it's absent,
+  GhostMark says so honestly (`c2patool_available: false`) and continues
+  to work without it -- c2patool is never a hard requirement, and
+  GhostMark never treats its absence, or a result it can't parse, as a
+  false "no manifest" finding.
+- In the production Docker image, c2patool is built from source (`cargo
+  install c2patool`) in a throwaway Rust build stage; only the compiled
+  binary is copied into the final image -- the Rust toolchain itself is
+  not shipped. See `Dockerfile`. Anyone can rebuild the image without
+  that stage and GhostMark still runs, just without this particular
+  independent check.
+
+Because both licenses are permissive and c2patool is used as a separate,
+unmodified external binary (not linked into or distributed with
+GhostMark's own code), this has no effect on GhostMark's MIT licensing.
+
 ## About ExifTool (GPL) -- external runtime dependency, never vendored
 
 [ExifTool](https://exiftool.org/) is licensed under your choice of the
