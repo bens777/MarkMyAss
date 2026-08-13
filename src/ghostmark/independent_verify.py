@@ -239,6 +239,7 @@ class ExifToolVerifier:
             applicable=True,
             version=version,
             tags_by_origin=tags_by_origin,
+            ran_successfully=True,
         )
 
 
@@ -316,6 +317,7 @@ class C2paToolVerifier:
                 applicable=True,
                 version=version,
                 found=found,
+                ran_successfully=True,
                 note="" if found else "c2patool ran successfully and found no manifest.",
             )
 
@@ -327,6 +329,7 @@ class C2paToolVerifier:
                 applicable=True,
                 version=version,
                 found=False,
+                ran_successfully=True,
                 note="c2patool reported no C2PA manifest present.",
             )
 

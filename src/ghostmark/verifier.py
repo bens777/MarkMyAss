@@ -58,7 +58,7 @@ def _compare(before: InspectionReport, after: InspectionReport) -> VerifyResult:
 
 def _exiftool_outcome(external_after: ExternalVerificationResult) -> ExternalVerifierOutcome:
     passed = None
-    if external_after.available and external_after.applicable:
+    if external_after.available and external_after.applicable and external_after.ran_successfully:
         passed = not external_after.has_embedded_metadata
     return ExternalVerifierOutcome(
         name="exiftool",
@@ -73,7 +73,7 @@ def _exiftool_outcome(external_after: ExternalVerificationResult) -> ExternalVer
 
 def _c2patool_outcome(c2pa_after: C2paVerificationResult) -> ExternalVerifierOutcome:
     passed = None
-    if c2pa_after.available and c2pa_after.applicable:
+    if c2pa_after.available and c2pa_after.applicable and c2pa_after.ran_successfully:
         passed = not c2pa_after.found
     return ExternalVerifierOutcome(
         name="c2patool",

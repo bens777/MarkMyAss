@@ -215,6 +215,14 @@ class ExternalVerificationResult:
     applicable: bool = True
     version: str | None = None
     tags_by_origin: dict[str, dict[str, str]] = field(default_factory=dict)
+    # True only when the tool actually ran to completion and its output was
+    # parsed -- NOT when it's merely installed/applicable. A timeout, crash,
+    # or unparseable output leaves this False, which the empty
+    # ``tags_by_origin`` default alone can't distinguish from "genuinely
+    # clean file with zero tags." Without this flag, a verifier that failed
+    # to run would be indistinguishable from one that ran and passed --
+    # see ``ghostmark.verifier._exiftool_outcome``.
+    ran_successfully: bool = False
     note: str = ""
 
     @property
@@ -233,6 +241,7 @@ class ExternalVerificationResult:
             "version": self.version,
             "tags_by_origin": self.tags_by_origin,
             "has_embedded_metadata": self.has_embedded_metadata,
+            "ran_successfully": self.ran_successfully,
             "note": self.note,
         }
 
@@ -253,6 +262,13 @@ class C2paVerificationResult:
     applicable: bool = True
     version: str | None = None
     found: bool = False
+    # True only when c2patool actually ran to completion (either a
+    # successful parse, or a non-zero exit whose message was confidently
+    # recognized as "no manifest") -- NOT when it's merely installed. See
+    # ExternalVerificationResult.ran_successfully for why this matters: a
+    # crash or timeout must never be indistinguishable from "checked, no
+    # manifest found" via the ``found=False`` default alone.
+    ran_successfully: bool = False
     trust_checked: bool = False
     note: str = ""
 
@@ -263,6 +279,7 @@ class C2paVerificationResult:
             "applicable": self.applicable,
             "version": self.version,
             "found": self.found,
+            "ran_successfully": self.ran_successfully,
             "trust_checked": self.trust_checked,
             "note": self.note,
         }
