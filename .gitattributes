@@ -1,0 +1,8 @@
+# The test corpus's whole point is byte-for-byte reproducibility --
+# these must never be subject to line-ending conversion on any clone,
+# regardless of a user's core.autocrlf setting.
+*.pdf -text
+*.jpg -text
+*.jpeg -text
+*.png -text
+*.webp -text
