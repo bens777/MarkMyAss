@@ -1,20 +1,31 @@
-# Deploying GhostMark to moseisley.sh/ghostmark
+# Deploying GhostMark to ghostmark.moseisley.sh
 
 This is a step-by-step guide for deploying GhostMark on your Moseisley
 VPS, written for someone who isn't a developer. It assumes your VPS
-already runs Caddy as the reverse proxy in front of moseisley.sh (if it
-runs something else, the general shape is the same but the exact reload
-command will differ).
+already runs Caddy (if it runs something else, the general shape is the
+same but the exact reload command will differ).
+
+GhostMark gets its own subdomain, `ghostmark.moseisley.sh`, rather than
+living at a subpath of `moseisley.sh` -- this gives it a clean canonical
+identity for search engines and its own site chrome, while still being
+visibly "an open-source project by Moseisley" (see the homepage). Point
+a DNS `A`/`AAAA` (or `CNAME`) record for `ghostmark.moseisley.sh` at this
+VPS before starting -- Caddy's automatic HTTPS needs that to issue a
+certificate.
 
 ## What you're deploying
 
 - A small Docker container running GhostMark's web app on
   `127.0.0.1:8765` -- **not** exposed to the internet directly.
-- ExifTool (for independent verification) installed inside that same
-  container, automatically, during the build.
-- Your existing Caddy server proxies `https://moseisley.sh/ghostmark/`
-  requests to that container. GhostMark itself never touches the public
-  internet directly.
+- ExifTool and c2patool (for independent verification) installed inside
+  that same container, automatically, during the build.
+- Caddy serves `https://ghostmark.moseisley.sh` as its own site and
+  proxies every request to that container. GhostMark itself never
+  touches the public internet directly.
+- (If you'd rather keep GhostMark at a subpath of an existing domain
+  instead of a subdomain -- e.g. `https://example.com/ghostmark` -- both
+  `docker-compose.prod.yml` and `deploy/Caddyfile.snippet` document that
+  as "Option B." Everything else in this guide is the same either way.)
 
 ## One-time setup
 
@@ -67,7 +78,7 @@ curl http://127.0.0.1:8765/health
 You should see something like:
 
 ```json
-{"status": "ok", "ghostmark": "0.4.0", "exiftool_available": true, "c2patool_available": true}
+{"status": "ok", "ghostmark": "0.5.0", "exiftool_available": true, "c2patool_available": true}
 ```
 
 If `exiftool_available` or `c2patool_available` is `false`, something went
@@ -85,12 +96,10 @@ Open your existing Caddyfile (commonly `/etc/caddy/Caddyfile`):
 sudo nano /etc/caddy/Caddyfile
 ```
 
-Find the block for `moseisley.sh` (it will look like
-`moseisley.sh { ... }`). Copy the contents of this repo's
-`deploy/Caddyfile.snippet` file and paste it **near the top, inside that
-block, above any existing catch-all `reverse_proxy` or `handle { }`
-block** for the rest of the site. (Full explanation of why is in the
-comments inside that file.)
+Copy **Option A** from this repo's `deploy/Caddyfile.snippet` file
+(the `ghostmark.moseisley.sh { ... }` block) and paste it as a new,
+separate site block anywhere in the file -- it does not need to live
+inside any other site's block, since it's its own subdomain.
 
 Save and exit (in `nano`: Ctrl+O, Enter, then Ctrl+X).
 
@@ -107,7 +116,7 @@ you run it directly.)
 **8. Visit it in a browser:**
 
 ```
-https://moseisley.sh/ghostmark
+https://ghostmark.moseisley.sh
 ```
 
 You should see the GhostMark page. Try pasting some text or uploading a
@@ -150,12 +159,14 @@ docker compose -f docker-compose.prod.yml restart
 
 The local desktop version of GhostMark (`ghostmark ui` on your own
 computer) keeps files 100% on your machine. This hosted version at
-moseisley.sh/ghostmark is different: uploaded files are processed
-temporarily on the VPS and automatically deleted (within a few minutes,
-and immediately after a file is downloaded) -- see `PRIVACY.md` for the
-exact policy. Nothing is stored permanently, logged, or put in a
-database, but it isn't the same "never leaves your device" guarantee as
-the local tool.
+ghostmark.moseisley.sh is different: uploaded files are processed
+temporarily on the VPS and automatically deleted within a few minutes
+(a session's cleaned file and its Verification Receipt aren't
+necessarily downloaded at the same moment, so deletion is on a timer
+rather than tied to the first download -- see `PRIVACY.md` for the exact
+policy). Nothing is stored permanently, logged, or put in a database,
+but it isn't the same "never leaves your device" guarantee as the local
+tool.
 
 ## Configuration reference
 

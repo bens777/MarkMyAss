@@ -1,15 +1,34 @@
-# GhostMark -- insert into moseisley.sh's existing Caddyfile.
+# GhostMark -- Caddy reverse-proxy configuration.
+#
+# Two supported layouts. Pick the one that matches your
+# GHOSTMARK_BASE_PATH / GHOSTMARK_PUBLIC_URL setting in
+# docker-compose.prod.yml (see that file's comments).
+
+# --- Option A (recommended): GhostMark on its own subdomain -----------------
+# GHOSTMARK_BASE_PATH="/", GHOSTMARK_PUBLIC_URL="https://ghostmark.moseisley.sh"
+#
+# This is its own site block -- add it as a new, separate entry in your
+# Caddyfile (it does not need to live inside moseisley.sh's block).
+# `reverse_proxy 127.0.0.1:8765` forwards every request to the GhostMark
+# container, which is the ONLY way GhostMark is reachable -- it is never
+# bound to a public interface itself (see docker-compose.prod.yml).
+
+ghostmark.moseisley.sh {
+    reverse_proxy 127.0.0.1:8765
+}
+
+# --- Option B: GhostMark under an existing domain's subpath ------------------
+# GHOSTMARK_BASE_PATH="/ghostmark/", GHOSTMARK_PUBLIC_URL="https://example.com/ghostmark"
 #
 # IMPORTANT: place this block ABOVE (before) your site's existing
 # catch-all / fallback `reverse_proxy` or `handle { ... }` block in the
-# SAME site definition (the block for moseisley.sh). Caddy evaluates
-# handle/handle_path blocks in the order they appear in the file, so if
-# your fallback proxy comes first, it will swallow /ghostmark requests
-# before this block ever sees them.
+# SAME site definition. Caddy evaluates handle/handle_path blocks in the
+# order they appear in the file, so if your fallback proxy comes first,
+# it will swallow /ghostmark requests before this block ever sees them.
 #
-# Do NOT paste this as a new standalone site block -- it must live
-# inside your existing `moseisley.sh { ... }` block, alongside (above)
-# whatever already serves the rest of the site.
+# Do NOT paste this as a new standalone site block -- it must live inside
+# your existing site's `{ ... }` block, alongside (above) whatever already
+# serves the rest of the site.
 #
 # What each line does:
 #   - `redir` sends a visitor at the bare "/ghostmark" (no trailing
@@ -29,12 +48,13 @@
 #     resolves e.g. `api/inspect` against that base into
 #     "/ghostmark/api/inspect", Caddy strips the prefix, and GhostMark
 #     receives "/api/inspect" -- its real route.
-#   - `reverse_proxy 127.0.0.1:8765` forwards to the GhostMark container,
-#     which is the ONLY way GhostMark is reachable -- it is never bound
-#     to a public interface itself (see docker-compose.prod.yml).
-
-redir /ghostmark /ghostmark/ 308
-
-handle_path /ghostmark/* {
-    reverse_proxy 127.0.0.1:8765
-}
+#
+# example.com {
+#     redir /ghostmark /ghostmark/ 308
+#
+#     handle_path /ghostmark/* {
+#         reverse_proxy 127.0.0.1:8765
+#     }
+#
+#     # ... rest of example.com's existing config ...
+# }
