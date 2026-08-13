@@ -1,0 +1,10 @@
+GhostMark demo fixture.
+
+English: This​ text​ contains⁠ hidden characters.
+French: J'aime l'intelligence artificielle. Ça fonctionne très bien.
+German: Übermäßige Änderungen dürfen den Text nicht beschädigen.
+Emoji: 👻 🔍 ✅
+Hidden tag block: 󠁧󠁨󠁯󠁳󠁴󠁭󠁡󠁲󠁫
+```python
+print('code blocks are preserved')
+```

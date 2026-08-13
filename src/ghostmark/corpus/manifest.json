@@ -1,0 +1,47 @@
+{
+  "ghostmark_corpus_version": 1,
+  "fixtures": [
+    {
+      "path": "text/hidden-unicode.txt",
+      "kind": "text",
+      "description": "Multilingual text containing a zero-width space, a word joiner, and Unicode 'tag' steganography characters, alongside legitimate French/German/emoji/code content.",
+      "expected_before": [
+        "unicode"
+      ],
+      "expected_after": []
+    },
+    {
+      "path": "jpeg/exif-xmp-iptc-comment.jpg",
+      "kind": "jpeg",
+      "description": "JPEG with synthetic EXIF, XMP, IPTC (Photoshop IRB), and comment segments.",
+      "expected_before": [
+        "exif",
+        "xmp",
+        "iptc",
+        "comment"
+      ],
+      "expected_after": []
+    },
+    {
+      "path": "png/exif-xmp-text.png",
+      "kind": "png",
+      "description": "PNG with a synthetic eXIf chunk, an XMP iTXt chunk, and a plain tEXt comment chunk.",
+      "expected_before": [
+        "exif",
+        "xmp",
+        "png_text"
+      ],
+      "expected_after": []
+    },
+    {
+      "path": "pdf/docinfo-xmp.pdf",
+      "kind": "pdf",
+      "description": "Single-page PDF with DocInfo (Title/Author/Producer) and XMP metadata.",
+      "expected_before": [
+        "pdf_info",
+        "pdf_xmp"
+      ],
+      "expected_after": []
+    }
+  ]
+}
