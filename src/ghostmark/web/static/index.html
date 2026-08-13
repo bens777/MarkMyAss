@@ -23,19 +23,30 @@
   {{JSONLD}}
 </head>
 <body>
-  <main class="wrap">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <main class="wrap" id="main-content">
     <p class="promo-top hosted-only hidden">
       An open-source project by <a href="https://moseisley.sh?utm_source=ghostmark&amp;utm_medium=referral&amp;utm_content=top_attribution" rel="noopener">Moseisley</a>
     </p>
 
     <nav class="top-nav">
-      <a href="." class="brand-link">👻 GhostMark</a>
+      <a href="." class="brand-link">
+        <svg class="brand-mark" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+          <path d="M5 21V10a7 7 0 0 1 14 0v11l-2.5-2-2.5 2-2.5-2-2.5 2-2.5-2Z" fill="currentColor" />
+          <circle cx="9.5" cy="10" r="1" fill="var(--bg)" />
+          <circle cx="14.5" cy="10" r="1" fill="var(--bg)" />
+        </svg>
+        GhostMark
+      </a>
       <a href="lab">AI Watermark Lab</a>
       <a href="benchmarks">Benchmarks</a>
       <a href="run-ai-locally">Run Models Locally</a>
     </nav>
 
     <header>
+      <div class="hero-art" aria-hidden="true">
+        <img src="static/art/mascot-captain.svg" alt="" width="220" height="170" class="mascot-idle" />
+      </div>
       <h1>Claude Watermark Remover &amp; AI Provenance Cleaner</h1>
       <p class="hero-flow">Inspect <span aria-hidden="true">→</span> Clean <span aria-hidden="true">→</span> Verify</p>
       <p class="subheadline">GhostMark shows exactly what it removed — and what it cannot verify.</p>
@@ -53,6 +64,7 @@
     </header>
 
     <section class="input-section card">
+      <p class="section-flavor">Let's see what is hiding inside.</p>
       <div class="tabs">
         <button id="tab-text" class="tab active" type="button">Paste Text</button>
         <button id="tab-file" class="tab" type="button">Upload File</button>
@@ -82,6 +94,7 @@
 
     <section id="results-section" class="card hidden">
       <h2>STEP 1 — INSPECTION</h2>
+      <p class="section-flavor">Spot the ghosts — scanning the cargo for hidden signals.</p>
       <div id="results-table" class="signal-table"></div>
       <p id="results-count" class="summary"></p>
 
@@ -97,6 +110,7 @@
 
     <section id="clean-section" class="card hidden">
       <h2>STEP 2 — CLEANING</h2>
+      <p class="section-flavor">Clear the deck — removing supported traces.</p>
       <div id="clean-table" class="signal-table"></div>
       <div id="cleaned-text-wrap" class="hidden">
         <label for="cleaned-text-output">Cleaned text</label>
@@ -110,6 +124,7 @@
 
     <section id="verify-section" class="card hidden">
       <h2>STEP 3 — INDEPENDENT VERIFICATION</h2>
+      <p class="section-flavor">A second observer checks the work.</p>
 
       <div id="verify-before-after">
         <div class="verify-column">
@@ -132,6 +147,7 @@
         &middot; <a href="lab/claude-watermark">why? →</a>
       </p>
 
+      <p class="section-flavor">Cargo cleared. Your cleaned cargo is ready.</p>
       <div class="download-row">
         <button id="btn-save" class="btn primary hidden" type="button">Download Clean File</button>
         <div id="receipt-downloads" class="receipt-downloads hidden">
@@ -141,10 +157,14 @@
           <a id="receipt-txt" class="btn secondary" href="#" download>TXT</a>
         </div>
       </div>
+
+      <p id="lab-teaser" class="lab-teaser hidden">
+        Curious what GhostMark can and can't verify? <a href="lab">Explore the GhostMark Lab →</a>
+      </p>
     </section>
 
     <div class="promo-bottom hosted-only hidden">
-      <h2>Building with AI?</h2>
+      <h2>Need more than a cleaner?</h2>
       <p>Meet Moseisley — your personal team of AI agents.</p>
       <a class="btn primary" href="https://moseisley.sh?utm_source=ghostmark&amp;utm_medium=referral&amp;utm_content=bottom_cta" rel="noopener">Explore Moseisley →</a>
     </div>

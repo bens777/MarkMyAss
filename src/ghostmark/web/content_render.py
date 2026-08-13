@@ -111,7 +111,8 @@ def render_article_page(
   {jsonld_html}
 </head>
 <body>
-  <main class="wrap article-wrap">
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <main class="wrap article-wrap" id="main-content">
     {nav_html}
     {breadcrumb_html}
     <article class="article">

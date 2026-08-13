@@ -76,6 +76,7 @@
   const receiptJson = el("receipt-json");
   const receiptHtml = el("receipt-html");
   const receiptTxt = el("receipt-txt");
+  const labTeaser = el("lab-teaser");
 
   async function loadConfig() {
     try {
@@ -145,6 +146,14 @@
     return { found: "FOUND", not_found: "NOT FOUND", unknown: "UNKNOWN" }[status] || status.toUpperCase();
   }
 
+  // A small spectral ghost glyph, shown briefly next to a newly-detected
+  // (FOUND) signal -- purely decorative, the literal status word next to
+  // it is what actually conveys the result. See DESIGN_SYSTEM.md.
+  const GHOST_GLYPH_SVG =
+    '<svg class="ghost-glyph ghost-appear" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">' +
+    '<path d="M4 20V11a6 6 0 0 1 12 0v9l-2-1.6-2 1.6-2-1.6-2 1.6-2-1.6Z" fill="currentColor" opacity="0.75"/>' +
+    "</svg>";
+
   function renderDetections(container, detections) {
     container.innerHTML = "";
     for (const d of detections) {
@@ -152,7 +161,10 @@
       row.className = "signal-row";
       const label = document.createElement("span");
       label.className = "signal-label";
-      label.textContent = d.label;
+      if (d.status === "found") {
+        label.insertAdjacentHTML("beforeend", GHOST_GLYPH_SVG);
+      }
+      label.appendChild(document.createTextNode(d.label));
       if (d.experimental) {
         const tag = document.createElement("span");
         tag.className = "experimental-tag";
@@ -290,6 +302,20 @@
     }
   }
 
+  // Swaps a button's label to a loading message for the duration of an
+  // async operation, then restores it -- a disabled button alone isn't
+  // sufficient feedback that something is happening (ui-ux-pro-max:
+  // "show feedback during async operations").
+  function withLoadingLabel(button, loadingText) {
+    const original = button.textContent;
+    button.disabled = true;
+    button.textContent = loadingText;
+    return () => {
+      button.disabled = false;
+      button.textContent = original;
+    };
+  }
+
   async function doInspect() {
     clearError();
     resultsSection.classList.add("hidden");
@@ -298,7 +324,7 @@
     arrow1.classList.add("hidden");
     arrow2.classList.add("hidden");
     arrow3.classList.add("hidden");
-    btnInspect.disabled = true;
+    const restoreInspect = withLoadingLabel(btnInspect, "Scanning the cargo…");
     try {
       let resp;
       if (state.mode === "text") {
@@ -346,12 +372,12 @@
     } catch (err) {
       showError(String(err));
     } finally {
-      btnInspect.disabled = false;
+      restoreInspect();
     }
   }
 
   async function doClean() {
-    btnClean.disabled = true;
+    const restoreClean = withLoadingLabel(btnClean, "Clearing the deck…");
     try {
       const resp = await fetch(API.clean(state.sessionId), { method: "POST" });
       if (!resp.ok) {
@@ -372,12 +398,12 @@
     } catch (err) {
       showError(String(err));
     } finally {
-      btnClean.disabled = false;
+      restoreClean();
     }
   }
 
   async function doVerify() {
-    btnVerify.disabled = true;
+    const restoreVerify = withLoadingLabel(btnVerify, "Signaling the second observer…");
     try {
       const resp = await fetch(API.verify(state.sessionId), { method: "POST" });
       if (!resp.ok) {
@@ -398,10 +424,11 @@
       receiptHtml.href = API.receiptDownload(state.sessionId, "html");
       receiptTxt.href = API.receiptDownload(state.sessionId, "txt");
       receiptDownloads.classList.remove("hidden");
+      labTeaser.classList.remove("hidden");
     } catch (err) {
       showError(String(err));
     } finally {
-      btnVerify.disabled = false;
+      restoreVerify();
     }
   }
 
