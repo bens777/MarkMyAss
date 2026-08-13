@@ -130,7 +130,7 @@ def test_every_lab_page_has_correction_cta_and_last_reviewed():
 def test_every_lab_page_has_at_least_one_official_source_link():
     client = TestClient(create_app(_config()))
     expected_domain_per_slug = {
-        "claude-watermark": "anthropic.com",
+        "claude-watermark": "support.claude.com",
         "c2pa": "c2pa.org",
         "hidden-unicode": "unicode.org",
         "pdf-metadata": "iso.org",

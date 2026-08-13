@@ -16,13 +16,20 @@ specifically to keep them separate.
 ### 1. File / metadata provenance
 
 If you ask Claude to help produce a file (a document, an exported image,
-etc.) through some pipeline, that pipeline -- not Claude itself -- may
-embed ordinary file metadata: an author field, a "Producer" string, XMP
-data, or (for images) a C2PA Content Credentials manifest. **This is not
-a Claude-specific mechanism.** It's the same category of signal any
-document/image-export tool can add, and it's exactly what GhostMark's
+etc.) through some pipeline, that pipeline may embed ordinary file
+metadata: an author field, a "Producer" string, XMP data, or (for
+images) a C2PA Content Credentials manifest. As of the same August 2026
+announcement above, Anthropic states that supported image outputs (SVG,
+PNG, JPG) now get **signed C2PA provenance metadata attached directly by
+Claude**, not just by a downstream export pipeline -- see the same
+[Anthropic Help Center article](https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content).
+Either way, this is the same category of signal any C2PA-aware
+document/image tool can add, and it's exactly what GhostMark's
 PDF-metadata, EXIF/XMP, and C2PA detectors target -- see
-[/lab/pdf-metadata](lab/pdf-metadata) and [/lab/c2pa](lab/c2pa).
+[/lab/pdf-metadata](lab/pdf-metadata) and [/lab/c2pa](lab/c2pa) for what
+GhostMark can and cannot do with a *signed* manifest specifically
+(short version: GhostMark detects/strips the JUMBF container
+structurally; it does not validate or forge cryptographic signatures).
 
 **GhostMark's status: Supported.** Detect: Yes. Remove: Yes. Independently
 verified: Yes, via ExifTool (and c2patool for the C2PA container).
@@ -51,14 +58,26 @@ that only the provider (holding a private key/seed) could later run a
 statistical test against a piece of text and estimate the odds it came
 from their model.
 
-**As of this writing, Anthropic has not published a public,
-independently reproducible detector for Claude's text output that
-GhostMark (or anyone outside Anthropic) can run.** GhostMark will not
-fabricate a detection result for a mechanism nobody outside the provider
-can test.
+**On August 11-12, 2026, Anthropic publicly confirmed this mechanism is
+real**, not hypothetical. Its support article states Claude "embeds an
+imperceptible watermark directly into the text itself" that "will travel
+with the text when it's copied and pasted elsewhere," rolling out to
+models launched on or after August 2, 2026 (with older models being
+retrofitted), across claude.ai, the API, Claude Code, Claude Cowork, and
+Claude Tag, worldwide. Source:
+[Anthropic Help Center -- "How Claude marks AI-generated content"](https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content).
+
+That same article is explicit that **no detector exists publicly yet**:
+"We're also working to enable users and other third parties to detect
+Claude's embedded watermarks and provenance metadata... We'll share
+details on detection mechanisms in forthcoming technical documentation."
+Until that documentation ships, there is nothing independently runnable
+for GhostMark (or anyone outside Anthropic) to implement or test against.
+GhostMark will not fabricate a detection result for a mechanism nobody
+outside the provider can currently verify.
 
 **GhostMark's status: Unknown.** Detect: Unknown. Remove: Unknown.
-Independent verification: No public verifier exists.
+Independent verification: No public verifier exists yet.
 
 ## Why GhostMark reports "Unknown" instead of a score
 
@@ -79,9 +98,10 @@ detector would use:
 
 ## What would change this page
 
-If Anthropic (or an independent researcher, with reproducible methodology
-and open code) publishes a public detector for Claude's statistical text
-watermark, GhostMark would implement it behind the same
+Anthropic has already committed to publishing "forthcoming technical
+documentation" on detection. When that ships -- or if an independent
+researcher publishes a reproducible detection methodology and open code
+first -- GhostMark would implement it behind the same
 `StatisticalWatermarkDetector` interface already defined for this
 purpose, and this page's status would change from Unknown to whatever
 the evidence actually supports. Until then, this page states the current
@@ -94,11 +114,19 @@ ghostmark inspect-text "any text you like" --json
 # -> "statistical_claude": {"status": "unknown", ...}
 ```
 
+## Related pages
+
+- [Claude Watermark Remover](claude-watermark-remover) -- the practical,
+  action-oriented version of this page: what GhostMark actually cleans.
+- [Claude Watermark Detector](claude-watermark-detector) -- for
+  "how do I check a file/text," rather than "how does the mechanism work."
+
 ## Sources
 
-- [Anthropic -- Claude models overview](https://www.anthropic.com/claude)
-  (no public statistical watermark detector is published here or elsewhere
-  by Anthropic as of this writing)
+- [Anthropic Help Center -- "How Claude marks AI-generated content"](https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content)
+  -- the primary source for everything on this page about what Anthropic
+  has and hasn't confirmed. No public statistical watermark detector is
+  published here or elsewhere by Anthropic as of this writing.
 - [Kirchenbauer et al., "A Watermark for Large Language Models" (2023)](https://arxiv.org/abs/2301.10226)
   -- the general statistical-watermarking technique this category refers
   to; describes the *concept*, not a Claude-specific, publicly runnable

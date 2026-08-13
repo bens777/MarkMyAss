@@ -70,13 +70,13 @@ zero `embedded_metadata`-category tags in the cleaned output.
 ## Reproducible test commands
 
 ```bash
-ghostmark inspect tests/corpus/pdf/docinfo-xmp.pdf --json
-ghostmark clean tests/corpus/pdf/docinfo-xmp.pdf
-ghostmark verify tests/corpus/pdf/docinfo-xmp.ghostmark.pdf --receipt receipt.json
+ghostmark inspect src/ghostmark/corpus/pdf/docinfo-xmp.pdf --json
+ghostmark clean src/ghostmark/corpus/pdf/docinfo-xmp.pdf
+ghostmark verify src/ghostmark/corpus/pdf/docinfo-xmp.ghostmark.pdf --receipt receipt.json
 
 # Independently, with ExifTool directly:
-exiftool -j -G1 -a -s tests/corpus/pdf/docinfo-xmp.pdf
-exiftool -j -G1 -a -s tests/corpus/pdf/docinfo-xmp.ghostmark.pdf
+exiftool -j -G1 -a -s src/ghostmark/corpus/pdf/docinfo-xmp.pdf
+exiftool -j -G1 -a -s src/ghostmark/corpus/pdf/docinfo-xmp.ghostmark.pdf
 ```
 
 Covered by the automated regression suite:
@@ -84,6 +84,11 @@ Covered by the automated regression suite:
 [`tests/test_corpus.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_corpus.py),
 and the real-ExifTool integration suite
 [`tests/integration/test_exiftool_real.py`](https://github.com/bens777/ghostmark/blob/main/tests/integration/test_exiftool_real.py).
+
+## Related pages
+
+- [AI Metadata Cleaner](ai-metadata-cleaner) -- the practical,
+  format-by-format version of this page, covering PDF, JPEG, PNG, and WebP.
 
 ## Sources
 

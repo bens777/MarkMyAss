@@ -62,9 +62,9 @@ linked source file above -- anyone can audit it.
 
 ```bash
 # Using GhostMark's own reproducible corpus fixture:
-ghostmark inspect tests/corpus/text/hidden-unicode.txt --json
-ghostmark clean tests/corpus/text/hidden-unicode.txt
-ghostmark inspect tests/corpus/text/hidden-unicode.ghostmark.txt --json
+ghostmark inspect src/ghostmark/corpus/text/hidden-unicode.txt --json
+ghostmark clean src/ghostmark/corpus/text/hidden-unicode.txt
+ghostmark inspect src/ghostmark/corpus/text/hidden-unicode.ghostmark.txt --json
 ```
 
 Or directly on any text containing a zero-width space (U+200B) -- build
@@ -78,6 +78,11 @@ python3 -c "print('hello' + chr(0x200B) + 'world')" | xargs -0 -I{} ghostmark in
 This exact scenario is also covered by the automated regression suite:
 [`tests/test_unicode.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_unicode.py)
 and [`tests/test_corpus.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_corpus.py).
+
+## Related pages
+
+- [Hidden Unicode Remover](hidden-unicode-remover) -- the practical,
+  action-oriented version of this page, with a live before/after example.
 
 ## Sources
 
