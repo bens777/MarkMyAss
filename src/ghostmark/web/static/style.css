@@ -125,7 +125,7 @@ img, svg { max-width: 100%; height: auto; }
    enough to host the hero split. Scoped to the homepage (.wrap without
    .article-wrap) so it never narrows the footer on Lab/Benchmarks/Run
    Local pages, which use their own (780px) .article-wrap measure. */
-.tool-flow, .promo-bottom, .run-local-teaser,
+.tool-flow, .promo-bottom, .run-local-teaser, .info-section,
 .wrap:not(.article-wrap) > footer {
   max-width: 720px;
   margin-left: auto;
@@ -250,6 +250,22 @@ img, svg { max-width: 100%; height: auto; }
 .subheadline { margin: 0.6rem 0 0; color: var(--text); font-size: 1.1rem; max-width: 46ch; }
 .tagline { margin: 0.35rem 0 0; color: var(--brass); font-size: 1rem; font-style: italic; font-family: var(--font-display); }
 .honesty-note { margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--muted); font-style: italic; }
+
+/* Compact positioning note: GhostMark is not Claude-only. Visible enough
+   to not be missed, but sized well below the H1 -- a callout, not a
+   second headline. */
+.scope-note {
+  margin: 0.9rem 0 0;
+  padding: 0.6rem 0.9rem;
+  border-left: 3px solid var(--spectral);
+  background: color-mix(in srgb, var(--spectral) 10%, transparent);
+  border-radius: 0 6px 6px 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+  max-width: 34rem;
+}
+.scope-note strong { color: var(--spectral); }
 
 .hero-cta-row {
   display: flex;
@@ -512,6 +528,53 @@ textarea {
 .explain-panel h3 { margin: 0 0 0.4rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
 .explain-panel ul { margin: 0; padding-left: 1.1rem; font-size: 0.88rem; }
 .explain-panel li { margin: 0.3rem 0; }
+.explain-panel p { margin: 0; font-size: 0.92rem; line-height: 1.6; }
+.explain-panel + .explain-panel { margin-top: 0.75rem; }
+
+/* Capability / limits / use-case checklists on the homepage's "what
+   GhostMark actually removes" section. */
+.info-section h2 { font-family: var(--font-display); }
+.capability-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1rem 0 1.25rem;
+}
+@media (max-width: 640px) {
+  .capability-columns { grid-template-columns: 1fr; gap: 1.25rem; }
+}
+.capability-columns h3 {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.capability-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.capability-list li { padding-left: 1.4rem; position: relative; }
+.capability-list--good li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: var(--notfound);
+  font-weight: 700;
+}
+.capability-list--limit li::before {
+  content: "!";
+  position: absolute;
+  left: 0.15rem;
+  color: var(--partial);
+  font-weight: 700;
+}
 
 .download-row {
   display: flex;

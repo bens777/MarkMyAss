@@ -67,6 +67,7 @@
           </ul>
           <p id="privacy-note" class="privacy-note"></p>
           <p class="honesty-note">No fake "100% undetectable" scores.</p>
+          <p class="scope-note"><strong>Works beyond Claude.</strong> GhostMark analyzes supported watermark and provenance signals regardless of which AI created the content — including hidden Unicode, EXIF/XMP/IPTC metadata, PDF metadata, PNG metadata, and supported provenance structures.</p>
         </div>
       </div>
     </section>
@@ -175,6 +176,55 @@
       </p>
     </section>
     </div>
+
+    <section class="card info-section">
+      <h2>What GhostMark actually removes</h2>
+      <p class="section-flavor">Signal-based, not provider-magic — support depends on the signal type, not just which AI made the file.</p>
+
+      <div class="capability-columns">
+        <div>
+          <h3>Reliably supported</h3>
+          <ul class="capability-list capability-list--good">
+            <li>Hidden Unicode and invisible text characters</li>
+            <li>EXIF / XMP / IPTC metadata (JPEG, PNG, WebP)</li>
+            <li>PDF document metadata (DocInfo + XMP)</li>
+            <li>PNG metadata</li>
+            <li>Supported file-level provenance signals</li>
+            <li>Independent metadata verification with ExifTool</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Current limits</h3>
+          <ul class="capability-list capability-list--limit">
+            <li>C2PA / Content Credentials support is partial</li>
+            <li>Claude, Gemini, and GPT statistical model-level watermarks are currently <strong>UNKNOWN</strong> — no public verifier exists to confirm removal</li>
+            <li>GhostMark never claims "100% AI-undetectable"</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="explain-panel">
+        <h3>What "VERIFIED CLEAN" means</h3>
+        <p>GhostMark shows <strong>VERIFIED CLEAN</strong> only when a supported signal was actually found before cleaning, GhostMark's own re-inspection confirms it's gone, and every independent verifier that could run (ExifTool, and c2patool where applicable) agrees too. It is not a claim that the file contains no possible identifying signal whatsoever — only that the specific, supported metadata categories GhostMark targets are independently confirmed gone. See the <a href="lab">AI Watermark Lab</a> for the full, honestly-scored capability matrix.</p>
+      </div>
+
+      <div class="explain-panel">
+        <h3>Is GhostMark only for Claude?</h3>
+        <p>No. GhostMark is not limited to Claude. It works across supported watermark and provenance signal types, including hidden Unicode and common file metadata. Its support depends on the signal type, not just the AI provider.</p>
+      </div>
+    </section>
+
+    <section class="card info-section">
+      <h2>Best use cases</h2>
+      <p class="section-flavor">Where GhostMark is genuinely reliable — not a universal AI-detection eraser, but strong at what it actually does.</p>
+      <ul class="capability-list capability-list--good">
+        <li>Cleaning metadata before publishing PDFs or images</li>
+        <li>Removing author, creator, GPS, and related metadata fields</li>
+        <li>Cleaning hidden Unicode from copied AI-generated text</li>
+        <li>Checking files for supported provenance metadata before you rely on them</li>
+        <li>Independently verifying that supported traces were actually removed — not just trusting a single tool's word for it</li>
+      </ul>
+    </section>
 
     <section class="preview-grid" aria-label="Explore GhostMark">
       <a class="preview-card" href="lab">
