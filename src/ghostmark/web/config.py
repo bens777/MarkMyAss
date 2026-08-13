@@ -53,6 +53,19 @@ def _normalize_base_path(raw: str) -> str:
     return path
 
 
+_HOSTED_DEFAULT_RATE_LIMIT_PER_MINUTE = 20
+# RateLimitMiddleware is always attached regardless of mode (see app.py),
+# but per-IP request throttling exists to protect a PUBLIC deployment from
+# abuse -- see SECURITY.md's threat model, which only lists rate limiting
+# under "Hosted mode." A single local user (127.0.0.1-only, no adversarial
+# exposure) legitimately doing routine batch work -- dragging in a folder
+# of files through the web UI, or a script driving the API directly -- can
+# easily exceed 20 requests/minute across inspect+clean+verify+download
+# calls for even a handful of files. Local mode's default is high enough
+# to be a non-factor for real usage while still bounding a runaway loop.
+_LOCAL_DEFAULT_RATE_LIMIT_PER_MINUTE = 1000
+
+
 def load_config() -> WebConfig:
     mode = _env_str("GHOSTMARK_MODE", "local").lower()
     if mode not in ("local", "hosted"):
@@ -61,12 +74,16 @@ def load_config() -> WebConfig:
     ttl_minutes = _env_int("GHOSTMARK_SESSION_TTL_MINUTES", _DEFAULT_SESSION_TTL_MINUTES)
     ttl_minutes = max(1, min(ttl_minutes, _MAX_SESSION_TTL_MINUTES))
 
+    default_rate_limit = (
+        _HOSTED_DEFAULT_RATE_LIMIT_PER_MINUTE if mode == "hosted" else _LOCAL_DEFAULT_RATE_LIMIT_PER_MINUTE
+    )
+
     return WebConfig(
         mode=mode,
         base_path=_normalize_base_path(_env_str("GHOSTMARK_BASE_PATH", "/")),
         public_url=_env_str("GHOSTMARK_PUBLIC_URL", "https://ghostmark.moseisley.sh"),
         session_ttl_seconds=ttl_minutes * 60,
-        rate_limit_per_minute=_env_int("GHOSTMARK_RATE_LIMIT_PER_MINUTE", 20),
+        rate_limit_per_minute=_env_int("GHOSTMARK_RATE_LIMIT_PER_MINUTE", default_rate_limit),
         max_concurrent_jobs=_env_int("GHOSTMARK_MAX_CONCURRENT", 4),
         processing_timeout_seconds=_env_int("GHOSTMARK_PROCESSING_TIMEOUT_SECONDS", 30),
         max_upload_mb=_env_int("GHOSTMARK_MAX_UPLOAD_MB", 50),

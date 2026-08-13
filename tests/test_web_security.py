@@ -57,6 +57,34 @@ def test_load_config_normalizes_base_path(monkeypatch):
     assert config.base_path == "/ghostmark/"
 
 
+def test_load_config_local_mode_gets_a_generous_rate_limit_by_default(monkeypatch):
+    """Local mode (127.0.0.1-only, single user) must not inherit the strict
+    per-IP rate limit meant to protect a public deployment from abuse --
+    SECURITY.md's threat model only lists rate limiting under "Hosted
+    mode." A low default here would make routine local batch use (several
+    files through the web UI, or a script driving the API) hit 429s."""
+
+    monkeypatch.delenv("GHOSTMARK_MODE", raising=False)
+    monkeypatch.delenv("GHOSTMARK_RATE_LIMIT_PER_MINUTE", raising=False)
+    config = load_config()
+    assert config.mode == "local"
+    assert config.rate_limit_per_minute >= 100
+
+
+def test_load_config_hosted_mode_keeps_the_strict_default_rate_limit(monkeypatch):
+    monkeypatch.setenv("GHOSTMARK_MODE", "hosted")
+    monkeypatch.delenv("GHOSTMARK_RATE_LIMIT_PER_MINUTE", raising=False)
+    config = load_config()
+    assert config.rate_limit_per_minute == 20
+
+
+def test_load_config_explicit_rate_limit_env_var_overrides_either_default(monkeypatch):
+    monkeypatch.setenv("GHOSTMARK_MODE", "local")
+    monkeypatch.setenv("GHOSTMARK_RATE_LIMIT_PER_MINUTE", "7")
+    config = load_config()
+    assert config.rate_limit_per_minute == 7
+
+
 # --- security headers --------------------------------------------------------------
 
 
