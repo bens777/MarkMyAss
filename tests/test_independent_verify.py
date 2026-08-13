@@ -6,7 +6,7 @@ import json
 import subprocess
 from pathlib import Path
 
-from ghostmark.independent_verify import ExifToolVerifier, categorize_tag
+from ghostmark.independent_verify import C2paToolVerifier, ExifToolVerifier, categorize_tag
 from ghostmark.models import MetadataOrigin
 
 
@@ -142,4 +142,72 @@ def test_verify_file_produces_verification_summary(tmp_path: Path, monkeypatch):
     assert verify_result.summary_v2 is not None
     assert verify_result.summary_v2.ghostmark_pass is True
     assert verify_result.summary_v2.exiftool_pass is None  # unavailable in this test
-    assert verify_result.summary_v2.verdict.value == "partial"
+    # No independent verifier was available/applicable at all (ExifTool
+    # patched unavailable, c2patool not installed on this test machine) --
+    # GhostMark's own claim is unverified, not "partial" (that's reserved
+    # for when a verifier DID run and disagreed).
+    assert verify_result.summary_v2.verdict.value == "unverified"
+
+
+# --- c2patool ------------------------------------------------------------------------
+
+
+def test_c2patool_not_applicable_for_text_files(tmp_path: Path):
+    path = tmp_path / "notes.txt"
+    path.write_text("hello", encoding="utf-8")
+    result = C2paToolVerifier().inspect(path)
+    assert result.applicable is False
+
+
+def test_c2patool_unavailable_when_not_installed(tmp_path: Path, monkeypatch):
+    path = tmp_path / "photo.jpg"
+    path.write_bytes(b"\xff\xd8\xff\xd9")
+    monkeypatch.setattr(C2paToolVerifier, "available", lambda self: False)
+    result = C2paToolVerifier().inspect(path)
+    assert result.available is False
+    assert result.applicable is True
+    assert "not installed" in result.note
+
+
+def test_c2patool_reports_manifest_found(tmp_path: Path, monkeypatch):
+    import ghostmark.independent_verify as iv
+
+    path = tmp_path / "photo.jpg"
+    path.write_bytes(b"\xff\xd8\xff\xd9")
+    monkeypatch.setattr(C2paToolVerifier, "available", lambda self: True)
+    monkeypatch.setattr(C2paToolVerifier, "version", lambda self: "0.27.12")
+    fake_manifest = json.dumps({"active_manifest": "urn:uuid:1234", "manifests": {}})
+    _fake_run(monkeypatch, iv, stdout=fake_manifest.encode())
+
+    result = C2paToolVerifier().inspect(path)
+    assert result.found is True
+    assert result.version == "0.27.12"
+
+
+def test_c2patool_reports_no_manifest_via_error_message(tmp_path: Path, monkeypatch):
+    import ghostmark.independent_verify as iv
+
+    path = tmp_path / "photo.jpg"
+    path.write_bytes(b"\xff\xd8\xff\xd9")
+    monkeypatch.setattr(C2paToolVerifier, "available", lambda self: True)
+    monkeypatch.setattr(C2paToolVerifier, "version", lambda self: "0.27.12")
+    _fake_run(monkeypatch, iv, returncode=1, stderr=b"Error: No claim found")
+
+    result = C2paToolVerifier().inspect(path)
+    assert result.found is False
+    assert result.available is True
+
+
+def test_c2patool_genuine_error_does_not_guess_found_status(tmp_path: Path, monkeypatch):
+    import ghostmark.independent_verify as iv
+
+    path = tmp_path / "photo.jpg"
+    path.write_bytes(b"\xff\xd8\xff\xd9")
+    monkeypatch.setattr(C2paToolVerifier, "available", lambda self: True)
+    monkeypatch.setattr(C2paToolVerifier, "version", lambda self: "0.27.12")
+    _fake_run(monkeypatch, iv, returncode=101, stderr=b"panicked at src/main.rs:42")
+
+    result = C2paToolVerifier().inspect(path)
+    assert result.found is False  # dataclass default, not asserted as a real finding
+    assert result.note  # but the failure is visible in the note
+    assert "panicked" in result.note

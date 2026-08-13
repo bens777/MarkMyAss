@@ -175,9 +175,30 @@ class MetadataOrigin(StrEnum):
 
 
 class VerificationVerdict(StrEnum):
+    """The headline result of a clean, in order of strength.
+
+    - ``VERIFIED_CLEAN``: something supported WAS found before cleaning,
+      GhostMark's own re-inspection finds it gone, AND every independent
+      verifier that could check agrees. The strongest claim GhostMark
+      ever makes -- never awarded on GhostMark's own say-so alone.
+    - ``PARTIAL``: GhostMark's own re-inspection says clean, but an
+      independent verifier that DID run disagrees (still finds
+      something). GhostMark's internal claim is not corroborated.
+    - ``UNVERIFIED``: GhostMark's own re-inspection says clean, but no
+      independent verifier was available/applicable to check at all.
+    - ``NOT_APPLICABLE``: no supported signal was detected before
+      cleaning in the first place -- there was nothing to verify removal
+      of, so "clean" would be a claim about nothing.
+    - ``FAILED``: GhostMark's own re-inspection still finds a signal it
+      flagged before cleaning. GhostMark's own core promise did not hold
+      for this input.
+    """
+
     VERIFIED_CLEAN = "verified_clean"
     PARTIAL = "partial"
     UNVERIFIED = "unverified"
+    NOT_APPLICABLE = "not_applicable"
+    FAILED = "failed"
 
 
 @dataclass
@@ -217,40 +238,129 @@ class ExternalVerificationResult:
 
 
 @dataclass
+class C2paVerificationResult:
+    """Result of an independent C2PA manifest check using ``c2patool``.
+
+    c2patool is the official Content Authenticity Initiative CLI -- it can
+    read a C2PA manifest, but this is still NOT a claim of cryptographic
+    validation (signature/trust-chain checking) unless ``trust_checked`` is
+    True; GhostMark only uses it to confirm presence/absence of a
+    manifest, matching GhostMark's own heuristic C2PA detector's scope.
+    """
+
+    tool: str
+    available: bool
+    applicable: bool = True
+    version: str | None = None
+    found: bool = False
+    trust_checked: bool = False
+    note: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "tool": self.tool,
+            "available": self.available,
+            "applicable": self.applicable,
+            "version": self.version,
+            "found": self.found,
+            "trust_checked": self.trust_checked,
+            "note": self.note,
+        }
+
+
+@dataclass
+class ExternalVerifierOutcome:
+    """A simple pass/fail/n-a summary from one independent verifier, used to
+    build the overall verdict and the verification receipt. Distinct from
+    :class:`ExternalVerificationResult`, which carries ExifTool's full
+    per-tag breakdown -- this is the condensed "did it agree" signal.
+    """
+
+    name: str
+    label: str
+    available: bool
+    applicable: bool
+    passed: bool | None  # None = not available/applicable
+    version: str | None = None
+    note: str = ""
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "label": self.label,
+            "available": self.available,
+            "applicable": self.applicable,
+            "passed": self.passed,
+            "version": self.version,
+            "note": self.note,
+        }
+
+
+@dataclass
 class VerificationSummary:
-    """The headline verdict for a clean: PASS only when GhostMark's own
-    re-inspection AND an independent tool both agree nothing supported
-    remains. This is NOT a claim that the file contains no possible
+    """The headline verdict for a clean: VERIFIED CLEAN only when something
+    supported was actually found before cleaning, GhostMark's own
+    re-inspection finds it gone, AND every independent verifier that could
+    run agrees. This is NOT a claim that the file contains no possible
     identifying signal whatsoever -- only that the specific, supported
     metadata categories GhostMark targets are independently confirmed gone.
     """
 
     ghostmark_pass: bool
-    exiftool_pass: bool | None  # None = not run / not applicable / unavailable
+    supported_found_before: int = 0
+    external_verifiers: list[ExternalVerifierOutcome] = field(default_factory=list)
     statistical_watermark_verified: bool = False
     c2pa_status: str = "partial"
-    exiftool_available: bool = False
-    exiftool_applicable: bool = True
-    exiftool_version: str | None = None
     note: str = ""
+
+    # --- backward/forward-compatible convenience accessors -------------------------
+
+    def _verifier(self, name: str) -> ExternalVerifierOutcome | None:
+        return next((v for v in self.external_verifiers if v.name == name), None)
+
+    @property
+    def exiftool_pass(self) -> bool | None:
+        v = self._verifier("exiftool")
+        return v.passed if v else None
+
+    @property
+    def exiftool_available(self) -> bool:
+        v = self._verifier("exiftool")
+        return v.available if v else False
+
+    @property
+    def exiftool_applicable(self) -> bool:
+        v = self._verifier("exiftool")
+        return v.applicable if v else True
+
+    @property
+    def exiftool_version(self) -> str | None:
+        v = self._verifier("exiftool")
+        return v.version if v else None
 
     @property
     def supported_metadata_clean(self) -> bool:
-        return self.ghostmark_pass and self.exiftool_pass is not False
+        return self.ghostmark_pass and all(v.passed is not False for v in self.external_verifiers)
 
     @property
     def verdict(self) -> VerificationVerdict:
-        if self.exiftool_pass is None:
-            return VerificationVerdict.PARTIAL if self.ghostmark_pass else VerificationVerdict.UNVERIFIED
-        if self.ghostmark_pass and self.exiftool_pass:
+        if self.supported_found_before == 0:
+            return VerificationVerdict.NOT_APPLICABLE
+        if not self.ghostmark_pass:
+            return VerificationVerdict.FAILED
+
+        relevant = [v for v in self.external_verifiers if v.available and v.applicable]
+        if not relevant:
+            return VerificationVerdict.UNVERIFIED
+        if all(v.passed for v in relevant):
             return VerificationVerdict.VERIFIED_CLEAN
-        if self.ghostmark_pass or self.exiftool_pass:
-            return VerificationVerdict.PARTIAL
-        return VerificationVerdict.UNVERIFIED
+        return VerificationVerdict.PARTIAL
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "ghostmark_pass": self.ghostmark_pass,
+            "supported_found_before": self.supported_found_before,
+            "external_verifiers": [v.to_dict() for v in self.external_verifiers],
             "exiftool_pass": self.exiftool_pass,
             "supported_metadata_clean": self.supported_metadata_clean,
             "statistical_watermark_verified": self.statistical_watermark_verified,
@@ -274,6 +384,8 @@ class VerifyResult:
     unknown: list[str] = field(default_factory=list)
     external_before: ExternalVerificationResult | None = None
     external_after: ExternalVerificationResult | None = None
+    c2pa_before: C2paVerificationResult | None = None
+    c2pa_after: C2paVerificationResult | None = None
     summary_v2: VerificationSummary | None = None
 
     @property
@@ -301,5 +413,7 @@ class VerifyResult:
             "summary": self.summary(),
             "external_before": self.external_before.to_dict() if self.external_before else None,
             "external_after": self.external_after.to_dict() if self.external_after else None,
+            "c2pa_before": self.c2pa_before.to_dict() if self.c2pa_before else None,
+            "c2pa_after": self.c2pa_after.to_dict() if self.c2pa_after else None,
             "verification_summary": self.summary_v2.to_dict() if self.summary_v2 else None,
         }
