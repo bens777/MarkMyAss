@@ -90,6 +90,14 @@ Covered by
 (mocked c2patool behavior, including the "no manifest" and genuine-error
 paths).
 
+## Related pages
+
+- [C2PA Remover](c2pa-remover) -- the practical, action-oriented version
+  of this page.
+- [Content Credentials Remover](content-credentials-remover) -- same
+  mechanism, written for people who know the "cr" icon rather than the
+  C2PA spec name.
+
 ## Sources
 
 - [C2PA Technical Specification](https://spec.c2pa.org/specifications/specifications/2.2/specs/C2PA_Specification.html)

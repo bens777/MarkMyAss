@@ -49,10 +49,21 @@ independent tool agree, repeatedly, in the test corpus), *Partial*
 ## Proof, not promises
 
 Every "Verified" row above is backed by GhostMark's public, reproducible
-test corpus (`tests/corpus/`) and regression suite (`tests/test_corpus.py`)
+test corpus (`src/ghostmark/corpus/`) and regression suite (`tests/test_corpus.py`)
 -- see the [Benchmarks page](benchmarks) for the actual pass/fail counts
 from the current test run, generated from that same corpus, not
 hand-typed.
+
+## Related pages
+
+Practical, action-oriented versions of the mechanisms above:
+[AI Watermark Remover](ai-watermark-remover) (overview of all signals),
+[AI Metadata Cleaner](ai-metadata-cleaner),
+[C2PA Remover](c2pa-remover),
+[Content Credentials Remover](content-credentials-remover),
+[Hidden Unicode Remover](hidden-unicode-remover),
+[Claude Watermark Remover](claude-watermark-remover), and
+[Claude Watermark Detector](claude-watermark-detector).
 
 ## Something outdated or inaccurate?
 
