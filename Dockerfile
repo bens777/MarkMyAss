@@ -1,12 +1,31 @@
-# ExifTool is installed via the OS package manager (Debian/apt) -- GhostMark
-# never vendors ExifTool's GPL-licensed source or binary in this repository
-# or in the Python package; it only shells out to whatever `exiftool` is on
-# PATH at runtime. See THIRD_PARTY_LICENSES.md.
+# ExifTool and c2patool are installed as separate, independently-licensed
+# external binaries -- GhostMark never vendors either's source or binary
+# in this repository or in the Python package; it only shells out to
+# whatever it finds on PATH at runtime. See THIRD_PARTY_LICENSES.md.
+#
+# c2patool (Apache-2.0/MIT) is published on crates.io, not as a
+# conveniently apt-installable Debian package, so it's built from the
+# official source in a throwaway Rust build stage and only the resulting
+# binary is copied into the final image -- the Rust toolchain itself
+# never ships in the image GhostMark actually runs.
+FROM rust:1-slim-bookworm AS c2patool-builder
+# c2patool depends on openssl-sys with the "vendored" feature, which always
+# compiles its own OpenSSL from source (system libssl-dev is not enough).
+# That vendored build's Configure script needs Perl core modules (e.g.
+# FindBin) that the slim image's minimal perl-base doesn't include, so pull
+# in the full perl package plus a C toolchain before building.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends perl make gcc \
+    && rm -rf /var/lib/apt/lists/*
+RUN cargo install c2patool
+
 FROM python:3.12-slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libimage-exiftool-perl \
     && rm -rf /var/lib/apt/lists/*
+
+COPY --from=c2patool-builder /usr/local/cargo/bin/c2patool /usr/local/bin/c2patool
 
 WORKDIR /app
 COPY pyproject.toml README.md LICENSE ./

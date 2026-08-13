@@ -10,8 +10,8 @@ This automates exactly the manual process it replaces:
     ExifTool inspect (cleaned)  -> targeted embedded metadata NOT FOUND
 
 Skips (does not fail) when ExifTool isn't installed, so local `pytest`
-runs are unaffected. CI's "Independent ExifTool Verification" job
-installs ExifTool and this suite MUST pass there -- see
+runs are unaffected. CI's "Independent Verification (ExifTool +
+c2patool)" job installs ExifTool and this suite MUST pass there -- see
 .github/workflows/ci.yml.
 """
 
@@ -32,7 +32,7 @@ verifier = ExifToolVerifier()
 
 pytestmark = pytest.mark.skipif(
     not verifier.available(),
-    reason="ExifTool is not installed locally; this suite runs in CI's ExifTool job.",
+    reason="ExifTool is not installed locally; this suite runs in CI's independent-verification job.",
 )
 
 
