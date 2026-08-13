@@ -154,6 +154,31 @@
     '<path d="M4 20V11a6 6 0 0 1 12 0v9l-2-1.6-2 1.6-2-1.6-2 1.6-2-1.6Z" fill="currentColor" opacity="0.75"/>' +
     "</svg>";
 
+  // Same ghost glyph, but shown on a REMOVED row during cleaning -- fades
+  // and shrinks out (.ghost-dissolve) rather than fading in, so a trace
+  // visibly "dissolves" instead of just silently disappearing from the
+  // list. Single play, not a loop.
+  const GHOST_DISSOLVE_SVG =
+    '<svg class="ghost-glyph ghost-dissolve" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">' +
+    '<path d="M4 20V11a6 6 0 0 1 12 0v9l-2-1.6-2 1.6-2-1.6-2 1.6-2-1.6Z" fill="currentColor" opacity="0.75"/>' +
+    "</svg>";
+
+  // A small wax-seal glyph for a clean verification result -- echoes
+  // static/art/verify-seal.svg without an extra image request.
+  const SEAL_GLYPH_SVG =
+    '<svg class="verdict-icon ghost-appear" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">' +
+    '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
+    '<path d="M8 12.3l2.6 2.6L16 9.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+    "</svg>";
+
+  // A small fog/ghost glyph for unverified or not-applicable results --
+  // "uncharted waters," but the badge text next to it always spells out
+  // the literal verdict.
+  const FOG_GLYPH_SVG =
+    '<svg class="verdict-icon ghost-appear" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">' +
+    '<path d="M4 19V11a6 6 0 0 1 12 0v8l-2-1.5-2 1.5-2-1.5-2 1.5-2-1.5Z" fill="currentColor" opacity="0.6"/>' +
+    "</svg>";
+
   function renderDetections(container, detections) {
     container.innerHTML = "";
     for (const d of detections) {
@@ -187,7 +212,10 @@
       row.className = "signal-row";
       const label = document.createElement("span");
       label.className = "signal-label";
-      label.textContent = a.label;
+      if (a.removed) {
+        label.insertAdjacentHTML("beforeend", GHOST_DISSOLVE_SVG);
+      }
+      label.appendChild(document.createTextNode(a.label));
       const status = document.createElement("span");
       let cls = "status-not_found";
       let text = "NOT PRESENT";
@@ -266,7 +294,11 @@
 
     const badge = document.createElement("span");
     badge.className = `verdict-badge verdict-${summary.verdict}`;
-    badge.textContent = VERDICT_TEXT[summary.verdict] || "UNVERIFIED";
+    const icon = summary.verdict === "verified_clean" ? SEAL_GLYPH_SVG
+      : summary.verdict === "failed" ? ""
+      : FOG_GLYPH_SVG;
+    if (icon) badge.insertAdjacentHTML("beforeend", icon);
+    badge.appendChild(document.createTextNode(VERDICT_TEXT[summary.verdict] || "UNVERIFIED"));
     verdictPanel.appendChild(badge);
 
     const lines = document.createElement("div");

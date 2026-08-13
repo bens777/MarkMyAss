@@ -88,6 +88,8 @@
 
 * { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
   font-family: var(--font-body);
@@ -113,9 +115,21 @@ body {
 img, svg { max-width: 100%; height: auto; }
 
 .wrap {
-  max-width: 720px;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 2rem 1.25rem 4rem;
+}
+
+/* Everything that isn't the wide two-column hero reverts to a focused
+   reading/interaction column, even though .wrap itself is now wide
+   enough to host the hero split. Scoped to the homepage (.wrap without
+   .article-wrap) so it never narrows the footer on Lab/Benchmarks/Run
+   Local pages, which use their own (780px) .article-wrap measure. */
+.tool-flow, .promo-bottom, .run-local-teaser,
+.wrap:not(.article-wrap) > footer {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .promo-top {
@@ -148,35 +162,52 @@ img, svg { max-width: 100%; height: auto; }
 .top-nav .brand-link:hover { color: var(--brass); }
 .brand-mark { color: var(--spectral); flex-shrink: 0; }
 
-.hero-art {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0.5rem;
-  min-width: 0;
+/* ---- Hero: two-column "ship on the water" split ---- */
+.hero-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 2.5rem;
+  margin-bottom: 3rem;
 }
-.hero-art img { max-width: 100%; width: auto; height: auto; min-width: 0; }
+@media (max-width: 860px) {
+  .hero-split {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .hero-cta-row, .trust-bar { justify-content: center; }
+}
 
-header { text-align: center; margin-bottom: 1.5rem; }
-header h1 {
+.hero-copy h1 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(1.75rem, 1.35rem + 2vw, 2.6rem);
-  line-height: 1.15;
+  font-size: clamp(1.9rem, 1.35rem + 2.6vw, 3.1rem);
+  line-height: 1.1;
   letter-spacing: 0.005em;
   margin: 0 0 0.6rem;
 }
-.hero-flow { margin: 0; font-size: 1.3rem; font-weight: 700; color: var(--accent); }
-.subheadline { margin: 0.5rem 0 0; color: var(--text); font-size: 1.05rem; }
-.tagline { margin: 0.35rem 0 0; color: var(--brass); font-size: 0.95rem; font-style: italic; font-family: var(--font-display); }
+.hero-flow { margin: 0; font-size: 1.35rem; font-weight: 700; color: var(--accent); }
+.subheadline { margin: 0.6rem 0 0; color: var(--text); font-size: 1.1rem; max-width: 46ch; }
+.hero-split .subheadline { max-width: none; }
+.tagline { margin: 0.35rem 0 0; color: var(--brass); font-size: 1rem; font-style: italic; font-family: var(--font-display); }
 .honesty-note { margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--muted); font-style: italic; }
+
+.hero-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  margin-top: 1.5rem;
+}
+.btn-lg { padding: 0.85rem 1.7rem; font-size: 1.05rem; margin-top: 0; }
 
 .trust-bar {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 0.5rem 1rem;
-  margin: 1rem 0 0;
+  margin: 1.5rem 0 0;
   padding: 0;
   font-size: 0.8rem;
   color: var(--muted);
@@ -185,6 +216,32 @@ header h1 {
 .trust-bar li::before { content: "✓"; color: var(--notfound); }
 
 .privacy-note { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--muted); }
+
+/* The illustration sits inside a soft radial "porthole" glow so it reads
+   as a deliberate scene rather than a lone icon floating on flat
+   background -- purely a static gradient, no image request. */
+.hero-art {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  padding: 1.75rem;
+  border-radius: 20px;
+  background: radial-gradient(ellipse 90% 80% at 50% 55%, color-mix(in srgb, var(--surface-2) 85%, transparent), transparent 72%);
+}
+.hero-art img { max-width: 100%; width: 100%; height: auto; min-width: 0; }
+
+.stage-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.stage-icon { flex-shrink: 0; }
+.section-flavor.with-icon {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 
 .card, .input-section {
   background: var(--surface);
@@ -316,6 +373,7 @@ textarea {
 }
 
 .ghost-glyph { color: var(--spectral); vertical-align: -2px; margin-right: 0.35rem; }
+.verdict-icon { vertical-align: -3px; margin-right: 0.4rem; }
 
 .lab-teaser {
   text-align: center;

@@ -45,28 +45,40 @@
       <a href="https://github.com/bens777/ghostmark" rel="noopener">GitHub</a>
     </nav>
 
-    <header>
+    <section class="hero-split">
+      <div class="hero-copy">
+        <h1>Claude Watermark Remover &amp; AI Provenance Cleaner</h1>
+        <p class="hero-flow">Inspect <span aria-hidden="true">→</span> Clean <span aria-hidden="true">→</span> Verify</p>
+        <p class="subheadline">GhostMark shows exactly what it removed — and what it cannot verify.</p>
+        <p class="tagline">Proof, not promises.</p>
+
+        <div class="hero-cta-row">
+          <a href="#input-section" class="btn primary btn-lg">Inspect a File</a>
+          <a href="lab" class="btn secondary btn-lg">Explore the Lab</a>
+        </div>
+
+        <ul class="trust-bar">
+          <li>Free</li>
+          <li>Open source</li>
+          <li>No account</li>
+          <li>Independent verification</li>
+          <li>Download your cleaned file</li>
+        </ul>
+        <p id="privacy-note" class="privacy-note"></p>
+        <p class="honesty-note">No fake "100% undetectable" scores.</p>
+      </div>
+
       <div class="hero-art" aria-hidden="true">
         <img src="static/art/hero-fleet.svg" alt="" width="640" height="260" class="mascot-idle" />
       </div>
-      <h1>Claude Watermark Remover &amp; AI Provenance Cleaner</h1>
-      <p class="hero-flow">Inspect <span aria-hidden="true">→</span> Clean <span aria-hidden="true">→</span> Verify</p>
-      <p class="subheadline">GhostMark shows exactly what it removed — and what it cannot verify.</p>
-      <p class="tagline">Proof, not promises.</p>
+    </section>
 
-      <ul class="trust-bar">
-        <li>Free</li>
-        <li>Open source</li>
-        <li>No account</li>
-        <li>Independent verification</li>
-        <li>Download your cleaned file</li>
-      </ul>
-      <p id="privacy-note" class="privacy-note"></p>
-      <p class="honesty-note">No fake "100% undetectable" scores.</p>
-    </header>
-
+    <div class="tool-flow">
     <section id="input-section" class="input-section card">
-      <p class="section-flavor">Let's see what is hiding inside.</p>
+      <p class="section-flavor with-icon">
+        <img src="static/art/spyglass.svg" alt="" width="26" height="26" class="stage-icon" />
+        Let's see what is hiding inside.
+      </p>
       <div class="tabs">
         <button id="tab-text" class="tab active" type="button">Paste Text</button>
         <button id="tab-file" class="tab" type="button">Upload File</button>
@@ -95,7 +107,7 @@
     <div class="flow-arrow hidden" id="arrow-1">↓</div>
 
     <section id="results-section" class="card hidden">
-      <h2>STEP 1 — INSPECTION</h2>
+      <h2 class="stage-heading"><img src="static/art/spyglass.svg" alt="" width="26" height="26" class="stage-icon" /> STEP 1 — INSPECTION</h2>
       <p class="section-flavor">Spot the ghosts — scanning the cargo for hidden signals.</p>
       <div id="results-table" class="signal-table"></div>
       <p id="results-count" class="summary"></p>
@@ -111,7 +123,7 @@
     <div class="flow-arrow hidden" id="arrow-2">↓</div>
 
     <section id="clean-section" class="card hidden">
-      <h2>STEP 2 — CLEANING</h2>
+      <h2 class="stage-heading"><img src="static/art/ghost-mark.svg" alt="" width="26" height="26" class="stage-icon" /> STEP 2 — CLEANING</h2>
       <p class="section-flavor">Clear the deck — removing supported traces.</p>
       <div id="clean-table" class="signal-table"></div>
       <div id="cleaned-text-wrap" class="hidden">
@@ -125,7 +137,7 @@
     <div class="flow-arrow hidden" id="arrow-3">↓</div>
 
     <section id="verify-section" class="card hidden">
-      <h2>STEP 3 — INDEPENDENT VERIFICATION</h2>
+      <h2 class="stage-heading"><img src="static/art/verify-seal.svg" alt="" width="26" height="26" class="stage-icon" /> STEP 3 — INDEPENDENT VERIFICATION</h2>
       <p class="section-flavor">A second observer checks the work.</p>
 
       <div id="verify-before-after">
@@ -164,6 +176,7 @@
         Curious what GhostMark can and can't verify? <a href="lab">Explore the GhostMark Lab →</a>
       </p>
     </section>
+    </div>
 
     <div class="promo-bottom hosted-only hidden">
       <h2>Need more than a cleaner?</h2>
