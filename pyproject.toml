@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ghostmark"
-version = "0.2.0"
+version = "0.3.0"
 description = "Open-source AI watermark & provenance cleaner. Inspect, sanitize and verify metadata and supported watermark signals in AI-generated text, images and documents."
 readme = "README.md"
 license = "MIT"
@@ -44,6 +44,7 @@ dependencies = [
   "pillow>=10.3",
   "pikepdf>=8.15",
   "python-multipart>=0.0.9",
+  "markdown>=3.6",
 ]
 
 [project.optional-dependencies]

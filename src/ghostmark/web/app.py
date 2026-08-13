@@ -49,10 +49,26 @@ from ghostmark.security import (
 from ghostmark.verifier import verify_file, verify_text
 from ghostmark.web.concurrency import BoundedRunner, ProcessingTimeoutError, ServerBusyError
 from ghostmark.web.config import WebConfig, load_config
+from ghostmark.web.content_render import (
+    CONTENT_DIR,
+    PageMeta,
+    render_article_page,
+    render_markdown_to_html,
+)
 from ghostmark.web.security_middleware import RateLimitMiddleware, SecurityHeadersMiddleware
 
 STATIC_DIR = Path(__file__).parent / "static"
 TTL_SWEEP_INTERVAL_SECONDS = 60
+
+RUN_LOCAL_PAGE_META = PageMeta(
+    title="Run AI Models Locally — Avoid Provider-Side Provenance at the Source | GhostMark",
+    description=(
+        "A practical developer guide to running open-weight AI models locally or on rented "
+        "GPUs. Compare models, hardware, budgets, and installation paths."
+    ),
+    path="/run-local",
+)
+_ARTICLE_NAV_HTML = '<header class="article-header"><a href="." class="brand-link">👻 GhostMark</a></header>'
 
 log = logging.getLogger("ghostmark.web")
 
@@ -196,6 +212,21 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
         index_path = STATIC_DIR / "index.html"
         html = index_path.read_text(encoding="utf-8")
         return HTMLResponse(_inject_base_href(html, config.base_path))
+
+    # Rendered once per process -- the content is a static file, not
+    # per-request state, so there's no reason to re-run the Markdown
+    # parser on every hit.
+    _run_local_html = render_article_page(
+        meta=RUN_LOCAL_PAGE_META,
+        body_html=render_markdown_to_html((CONTENT_DIR / "run_local.md").read_text(encoding="utf-8")),
+        base_path=config.base_path,
+        public_url=config.public_url,
+        nav_html=_ARTICLE_NAV_HTML,
+    )
+
+    @app.get("/run-local", response_class=HTMLResponse)
+    def run_local() -> HTMLResponse:
+        return HTMLResponse(_run_local_html)
 
     @app.get("/health")
     def health() -> dict[str, Any]:

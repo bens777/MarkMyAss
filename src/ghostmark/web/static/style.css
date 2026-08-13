@@ -209,4 +209,12 @@ textarea {
 footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 2rem; }
 footer a { color: var(--accent); }
 
+.run-local-teaser {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 0.5rem;
+}
+.run-local-teaser a { color: var(--accent); }
+
 label { display: block; margin: 1rem 0 0.4rem; color: var(--muted); font-size: 0.9rem; }
