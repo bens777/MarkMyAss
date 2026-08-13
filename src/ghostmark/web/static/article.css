@@ -66,8 +66,9 @@
 
 .article h1 {
   font-family: var(--font-display);
-  font-size: 1.9rem;
-  line-height: 1.25;
+  font-weight: 700;
+  font-size: clamp(1.6rem, 1.3rem + 1.5vw, 2.25rem);
+  line-height: 1.2;
   letter-spacing: 0.005em;
   margin: 0.2rem 0 0.1rem;
 }
@@ -78,10 +79,11 @@
   font-size: 1.05rem;
 }
 .article h2 {
-  font-size: 1.35rem;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
   margin: 2.2rem 0 0.8rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
+  border-top: 3px solid var(--brass);
 }
 .article h3 {
   font-size: 1.05rem;
@@ -135,6 +137,10 @@
 .article th {
   background: var(--surface);
   font-weight: 600;
+  border-bottom: 2px solid var(--brass);
+}
+.article tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
 }
 
 .article hr {
@@ -156,10 +162,12 @@
 .log-entry {
   background: var(--parchment);
   color: var(--parchment-ink);
+  border: 1px solid var(--border);
   border-left: 4px solid var(--brass);
   border-radius: 6px;
   padding: 1rem 1.25rem;
   margin: 1.5rem 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 .log-entry p, .log-entry li { color: var(--parchment-ink); }
 .log-entry a { color: #5a4210; }

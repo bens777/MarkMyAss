@@ -3,15 +3,15 @@
        imagery. Self-contained theming (works via <img>, which does not inherit
        the host page's CSS custom properties). -->
   <style>
-    .gm-line { stroke: #9aa1ad; }
-    .gm-brass { stroke: #c9a44c; fill: #c9a44c; }
-    .gm-ghost { fill: #b9f5ff; stroke: #b9f5ff; }
-    .gm-water { stroke: #2a2e38; }
+    .gm-line { stroke: #aebcd1; }
+    .gm-brass { stroke: #dcac52; fill: #dcac52; }
+    .gm-ghost { fill: #8fe8cc; stroke: #8fe8cc; }
+    .gm-water { stroke: #2f5074; }
     @media (prefers-color-scheme: light) {
-      .gm-line { stroke: #5b6270; }
-      .gm-brass { stroke: #946f0f; fill: #946f0f; }
-      .gm-ghost { fill: #2f8fa8; stroke: #2f8fa8; }
-      .gm-water { stroke: #dfe2ea; }
+      .gm-line { stroke: #5c6b82; }
+      .gm-brass { stroke: #8a641c; fill: #8a641c; }
+      .gm-ghost { fill: #166b5a; stroke: #166b5a; }
+      .gm-water { stroke: #d8c9a3; }
     }
   </style>
 

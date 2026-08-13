@@ -168,22 +168,22 @@ class VerificationReceipt:
 <meta charset="utf-8">
 <title>GhostMark Verification Receipt -- {escape(self.file_name)}</title>
 <style>
-  body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; color: #e7e9ee; background: #0f1115; }}
+  body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; color: #f5ecd8; background: #0b1d33; }}
   h1 {{ font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif; font-size: 1.5rem; margin-bottom: 0.1rem; }}
-  .subtitle {{ color: #c9a44c; font-style: italic; margin: 0 0 1.25rem; font-size: 0.95rem; }}
-  h2 {{ font-size: 1rem; text-transform: uppercase; letter-spacing: .04em; color: #9aa1ad; margin-top: 2rem; }}
+  .subtitle {{ color: #dcac52; font-style: italic; margin: 0 0 1.25rem; font-size: 0.95rem; }}
+  h2 {{ font-size: 1rem; text-transform: uppercase; letter-spacing: .04em; color: #aebcd1; margin-top: 2rem; border-top: 2px solid #dcac52; padding-top: .5rem; }}
   table {{ width: 100%; border-collapse: collapse; margin-top: .5rem; }}
-  td {{ padding: .4rem .6rem; border: 1px solid #2a2e38; }}
-  td.found {{ color: #ffb454; font-weight: 700; }}
-  td.clean {{ color: #5fd08a; font-weight: 700; }}
-  td.na {{ color: #9aa1ad; font-weight: 700; }}
+  td {{ padding: .4rem .6rem; border: 1px solid #2f5074; }}
+  td.found {{ color: #f0ab5d; font-weight: 700; }}
+  td.clean {{ color: #6fcf8e; font-weight: 700; }}
+  td.na {{ color: #aebcd1; font-weight: 700; }}
   .verdict {{ display: inline-block; padding: .4rem 1rem; border-radius: 999px; font-weight: 800; margin-top: .5rem; }}
-  .verdict.clean {{ background: rgba(95,208,138,.18); color: #5fd08a; }}
-  .verdict.found {{ background: rgba(255,180,84,.18); color: #ffb454; }}
-  .verdict.na {{ background: rgba(154,161,173,.18); color: #9aa1ad; }}
-  code {{ background: #171a21; border: 1px solid #2a2e38; padding: .1rem .3rem; border-radius: 4px; font-size: .85em; word-break: break-all; font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", monospace; }}
-  footer {{ margin-top: 2rem; color: #9aa1ad; font-size: .85rem; }}
-  footer a {{ color: #7c8cff; }}
+  .verdict.clean {{ background: rgba(111,207,142,.18); color: #6fcf8e; }}
+  .verdict.found {{ background: rgba(240,171,93,.18); color: #f0ab5d; }}
+  .verdict.na {{ background: rgba(174,188,209,.18); color: #aebcd1; }}
+  code {{ background: #122a48; border: 1px solid #2f5074; padding: .1rem .3rem; border-radius: 4px; font-size: .85em; word-break: break-all; font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", monospace; }}
+  footer {{ margin-top: 2rem; color: #aebcd1; font-size: .85rem; }}
+  footer a {{ color: #e2664f; }}
 </style>
 </head>
 <body>

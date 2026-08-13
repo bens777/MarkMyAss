@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260" width="640" height="260" role="img" aria-label="An original GhostMark illustration: a pirate ship sailing dark waters at night while a captain on deck uses a spyglass to inspect a glowing crate surrounded by faint spectral signals">
+  <!-- Original artwork for GhostMark. No third-party, franchise, or copyrighted
+       imagery; simple geometric shapes only. Self-theming (light/dark) via
+       an internal style block with hardcoded hex, since this SVG is
+       referenced via img and does not inherit the host page's CSS custom
+       properties. See DESIGN_SYSTEM.md. -->
+  <style>
+    .gm-glow-a { fill: #8fe8cc; }
+    .gm-water  { stroke: #2f5074; }
+    .gm-hull   { fill: #f5ecd8; }
+    .gm-sail   { fill: #f5ecd8; opacity: 0.92; }
+    .gm-ink    { fill: #f5ecd8; }
+    .gm-line   { stroke: #aebcd1; }
+    .gm-brass  { stroke: #dcac52; fill: #dcac52; }
+    .gm-ghost  { fill: #8fe8cc; }
+    .gm-glow-b { fill: #dcac52; }
+    @media (prefers-color-scheme: light) {
+      .gm-glow-a { fill: #166b5a; }
+      .gm-water  { stroke: #d8c9a3; }
+      .gm-hull   { fill: #22314a; }
+      .gm-sail   { fill: #22314a; opacity: 0.92; }
+      .gm-ink    { fill: #22314a; }
+      .gm-line   { stroke: #5c6b82; }
+      .gm-brass  { stroke: #8a641c; fill: #8a641c; }
+      .gm-ghost  { fill: #166b5a; }
+      .gm-glow-b { fill: #8a641c; }
+    }
+  </style>
+
+  <!-- night sky glow (moon) -->
+  <circle class="gm-glow-a" cx="560" cy="52" r="30" opacity="0.16" />
+  <circle class="gm-glow-a" cx="560" cy="52" r="14" opacity="0.32" />
+
+  <!-- faint stars -->
+  <g class="gm-ghost" opacity="0.6">
+    <circle cx="90" cy="30" r="1.6" />
+    <circle cx="150" cy="55" r="1.2" />
+    <circle cx="260" cy="24" r="1.4" />
+    <circle cx="420" cy="40" r="1.2" />
+    <circle cx="480" cy="20" r="1.6" />
+  </g>
+
+  <!-- layered ocean-wave horizon -->
+  <g class="gm-water" fill="none" stroke-width="2" stroke-linecap="round">
+    <path d="M0 210 Q40 202 80 210 T160 210 T240 210 T320 210 T400 210 T480 210 T560 210 T640 210" opacity="0.9" />
+    <path d="M0 226 Q45 220 90 226 T180 226 T270 226 T360 226 T450 226 T540 226 T630 226" opacity="0.55" />
+    <path d="M0 242 Q50 238 100 242 T200 242 T300 242 T400 242 T500 242 T600 242" opacity="0.3" />
+  </g>
+
+  <!-- glowing crate with spectral wisps -->
+  <g>
+    <circle class="gm-glow-b" cx="520" cy="176" r="40" opacity="0.22" />
+    <circle class="gm-glow-b" cx="520" cy="176" r="24" opacity="0.3" />
+    <g class="gm-ghost" opacity="0.6">
+      <path d="M478 168 v-26 a12 12 0 0 1 24 0 v26 l-4 -4 -4 4 -4 -4 -4 4 -4 -4 -4 4Z" />
+      <path d="M552 172 v-20 a9 9 0 0 1 18 0 v20 l-3 -3 -3 3 -3 -3 -3 3 -3 -3Z" opacity="0.7" />
+    </g>
+    <g class="gm-line" fill="none" stroke-width="2" stroke-linejoin="round">
+      <rect x="498" y="168" width="44" height="34" rx="2" />
+      <line x1="498" y1="182" x2="542" y2="182" />
+      <line x1="520" y1="168" x2="520" y2="202" />
+    </g>
+  </g>
+
+  <!-- ship hull -->
+  <path class="gm-hull" d="M120 214 L300 214 L286 234 L134 234 Z" />
+  <!-- mast -->
+  <line class="gm-line" x1="200" y1="214" x2="200" y2="120" stroke-width="4" stroke-linecap="round" />
+  <!-- sail -->
+  <path class="gm-sail" d="M204 128 L204 206 L260 206 Q214 168 204 128 Z" />
+  <!-- pennant -->
+  <path class="gm-brass" d="M200 120 L222 128 L200 136 Z" stroke-width="2" />
+
+  <!-- captain on deck with spyglass, watching the crate. Scaled up ~30%
+       about the point where the figure meets the deck (161, 214) so it
+       reads clearly at hero size. -->
+  <g transform="translate(-48.3, -64.2) scale(1.3)">
+    <g class="gm-ink">
+      <path d="M150 190 L172 190 L180 214 L140 214 Z" />
+      <circle cx="161" cy="178" r="9" />
+      <ellipse cx="161" cy="170" rx="15" ry="4" />
+      <path d="M148 170 Q161 154 174 170 Z" />
+    </g>
+    <g class="gm-line" fill="none" stroke-width="3.5" stroke-linecap="round">
+      <line x1="170" y1="190" x2="192" y2="174" />
+    </g>
+    <g class="gm-brass" stroke-width="1.6">
+      <rect x="188" y="169" width="16" height="6.5" rx="2" transform="rotate(-27 196 172)" />
+    </g>
+  </g>
+</svg>

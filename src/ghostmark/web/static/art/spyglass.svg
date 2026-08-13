@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="A spyglass, GhostMark's icon for inspecting a file">
   <!-- Original artwork for GhostMark. -->
   <style>
-    .gm-line { stroke: #9aa1ad; }
-    .gm-brass { stroke: #c9a44c; }
+    .gm-line { stroke: #aebcd1; }
+    .gm-brass { stroke: #dcac52; }
     @media (prefers-color-scheme: light) {
-      .gm-line { stroke: #5b6270; }
-      .gm-brass { stroke: #946f0f; }
+      .gm-line { stroke: #5c6b82; }
+      .gm-brass { stroke: #8a641c; }
     }
   </style>
   <g fill="none" stroke-linecap="round" stroke-linejoin="round">

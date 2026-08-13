@@ -20,6 +20,16 @@ constraints; generated with `pip-licenses`).
 Development-only dependencies (`pytest`, `pytest-cov`, `httpx`, `ruff`) are
 not distributed with GhostMark and do not affect end users.
 
+## About Playfair Display (SIL Open Font License 1.1) -- bundled, unmodified
+
+The site's display heading font, `src/ghostmark/web/static/fonts/playfair-display-v40-latin-700.woff2`
+(bold weight, Latin subset), is self-hosted so the app never calls out to a
+third-party font CDN at runtime (see `PRIVACY.md`). It is used unmodified,
+exactly as distributed by the Google Fonts repository, and its license text
+is bundled alongside it at `src/ghostmark/web/static/fonts/OFL.txt`, per the
+OFL's redistribution terms. The font is not sold on its own and is not
+renamed, so no Reserved Font Name conflict applies.
+
 ## About `pikepdf` (MPL-2.0)
 
 `pikepdf` is licensed under the Mozilla Public License 2.0, a **file-level**
