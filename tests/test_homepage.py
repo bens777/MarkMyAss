@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import re
+
 from fastapi.testclient import TestClient
 
 from ghostmark.web.app import create_app
@@ -52,6 +54,27 @@ def test_homepage_moseisley_copy_updated():
     assert "An open-source project by" in html
     assert "Meet Moseisley" in html
     assert "Explore Moseisley" in html
+
+
+def test_homepage_moseisley_links_point_to_moseisley_with_utm_attribution():
+    """Both Moseisley links (top attribution, bottom CTA) must point to the
+    real moseisley.sh domain (never a lookalike/typo domain) and carry
+    simple, privacy-compatible UTM query params for attribution -- no
+    tracking pixels, no third-party scripts, no cookies."""
+
+    client = TestClient(create_app(_config()))
+    html = client.get("/").text
+    # Matches only the two outbound "visit Moseisley" links (bare domain +
+    # query string) -- NOT this test fixture's own self-referential
+    # canonical/OG URL, which happens to also live on the moseisley.sh
+    # domain (https://moseisley.sh/ghostmark, a path, not a query string)
+    # when public_url is configured for the subpath deployment style.
+    moseisley_links = re.findall(r'href="(https://moseisley\.sh\?[^"]*)"', html)
+    assert len(moseisley_links) == 2
+    for link in moseisley_links:
+        assert link.startswith("https://moseisley.sh?")
+        assert "utm_source=ghostmark" in link
+        assert "utm_medium=referral" in link
 
 
 def test_homepage_never_calls_moseisley_promo_a_popup_or_interstitial():
