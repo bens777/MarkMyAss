@@ -131,7 +131,13 @@ def test_verify_file_produces_verification_summary(tmp_path: Path, monkeypatch):
     from ghostmark.fixtures.generate import make_jpeg_fixture
     from ghostmark.verifier import verify_file
 
+    # Patch BOTH verifiers unavailable -- deterministic regardless of what's
+    # actually installed on the machine running this test (a previous
+    # version of this test only patched ExifTool and silently relied on
+    # c2patool not being installed locally, which broke the moment c2patool
+    # was installed for the real-binary integration suite in the same repo).
     monkeypatch.setattr(ExifToolVerifier, "available", lambda self: False)
+    monkeypatch.setattr(C2paToolVerifier, "available", lambda self: False)
 
     path = tmp_path / "demo.jpg"
     make_jpeg_fixture(path)
@@ -142,10 +148,9 @@ def test_verify_file_produces_verification_summary(tmp_path: Path, monkeypatch):
     assert verify_result.summary_v2 is not None
     assert verify_result.summary_v2.ghostmark_pass is True
     assert verify_result.summary_v2.exiftool_pass is None  # unavailable in this test
-    # No independent verifier was available/applicable at all (ExifTool
-    # patched unavailable, c2patool not installed on this test machine) --
-    # GhostMark's own claim is unverified, not "partial" (that's reserved
-    # for when a verifier DID run and disagreed).
+    # No independent verifier was available/applicable at all (both patched
+    # unavailable) -- GhostMark's own claim is unverified, not "partial"
+    # (that's reserved for when a verifier DID run and disagreed).
     assert verify_result.summary_v2.verdict.value == "unverified"
 
 
