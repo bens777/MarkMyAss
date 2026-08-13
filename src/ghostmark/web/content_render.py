@@ -16,6 +16,8 @@ from pathlib import Path
 
 import markdown as _markdown
 
+from ghostmark.web.seo import breadcrumb_jsonld, breadcrumb_nav_html, jsonld_script_tag
+
 CONTENT_DIR = Path(__file__).parent / "content"
 
 _MARKDOWN_EXTENSIONS = ["tables", "fenced_code", "sane_lists", "toc"]
@@ -27,6 +29,10 @@ class PageMeta:
     title: str
     description: str
     path: str  # e.g. "/run-local" -- appended to the deployment's public_url for canonical/OG
+    # Ordered (name, path) pairs for BreadcrumbList + the visible breadcrumb
+    # trail, starting with ("Home", "/"). None on pages that don't need one
+    # (e.g. the homepage itself).
+    breadcrumbs: tuple[tuple[str, str], ...] | None = None
 
 
 def render_markdown_to_html(markdown_text: str) -> str:
@@ -60,10 +66,25 @@ def render_article_page(
     base_path: str,
     public_url: str,
     nav_html: str,
+    structured_data: list[dict] | None = None,
+    footer_html: str | None = None,
 ) -> str:
     """Wrap rendered article HTML in a full page shell matching GhostMark's site chrome."""
 
     canonical_url = public_url.rstrip("/") + meta.path
+
+    jsonld_blocks = list(structured_data or [])
+    breadcrumb_html = ""
+    if meta.breadcrumbs:
+        jsonld_blocks.append(breadcrumb_jsonld(public_url, list(meta.breadcrumbs)))
+        breadcrumb_html = breadcrumb_nav_html(public_url, list(meta.breadcrumbs))
+
+    jsonld_html = "\n  ".join(jsonld_script_tag(block) for block in jsonld_blocks)
+
+    footer = footer_html if footer_html is not None else (
+        '<p>GhostMark is open source (MIT). '
+        '<a href="https://github.com/bens777/ghostmark" rel="noopener">Source on GitHub</a>.</p>'
+    )
 
     return f"""<!doctype html>
 <html lang="en">
@@ -87,15 +108,17 @@ def render_article_page(
 
   <link rel="stylesheet" href="static/style.css" />
   <link rel="stylesheet" href="static/article.css" />
+  {jsonld_html}
 </head>
 <body>
   <main class="wrap article-wrap">
     {nav_html}
+    {breadcrumb_html}
     <article class="article">
 {body_html}
     </article>
     <footer>
-      <p>GhostMark is open source (MIT). <a href="https://github.com/bens777/ghostmark" rel="noopener">Source on GitHub</a>.</p>
+      {footer}
     </footer>
   </main>
 </body>

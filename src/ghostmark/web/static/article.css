@@ -17,6 +17,27 @@
   color: var(--accent);
 }
 
+.breadcrumbs {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+}
+.breadcrumbs a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.breadcrumbs a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.breadcrumbs .crumb-sep {
+  margin: 0 0.15rem;
+  color: var(--border);
+}
+.breadcrumbs [aria-current="page"] {
+  color: var(--text);
+}
+
 .article-hero {
   text-align: center;
   margin: 0 0 1rem;
