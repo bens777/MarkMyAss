@@ -22,32 +22,44 @@ not distributed with GhostMark and do not affect end users.
 
 ## About the homepage hero illustration -- AI-assisted, original composition
 
-`src/ghostmark/web/static/art/hero-mark.webp` (the small graphic mark
-next to the homepage hero copy) was produced with an AI image generation
+`src/ghostmark/web/static/art/hero-scene.webp` (the wide illustration
+beneath the homepage headline) was produced with an AI image generation
 tool during development, from an original text prompt written for this
-project (no reference image, no third-party artwork, franchise
-character, or logo used as input). The resulting image is a bundled,
-static asset served directly by GhostMark -- the app never calls out to
-the generation service at runtime, so this does not introduce a required
-paid API or third-party runtime dependency (see "no external network
-request" performance/privacy constraints elsewhere in this repo). The
-composition (a small stylized sailing ship silhouette with a wisp of
-spectral light near the sail, and a compass-rose motif) was deliberately
-prompted to be original and generic-nautical rather than reproducing any
-copyrighted character, franchise, or existing artwork (explicitly not a
-skull-and-crossbones or any named fictional ship); it was reviewed
-before inclusion to confirm this. If this image is ever regenerated or
-replaced, apply the same review before committing it.
+project. Two project-internal reference screenshots (in
+`design-references/`, not shipped with the package) were supplied to the
+generator as quality/energy references, accompanied by an explicit
+instruction NOT to copy their rendering styles, branding, characters, or
+layouts -- and the output was reviewed to confirm it does not reproduce
+either reference's content or style (it is neither pixel art nor neon
+sci-fi, and shares no characters, logos, or composition with them). The
+resulting image is a bundled, static asset served directly by GhostMark
+-- the app never calls out to the generation service at runtime, so this
+does not introduce a required paid API or third-party runtime dependency
+(see "no external network request" performance/privacy constraints
+elsewhere in this repo). The composition (an original pirate crew
+hunting original spectral-ghost characters aboard a generic sailing
+ship) was deliberately prompted to be original rather than reproducing
+any copyrighted character, franchise, or existing artwork (no named
+fictional ship or pirate character); it was reviewed before inclusion to
+confirm this. If this image is ever regenerated or replaced, apply the
+same review before committing it.
 
-## About Playfair Display (SIL Open Font License 1.1) -- bundled, unmodified
+## About Bricolage Grotesque (SIL Open Font License 1.1) -- bundled, subsetted
 
-The site's display heading font, `src/ghostmark/web/static/fonts/playfair-display-v40-latin-700.woff2`
-(bold weight, Latin subset), is self-hosted so the app never calls out to a
-third-party font CDN at runtime (see `PRIVACY.md`). It is used unmodified,
-exactly as distributed by the Google Fonts repository, and its license text
-is bundled alongside it at `src/ghostmark/web/static/fonts/OFL.txt`, per the
-OFL's redistribution terms. The font is not sold on its own and is not
-renamed, so no Reserved Font Name conflict applies.
+The site's display heading font,
+`src/ghostmark/web/static/fonts/bricolage-grotesque-v9-latin-800.woff2`
+(a single 800-weight static instance of the variable font, Latin subset,
+~17KB), is self-hosted so the app never calls out to a third-party font
+CDN at runtime (see `PRIVACY.md`). It was instanced and subsetted with
+`fonttools` from the variable font as distributed by the Google Fonts
+repository -- permitted modifications under the OFL -- and its license
+text is bundled alongside it at `src/ghostmark/web/static/fonts/OFL.txt`,
+per the OFL's redistribution terms. The font is not sold on its own and
+is not renamed, so no Reserved Font Name conflict applies. Body text
+uses the OS-provided system UI sans stack (no bundled file). An earlier
+iteration self-hosted Playfair Display (also SIL OFL 1.1) for headings;
+it was replaced by Bricolage Grotesque during a full art-direction
+rebuild.
 
 ## About `pikepdf` (MPL-2.0)
 

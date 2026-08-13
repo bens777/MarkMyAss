@@ -1,52 +1,78 @@
 /* Self-hosted display font (SIL OFL 1.1) -- see THIRD_PARTY_LICENSES.md.
    No third-party font CDN is ever contacted at runtime; the woff2 ships
-   with the app itself. */
+   with the app itself (17KB, latin subset, single 800 weight). */
 @font-face {
-  font-family: "Playfair Display";
+  font-family: "Bricolage Grotesque";
   font-style: normal;
-  font-weight: 700;
+  font-weight: 800;
   font-display: swap;
-  src: url("fonts/playfair-display-v40-latin-700.woff2") format("woff2");
+  src: url("fonts/bricolage-grotesque-v9-latin-800.woff2") format("woff2");
 }
 
-:root {
-  /* "Parchment Map" -- warm/light, the site's primary identity (default,
-     regardless of OS color-scheme preference). A previous iteration
-     defaulted to a dark navy palette, which read as gloomy/generic/
-     "dark fantasy poster" rather than a fresh, product-led brand --
-     see DESIGN_SYSTEM.md. Every text/background pairing below is
-     WCAG-verified at 4.5:1+ for normal text. */
-  --bg: #f4ecd8;
-  --bg-void: #eee2c4;
-  --surface: #fbf6ea;
-  --surface-2: #f4ecd8;
-  --border: #d8c9a3;
-  --text: #22314a;
-  --muted: #5c6b82;
-  --accent: #b93b25;
-  --accent-ink: #ffffff;
-  --brass: #8a641c;
-  --spectral: #166b5a;
-  --found: #8f4f0e;
-  --notfound: #1f7a45;
-  --unknown: #5c6b82;
-  --danger: #b23223;
-  --pass: #1f7a45;
-  --partial: #8f4f0e;
-  /* The page background itself is parchment-toned, so .log-entry needs a
-     visibly deeper "aged paper" shade to still read as a distinct
-     callout (border/shadow do the rest -- see .log-entry in article.css). */
-  --parchment: #ddc99a;
-  --parchment-ink: #22314a;
+/* ============================================================
+   MarkMyAss -- design tokens, built from zero.
 
+   Direction: a high-converting indie-software landing page first,
+   a pirates-vs-ghosts brand personality layered on top of it second.
+   Bright warm-cream base, deep navy ink, punchy coral CTAs, gold and
+   turquoise reserved for decoration (icons/borders/badges), never for
+   small text -- both fail 4.5:1 against a bright cream background at
+   full saturation, so keeping them decorative-only lets them stay
+   vivid instead of getting muddied down to "readable brown/teal".
+   Every color used as TEXT below is WCAG-verified at >=4.5:1 against
+   whatever background it actually sits on. See DESIGN_SYSTEM.md.
+   ============================================================ */
+
+:root {
+  --bg: #fff6e7;
+  --bg-void: #fbeac9;
+  --surface: #ffffff;
+  --surface-2: #fff1dc;
+  --border: #f0ddba;
+  --text: #12213d;
+  --muted: #56638a;
+
+  /* The one vivid color used for TEXT (links, kicker, hover, CTAs) --
+     verified >=4.5:1 against bg, surface-2 and white. */
+  --accent: #cc2a14;
+  --accent-ink: #ffffff;
+
+  /* Decorative-only vivid accents: icon fills, borders, tinted
+     backgrounds, badge chips with dark text on top. Never used as a
+     foreground text color -- at full saturation neither passes 4.5:1
+     against a bright cream page. */
+  --brass: #e8a233;
+  --spectral: #12b8a6;
+
+  /* Status text -- each independently checked against the tinted
+     surface-2 chip background it renders on. */
+  --found: #aa4b16;
+  --notfound: #177843;
+  --unknown: #56638a;
+  --danger: #d4242f;
+  --pass: #177843;
+  --partial: #aa4b16;
+
+  --parchment: #f6dfaf;
+  --parchment-ink: #12213d;
+
+  /* Modern, bold, internet-native type. Body stays the fast system
+     sans; display type is a bundled contemporary grotesque (single 800
+     weight) -- distinctive and characterful without being an antique
+     pirate poster face. No display serif anywhere in this identity. */
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
-  --font-display: "Playfair Display", Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-display: "Bricolage Grotesque", var(--font-body);
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", monospace;
 
-  /* Micro-interaction timing -- see DESIGN_SYSTEM.md's Motion section.
-     Overridden to 0 under prefers-reduced-motion below, so any element
-     using these variables in a transition/animation is automatically
-     motion-safe without needing its own media query. */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  /* "Sticker" hard shadow -- flat color offset, no blur. Reads as bold
+     and internet-native, not a soft muted parchment drop-shadow. */
+  --shadow-card: 4px 4px 0 var(--text);
+  --shadow-card-hover: 6px 6px 0 var(--text);
+  --shadow-btn: 3px 3px 0 var(--text);
+
   --dur-fast: 180ms;
   --dur-base: 260ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -55,27 +81,28 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* "Midnight Ocean" -- dark mode, opt-in only (OS preference), never
-       the default. */
-    --bg: #0b1d33;
-    --bg-void: #071526;
-    --surface: #122a48;
-    --surface-2: #1a3a5e;
-    --border: #2f5074;
-    --text: #f5ecd8;
-    --muted: #aebcd1;
-    --accent: #e2664f;
-    --accent-ink: var(--bg);
-    --brass: #dcac52;
-    --spectral: #8fe8cc;
-    --parchment: #f4ecd8;
-    --parchment-ink: #22314a;
-    --found: #f0ab5d;
-    --notfound: #6fcf8e;
-    --unknown: #aebcd1;
-    --danger: #e6543f;
-    --pass: #6fcf8e;
-    --partial: #f0ab5d;
+    --bg: #0e1b33;
+    --bg-void: #081222;
+    --surface: #16294a;
+    --surface-2: #1e3a63;
+    --border: #2c4a72;
+    --text: #fbf3e2;
+    --muted: #a9bad9;
+    --accent: #ff6b4a;
+    --accent-ink: #0e1b33;
+    --brass: #f2b84d;
+    --spectral: #4fe0cc;
+    --found: #ffb066;
+    --notfound: #6fe0a0;
+    --unknown: #a9bad9;
+    --danger: #ff8a80;
+    --pass: #6fe0a0;
+    --partial: #ffb066;
+    --parchment: #f5dfb0;
+    --parchment-ink: #12213d;
+    --shadow-card: 4px 4px 0 #081222;
+    --shadow-card-hover: 6px 6px 0 #081222;
+    --shadow-btn: 3px 3px 0 #081222;
   }
 }
 
@@ -97,21 +124,12 @@ body {
   margin: 0;
   font-family: var(--font-body);
   background-color: var(--bg);
-  /* Subtle atmosphere: a faint horizon glow plus a fine plotting-line
-     texture, both CSS gradients -- no image request, no layout cost.
-     Kept low-contrast so it never competes with foreground content or
-     text readability. */
-  background-image:
-    radial-gradient(ellipse 1200px 600px at 50% -10%, color-mix(in srgb, var(--spectral) 10%, transparent), transparent 60%),
-    repeating-linear-gradient(180deg, color-mix(in srgb, var(--text) 3%, transparent) 0px, transparent 1px, transparent 44px);
-  background-attachment: scroll;
   color: var(--text);
   line-height: 1.5;
-  /* Safety net: nothing on this site is meant to require horizontal
-     scroll on any viewport. A flex child with a large intrinsic size
-     (e.g. an <img width> attribute) can otherwise force the whole page
-     wider than the viewport even when max-width:100% is set on the
-     image itself, because flex items default to min-width:auto. */
+  /* Nothing on this site is meant to require horizontal scroll on any
+     viewport -- a flex child with a large intrinsic size can otherwise
+     force the page wider than the viewport even with max-width:100%
+     on the image itself, since flex items default to min-width:auto. */
   overflow-x: hidden;
 }
 
@@ -123,9 +141,9 @@ img, svg { max-width: 100%; height: auto; }
   padding: 2rem 1.25rem 4rem;
 }
 
-/* Everything that isn't the wide two-column hero reverts to a focused
-   reading/interaction column, even though .wrap itself is now wide
-   enough to host the hero split. Scoped to the homepage (.wrap without
+/* Everything but the wide hero band reverts to a focused reading/
+   interaction column, even though .wrap itself is wide enough to host
+   the full-width hero. Scoped to the homepage (.wrap without
    .article-wrap) so it never narrows the footer on Lab/Benchmarks/Run
    Local pages, which use their own (780px) .article-wrap measure. */
 .tool-flow, .promo-bottom, .run-local-teaser, .info-section,
@@ -159,118 +177,177 @@ img, svg { max-width: 100%; height: auto; }
   align-items: center;
   gap: 0.35rem;
   color: var(--text);
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.98rem;
+  letter-spacing: -0.01em;
 }
-.top-nav .brand-link:hover { color: var(--brass); }
+.top-nav .brand-link:hover { color: var(--accent); }
 .brand-mark { color: var(--spectral); flex-shrink: 0; }
 
-/* ---- Hero: contained, product-led -- NOT a full-bleed backdrop ----
-   A previous iteration made the illustration a full-viewport background
-   image; it read as "dark wallpaper with text on it" and made the art
-   the star instead of the product. This version is a short, ordinary
-   two-column block: copy on the left (unconstrained width, reads first),
-   a small framed illustration on the right that is clearly a supporting
-   brand detail, not the main event. The whole section is intentionally
-   short so the actual tool panel sits close to the fold. */
-.hero-split {
+/* ---- Hero: product-first, headline+CTA read in under 3 seconds ----
+   Classic conversion layout: copy/CTAs in the left column, the brand
+   illustration contained in the right column, and the cleaner panel in
+   its own strong block immediately below the hero. The illustration is
+   large enough to carry the brand but never pushes the headline or the
+   tool down the page. */
+.hero {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   align-items: center;
-  gap: 2.5rem;
-  margin-bottom: 2.5rem;
+  gap: 2.75rem;
+  padding: 1.5rem 0 0;
 }
-.hero-art {
-  display: flex;
-  justify-content: center;
-  min-width: 0;
-}
-.hero-art img {
-  width: 100%;
-  max-width: 320px;
-  height: auto;
-  min-width: 0;
-  border-radius: 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--brass);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-}
-@media (max-width: 860px) {
-  .hero-split {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 1.5rem;
-  }
-  .hero-art { order: -1; }
-  .hero-art img { max-width: 220px; }
-  .hero-cta-row, .trust-bar { justify-content: center; }
-}
-
-/* Public brand wordmark -- sits above the SEO-focused H1 rather than
-   replacing it, so the H1 keeps its exact, unchanged, search-friendly
-   text ("Claude Watermark Remover & AI Provenance Cleaner"). */
+.hero-copy { min-width: 0; }
 .brand-kicker {
-  margin: 0 0 0.5rem;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.05rem;
-  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.9rem;
+  font-weight: 800;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--brass);
+  color: var(--accent);
 }
-.hero-copy h1 {
+.hero h1 {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.9rem, 1.35rem + 2.6vw, 3.1rem);
-  line-height: 1.1;
-  letter-spacing: 0.005em;
-  margin: 0 0 0.6rem;
+  font-weight: 800;
+  font-size: clamp(2rem, 1.15rem + 2.6vw, 3.05rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.7rem;
+  max-width: 18ch;
 }
-.hero-flow { margin: 0; font-size: 1.35rem; font-weight: 700; color: var(--accent); }
-.subheadline { margin: 0.6rem 0 0; color: var(--text); font-size: 1.1rem; max-width: 46ch; }
-.tagline { margin: 0.35rem 0 0; color: var(--brass); font-size: 1rem; font-style: italic; font-family: var(--font-display); }
+.hero-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 0.8rem;
+  list-style: none;
+  padding: 0;
+}
+.hero-flow li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--text);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+}
+.hero-flow .flow-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.72rem;
+}
+.hero-flow .flow-sep { color: var(--border); font-weight: 400; }
+.subheadline {
+  margin: 0.6rem 0 0;
+  color: var(--text);
+  font-size: 1.15rem;
+  max-width: 46ch;
+}
+.tagline {
+  margin: 0.35rem 0 0;
+  color: var(--accent);
+  font-size: 1rem;
+  font-weight: 700;
+}
 .honesty-note { margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--muted); font-style: italic; }
 
-/* Compact positioning note: GhostMark is not Claude-only. Visible enough
-   to not be missed, but sized well below the H1 -- a callout, not a
-   second headline. */
+/* Compact positioning note: MarkMyAss is not Claude-only. Visible
+   enough to not be missed, but sized well below the H1 -- a callout,
+   not a second headline. */
 .scope-note {
-  margin: 0.9rem 0 0;
+  margin: 2rem auto 0;
   padding: 0.6rem 0.9rem;
-  border-left: 3px solid var(--spectral);
-  background: color-mix(in srgb, var(--spectral) 10%, transparent);
-  border-radius: 0 6px 6px 0;
+  border: 2px solid var(--spectral);
+  background: color-mix(in srgb, var(--spectral) 12%, var(--surface));
+  border-radius: var(--radius-sm);
   font-size: 0.88rem;
   line-height: 1.5;
   color: var(--text);
   max-width: 34rem;
+  text-align: center;
 }
-.scope-note strong { color: var(--spectral); }
+.scope-note strong { color: var(--accent); }
 
 .hero-cta-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.9rem;
-  margin-top: 1.5rem;
+  margin-top: 1.6rem;
 }
-.btn-lg { padding: 0.85rem 1.7rem; font-size: 1.05rem; margin-top: 0; }
+.btn-lg { padding: 0.9rem 1.8rem; font-size: 1.05rem; margin-top: 0; }
 
 .trust-bar {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1rem;
+  gap: 0.5rem 0.6rem;
   margin: 1.5rem 0 0;
   padding: 0;
-  font-size: 0.8rem;
-  color: var(--muted);
 }
-.trust-bar li { display: flex; align-items: center; gap: 0.3rem; }
-.trust-bar li::before { content: "✓"; color: var(--notfound); }
+.trust-bar li {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+}
+.trust-bar li::before { content: "\2713"; color: var(--notfound); }
 
-.privacy-note { margin: 0.6rem 0 0; font-size: 0.85rem; color: var(--muted); }
+.privacy-note { margin: 0.9rem 0 0; font-size: 0.85rem; color: var(--muted); }
+
+/* ---- Hero illustration -- the mandatory brand scene: pirates
+   actively hunting spectral ghosts aboard their ship. Contained in the
+   hero's right column at its natural aspect ratio (no cropping), framed
+   like the site's other cards. Plays a single settle-in animation on
+   load, never loops. */
+.hero-scene {
+  margin: 0;
+  min-width: 0;
+  border: 2px solid var(--text);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  animation: hero-settle var(--dur-base) var(--ease-out);
+}
+.hero-scene img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+@keyframes hero-settle {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    text-align: center;
+  }
+  .hero h1 { margin-left: auto; margin-right: auto; }
+  .subheadline { margin-left: auto; margin-right: auto; }
+  .hero-flow, .hero-cta-row, .trust-bar { justify-content: center; }
+  .hero-scene { max-width: 560px; margin: 0 auto; }
+}
 
 .stage-heading {
   display: flex;
@@ -286,26 +363,27 @@ img, svg { max-width: 100%; height: auto; }
 
 .card, .input-section {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--brass);
-  border-radius: 10px;
+  border: 2px solid var(--text);
+  border-radius: var(--radius-md);
   padding: 1.75rem 1.5rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+  margin-top: 1.5rem;
+  box-shadow: var(--shadow-card);
 }
 
 .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
 .tab {
   flex: 1;
   padding: 0.6rem;
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   background: transparent;
   color: var(--text);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 0.95rem;
+  font-weight: 600;
 }
-.tab.active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.tab.active { background: var(--accent); border-color: var(--text); color: var(--accent-ink); font-weight: 700; }
 
 .skip-link {
   position: absolute;
@@ -334,8 +412,8 @@ textarea {
   width: 100%;
   background: var(--bg);
   color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
   padding: 0.75rem;
   font-family: inherit;
   resize: vertical;
@@ -348,7 +426,7 @@ textarea {
   gap: 0.5rem;
   padding: 2rem 1rem;
   border: 2px dashed var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   text-align: center;
   color: var(--muted);
@@ -360,23 +438,24 @@ textarea {
   display: inline-block;
   margin-top: 1rem;
   padding: 0.65rem 1.4rem;
-  border-radius: 8px;
-  border: none;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--text);
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  box-shadow: var(--shadow-btn);
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
 }
 .btn.primary { background: var(--accent); color: var(--accent-ink); }
-.btn.primary:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 88%, white); }
-.btn.primary:active:not(:disabled) { transform: scale(0.97); }
-.btn.primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--border); margin-top: 0; padding: 0.5rem 1rem; font-size: 0.9rem; font-weight: 500; }
-.btn.secondary:hover { border-color: var(--brass); color: var(--brass); }
+.btn.primary:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--text); }
+.btn.primary:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--text); }
+.btn.primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.btn.secondary { background: var(--surface); color: var(--text); border: 2px solid var(--text); margin-top: 0; padding: 0.5rem 1rem; font-size: 0.9rem; }
+.btn.secondary:hover { background: var(--surface-2); transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--text); }
 .btn:focus-visible { outline: 2px solid var(--spectral); outline-offset: 2px; }
 
-.error { color: var(--danger); margin-top: 0.75rem; }
+.error { color: var(--danger); margin-top: 0.75rem; font-weight: 600; }
 
 .flow-arrow { text-align: center; font-size: 1.5rem; color: var(--muted); margin: -0.5rem 0 0.5rem; }
 
@@ -389,28 +468,27 @@ textarea {
   padding: 0.6rem 0.8rem;
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-left: 3px solid var(--border);
-  border-radius: 6px;
+  border-left: 4px solid var(--border);
+  border-radius: var(--radius-sm);
 }
 .signal-row:has(.status-found), .signal-row:has(.status-detected) { border-left-color: var(--found); }
 .signal-row:has(.status-not_found), .signal-row:has(.status-not_detected), .signal-row:has(.status-removed) { border-left-color: var(--notfound); }
-.signal-label { font-weight: 500; }
-.signal-status { font-weight: 700; font-size: 0.85rem; padding: 0.15rem 0.6rem; border-radius: 999px; white-space: nowrap; }
+.signal-label { font-weight: 600; }
+.signal-status { font-weight: 800; font-size: 0.85rem; padding: 0.15rem 0.6rem; border-radius: 999px; white-space: nowrap; }
 .status-found, .status-detected { color: var(--found); background: color-mix(in srgb, var(--found) 15%, transparent); }
 .status-not_found, .status-not_detected, .status-removed { color: var(--notfound); background: color-mix(in srgb, var(--notfound) 15%, transparent); }
 .status-unknown, .status-unverified, .status-partial, .status-unsupported { color: var(--unknown); background: color-mix(in srgb, var(--unknown) 15%, transparent); }
 .experimental-tag { font-size: 0.75rem; color: var(--found); margin-left: 0.4rem; }
 
-.summary { font-weight: 600; margin-top: 1rem; }
-.original-preserved { color: var(--notfound); font-size: 0.9rem; }
+.summary { font-weight: 700; margin-top: 1rem; }
+.original-preserved { color: var(--notfound); font-size: 0.9rem; font-weight: 600; }
 
-/* Secondary, in-theme flavor line under a STEP heading -- never replaces
-   the precise technical heading/status text next to it. */
+/* Secondary, in-theme flavor line under a STEP heading -- never
+   replaces the precise technical heading/status text next to it. */
 .section-flavor {
   margin: -0.4rem 0 0.9rem;
   font-size: 0.85rem;
   color: var(--muted);
-  font-style: italic;
 }
 
 .ghost-glyph { color: var(--spectral); vertical-align: -2px; margin-right: 0.35rem; }
@@ -422,7 +500,7 @@ textarea {
   color: var(--muted);
   margin: 1rem 0 0;
 }
-.lab-teaser a { color: var(--accent); }
+.lab-teaser a { color: var(--accent); font-weight: 600; }
 
 #verify-before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .verify-column h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 0 0 0.5rem; }
@@ -433,10 +511,10 @@ textarea {
 .exiftool-panel, .verdict-panel {
   margin-top: 1.25rem;
   padding: 1rem 1.1rem;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--border);
+  border: 2px solid var(--border);
+  border-left: 4px solid var(--border);
   transition: border-color var(--dur-base) var(--ease-out);
 }
 .exiftool-panel h3, .verdict-panel h3 { margin: 0 0 0.5rem; font-size: 0.95rem; }
@@ -451,24 +529,24 @@ textarea {
   border: 1px solid transparent;
   animation: seal-stamp var(--dur-base) var(--ease-out);
 }
-/* Emotional-state mapping for the verdict panel border -- reinforces the
-   badge's own color+text without relying on color alone (the badge text
-   itself always spells out the verdict, e.g. "VERIFIED CLEAN"). */
+/* Emotional-state mapping for the verdict panel border -- reinforces
+   the badge's own color+text without relying on color alone (the
+   badge text always spells out the verdict, e.g. "VERIFIED CLEAN"). */
 .verdict-panel:has(.verdict-verified_clean) { border-left-color: var(--pass); }
 .verdict-panel:has(.verdict-partial) { border-left-color: var(--partial); }
 .verdict-panel:has(.verdict-unverified),
 .verdict-panel:has(.verdict-not_applicable) { border-left-color: var(--unknown); border-left-style: dashed; }
 .verdict-panel:has(.verdict-failed) { border-left-color: var(--danger); }
-/* The verdict badge "stamps in" once when a result appears -- a single,
-   short, non-looping animation (never re-triggers on its own; disabled
-   entirely under prefers-reduced-motion via the global rule above). */
+/* The verdict badge "stamps in" once when a result appears -- a
+   single, short, non-looping animation (disabled entirely under
+   prefers-reduced-motion via the global rule above). */
 @keyframes seal-stamp {
   from { transform: scale(1.4); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
 
-/* Signal detected: a small ghost glyph briefly appears next to a FOUND
-   row (see app.js). Single play, not a loop. */
+/* Signal detected: a small ghost glyph briefly appears next to a
+   FOUND row (see app.js). Single play, not a loop. */
 .ghost-appear { animation: ghost-in var(--dur-base) var(--ease-out); }
 @keyframes ghost-in {
   from { opacity: 0; transform: translateY(-4px) scale(0.85); }
@@ -482,15 +560,6 @@ textarea {
   to { opacity: 0; transform: scale(0.9); }
 }
 
-/* Hero art: fades into view once on page load, then stops -- no
-   infinite loop. ui-ux-pro-max's own animation guidance flags continuous
-   decorative motion as distracting ("use for loading indicators only,
-   not decorative elements"), so this plays exactly once. */
-.hero-art { animation: hero-settle var(--dur-base) var(--ease-out); }
-@keyframes hero-settle {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 .verdict-verified_clean { background: color-mix(in srgb, var(--pass) 18%, transparent); color: var(--pass); border-color: color-mix(in srgb, var(--pass) 45%, transparent); }
 .verdict-partial { background: color-mix(in srgb, var(--partial) 18%, transparent); color: var(--partial); border-color: color-mix(in srgb, var(--partial) 45%, transparent); }
 .verdict-unverified { background: color-mix(in srgb, var(--unknown) 18%, transparent); color: var(--unknown); border-color: color-mix(in srgb, var(--unknown) 45%, transparent); }
@@ -498,14 +567,14 @@ textarea {
 .verdict-failed { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); border-color: color-mix(in srgb, var(--danger) 45%, transparent); }
 
 .watermark-note { font-size: 0.82rem; color: var(--muted); margin-top: 1rem; }
-.watermark-note a { color: var(--accent); }
+.watermark-note a { color: var(--accent); font-weight: 600; }
 
 .explain-panel {
   margin-top: 1rem;
   padding: 0.9rem 1rem;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
-  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+  border: 2px solid var(--border);
 }
 .explain-panel h3 { margin: 0 0 0.4rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
 .explain-panel ul { margin: 0; padding-left: 1.1rem; font-size: 0.88rem; }
@@ -514,8 +583,9 @@ textarea {
 .explain-panel + .explain-panel { margin-top: 0.75rem; }
 
 /* Capability / limits / use-case checklists on the homepage's "what
-   GhostMark actually removes" section. */
-.info-section h2 { font-family: var(--font-display); }
+   MarkMyAss actually removes" section. */
+.info-section h2 { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.01em; font-size: 1.55rem; }
+
 .capability-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -544,7 +614,7 @@ textarea {
 }
 .capability-list li { padding-left: 1.4rem; position: relative; }
 .capability-list--good li::before {
-  content: "✓";
+  content: "\2713";
   position: absolute;
   left: 0;
   color: var(--notfound);
@@ -571,7 +641,7 @@ textarea {
   align-items: center;
   gap: 0.5rem;
 }
-.receipt-label { font-size: 0.85rem; color: var(--muted); }
+.receipt-label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
 .receipt-downloads .btn.secondary { margin-top: 0; }
 
 .preview-grid {
@@ -589,28 +659,29 @@ textarea {
   gap: 0.5rem;
   padding: 1.5rem;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-top: 3px solid var(--brass);
-  border-radius: 10px;
+  border: 2px solid var(--text);
+  border-radius: var(--radius-md);
   text-decoration: none;
   color: var(--text);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
-  transition: transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
-.preview-card:hover { transform: translateY(-3px); border-color: var(--brass); }
+.preview-card:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-card-hover); }
 .preview-card:focus-visible { outline: 2px solid var(--spectral); outline-offset: 2px; }
-.preview-card h3 { margin: 0; font-family: var(--font-display); font-size: 1.15rem; }
+.preview-card h3 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; }
 .preview-card p { margin: 0; color: var(--muted); font-size: 0.92rem; flex-grow: 1; }
-.preview-link { color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+.preview-link { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
 
 .promo-bottom {
   text-align: center;
   padding: 2rem 1.5rem;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  border: 2px solid var(--text);
+  border-radius: var(--radius-lg);
   margin-bottom: 1.5rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
-.promo-bottom h2 { margin: 0 0 0.25rem; font-size: 1.3rem; font-family: var(--font-display); }
+.promo-bottom h2 { margin: 0 0 0.25rem; font-size: 1.3rem; font-family: var(--font-display); font-weight: 800; }
 .promo-bottom p { margin: 0 0 1rem; color: var(--muted); }
 
 footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 2rem; }
@@ -631,6 +702,6 @@ footer a { color: var(--accent); }
   color: var(--muted);
   margin: 0 0 0.5rem;
 }
-.run-local-teaser a { color: var(--accent); }
+.run-local-teaser a { color: var(--accent); font-weight: 600; }
 
-label { display: block; margin: 1rem 0 0.4rem; color: var(--muted); font-size: 0.9rem; }
+label { display: block; margin: 1rem 0 0.4rem; color: var(--muted); font-size: 0.9rem; font-weight: 600; }

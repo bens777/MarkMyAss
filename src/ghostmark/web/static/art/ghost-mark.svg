@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="A small spectral ghost mark, GhostMark's icon for a detected hidden signal">
   <!-- Original artwork for GhostMark. -->
   <style>
-    .gm-ghost { fill: #166b5a; }
-    .gm-ink { fill: #f4ecd8; }
+    .gm-ghost { fill: #12b8a6; }
+    .gm-ink { fill: #fff6e7; }
 
     @media (prefers-color-scheme: dark) {
-      .gm-ghost { fill: #8fe8cc; }
-      .gm-ink { fill: #0b1d33; }
+      .gm-ghost { fill: #4fe0cc; }
+      .gm-ink { fill: #0e1b33; }
     }
   </style>
   <path class="gm-ghost" opacity="0.7" d="M14 56

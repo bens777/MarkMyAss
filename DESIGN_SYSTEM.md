@@ -1,266 +1,266 @@
-# GhostMark Design System
+# MarkMyAss Design System
 
-**Brand concept:** Pirates hunting ghost marks hidden inside digital cargo.
-Retro pirate voyage × spectral ghost signals × serious developer tool —
-not a children's pirate game, not a flat black SaaS dashboard, not neon
-cybersecurity kitsch. Developer credibility always wins over decoration.
+**Brand concept:** a high-converting indie-software landing page first, a
+pirates-vs-ghosts brand personality layered on top of it second. Pirates =
+control, independence, finding and cleaning hidden signals. Ghosts =
+invisible metadata, hidden Unicode, provenance traces the user can't
+normally see. The product must remain the main character; the universe is
+strategic seasoning, not the whole meal.
 
-This is the second major iteration of this system (v1 shipped a
-near-black + periwinkle theme with a system-serif display font; v1 was
-judged too generic/dull and fully replaced below, not patched). Researched
-with the `ui-ux-pro-max` skill (`--design-system` + `--domain color`/`ux`
-queries) for structural guidance (contrast minimums, motion anti-patterns,
-loading-state feedback), then adapted into an original palette rather than
-using any stock recommendation verbatim.
+**This is a from-zero rebuild, not a patch.** The previous iteration (a
+warm-parchment palette rendered with an antique serif display font,
+soft-shadow cards, and a small boxed illustration) is not reused, extended,
+or referenced below — every token, the typography choice, the component
+shape language, and the hero illustration concept were redecided from
+scratch against this brief:
+
+- bold, fun, memorable, highly usable, internet-native, shareable, modern,
+  conversion-focused, slightly rebellious, technically credible
+- explicitly NOT: dark fantasy, cinematic pirate movie, children's
+  cartoon, generic SaaS, corporate enterprise, flat boring template,
+  stock-art landing page, old-fashioned pirate-parchment website
 
 This file is the single source of truth for palette, type, spacing,
-motion, and illustration rules. Page-specific deviations (if any) should
-be called out explicitly in the relevant page's CSS comments, not
-invented ad hoc.
+motion, and illustration rules going forward.
 
-## Palette: "Parchment Map" (default) / "Midnight Ocean" (opt-in dark)
+## Palette
 
-All pairs below are verified against WCAG 2.1 contrast math (relative-
-luminance formula, not eyeballed) using a throwaway Python script run
-against the exact final hex values — never approximated by eye.
+Bright warm-cream base, deep navy ink, one punchy coral-red used
+everywhere brand-colored TEXT is needed, and gold/turquoise reserved for
+**decoration only** (icon fills, borders, tinted badge backgrounds) —
+never as small foreground text. That split exists because gold and
+turquoise at a vivid, non-muddy saturation both fail 4.5:1 against a
+bright cream page; keeping them decorative lets them stay vivid instead of
+getting dialed back into "readable brown" and "readable teal," which is
+exactly the muddy/historical-parchment look this rebuild is moving away
+from. Every pairing below was checked with the WCAG relative-luminance
+formula against the exact background it actually renders on (page `--bg`,
+card `--surface`, or the tinted `--surface-2` chip background), not
+eyeballed.
 
-**"Parchment Map" (warm/light) is the site's default and primary
-identity, unconditionally, regardless of OS `prefers-color-scheme`.** An
-earlier iteration defaulted to the dark "Midnight Ocean" palette; it read
-as a "dark fantasy poster" rather than a fresh, product-led brand, and
-made the whole page feel heavier/gloomier than intended. "Midnight
-Ocean" still exists, but only behind `@media (prefers-color-scheme:
-dark)` now — an opt-in for users whose OS explicitly prefers dark, never
-the fallback. **If you change either palette, keep both `:root` (the
-unconditional default) and the `dark` media query in sync** — every
-token must be defined in both places, and every self-theming SVG under
-`static/art/` follows the identical pattern (see Icons & illustration
-below) and must be updated to match.
+### Light (default, unconditional — regardless of OS `prefers-color-scheme`)
 
-### "Parchment Map" (default, unconditional)
-
-| Token | Hex | Role | Contrast on `--bg` |
+| Token | Hex | Role | Contrast |
 | --- | --- | --- | --- |
-| `--bg` | `#f4ecd8` | Page background — warm cream/parchment, not white | — |
-| `--bg-void` | `#eee2c4` | Deepest atmospheric background (rare) | — |
-| `--surface` | `#fbf6ea` | Card/panel background | — |
-| `--surface-2` | `#f4ecd8` | Nested panel (signal rows, verdict/exiftool panels) | — |
-| `--border` | `#d8c9a3` | Borders, dividers | — |
-| `--text` | `#22314a` | Primary text — deep navy, not black | 13.9:1 (AAA) |
-| `--muted` | `#5c6b82` | Secondary text | 4.7:1 (AA) |
-| `--accent` | `#b93b25` | Interactive: links, primary CTA background, active tab, hero flow — coral/pirate red | 4.5:1 (AA) |
-| `--accent-ink` | `#ffffff` | Text color used ON an `--accent` background (buttons, active tab, skip-link) | 5.65:1 on `--accent` |
-| `--brass` | `#8a641c` | Secondary accent: card top-border, dividers, tagline, small icons — nautical-instrument gold | 4.55:1 (AA) |
-| `--spectral` | `#166b5a` | Secondary/decorative accent: ghost glyph, focus ring, provenance motifs — turquoise/spectral cyan, never large body text | 6.9:1 (AA+) |
-| `--found` | `#8f4f0e` | Signal found / partial verdict | 5.4:1 (AA) |
-| `--notfound` / `--pass` | `#1f7a45` | Signal absent / verified-clean verdict | 5.9:1 (AA) |
-| `--partial` | `#8f4f0e` | Partial verdict (= `--found`) | 5.4:1 (AA) |
-| `--danger` | `#b23223` | Failure / destructive | 5.5:1 (AA) |
-| `--unknown` | `#5c6b82` | Unknown/uncharted (= `--muted`) | 4.7:1 (AA) |
+| `--bg` | `#fff6e7` | Page background — bright warm cream | — |
+| `--bg-void` | `#fbeac9` | Deepest atmospheric background (rare) | — |
+| `--surface` | `#ffffff` | Card/panel background | — |
+| `--surface-2` | `#fff1dc` | Nested panel (signal rows, verdict/exiftool panels) | — |
+| `--border` | `#f0ddba` | Borders, dividers | — |
+| `--text` | `#12213d` | Primary text — deep navy, not black | 14.9:1 (AAA) on `--bg` |
+| `--muted` | `#56638a` | Secondary text | 5.5:1 (AA) on `--bg` |
+| `--accent` | `#cc2a14` | THE brand text color: links, kicker, tagline, hover states, primary CTA background | 5.0:1 on `--bg`, 4.8:1 on `--surface-2` |
+| `--accent-ink` | `#ffffff` | Text on an `--accent` background | 5.4:1 on `--accent` |
+| `--brass` | `#e8a233` | Decorative only — icon fills, borders, badge chips. Never text. | — |
+| `--spectral` | `#12b8a6` | Decorative only — ghost/provenance icon fills, borders, tinted callouts. Never text. | — |
+| `--found` / `--partial` | `#aa4b16` | Signal found / partial verdict badge text | 5.1:1 on `--surface-2` |
+| `--notfound` / `--pass` | `#177843` | Signal absent / verified-clean verdict badge text | 5.0:1 on `--surface-2` |
+| `--danger` | `#d4242f` | Failure / destructive | 4.6:1 on `--surface-2` |
+| `--unknown` | `#56638a` | Unknown/uncharted (= `--muted`) | 5.3:1 on `--surface-2` |
 
-**Rule: green is reserved for verified/success states only.** It is never
-used decoratively elsewhere in the palette.
+**Rule: `--brass` and `--spectral` are decorative-only, never a text
+color.** If a new component needs brand-colored text, use `--accent`. This
+is a hard rule, not a style preference — both fail 4.5:1 against every
+light-mode background at a saturation worth calling "gold" or
+"turquoise."
 
-### Parchment (sparing use — decorative "manifest/log" framing only)
+**Rule: green is reserved for verified/success states only.**
+
+### Parchment (sparing use — an occasional "ship's log" callout only)
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| `--parchment` | `#ddc99a` (default) / `#f4ecd8` (dark mode) | Warm paper surface for an occasional "ship's log" callout (`.log-entry`) |
-| `--parchment-ink` | `#22314a` | Text color used ONLY on `--parchment` (9.9:1+ AAA in both modes) |
+| `--parchment` | `#f6dfaf` (light) / `#f5dfb0` (dark) | Warm paper surface for `.log-entry` |
+| `--parchment-ink` | `#12213d` | Text on `--parchment` (12.3:1 AAA) |
 
-**Why `--parchment` itself changes per mode:** in the default (light)
-palette the page background is already parchment-toned (`--bg:
-#f4ecd8`), so a `.log-entry` callout needs a visibly deeper "aged paper"
-shade plus its own border to still read as a distinct panel — reusing
-the same value would make the callout blend into the page. `--brass` is
-never used as text on `--parchment` in either mode (fails contrast) —
-brass-on-parchment is decorative-only (a rule, a label, an icon stroke);
-text on parchment always uses `--parchment-ink` or the fixed link color
-`#5a4210` (5.8:1 on the default `--parchment`, 8.0:1 on the dark-mode
-value).
+### Dark (opt-in, `prefers-color-scheme: dark` only — never the fallback)
 
-### "Midnight Ocean" (opt-in, `prefers-color-scheme: dark` only)
+| Token | Hex |
+| --- | --- |
+| `--bg` | `#0e1b33` |
+| `--bg-void` | `#081222` |
+| `--surface` | `#16294a` |
+| `--surface-2` | `#1e3a63` |
+| `--border` | `#2c4a72` |
+| `--text` | `#fbf3e2` |
+| `--muted` | `#a9bad9` |
+| `--accent` | `#ff6b4a` |
+| `--accent-ink` | `#0e1b33` |
+| `--brass` | `#f2b84d` (decorative only) |
+| `--spectral` | `#4fe0cc` (decorative only) |
+| `--found` / `--partial` | `#ffb066` |
+| `--notfound` / `--pass` | `#6fe0a0` |
+| `--danger` | `#ff8a80` |
+| `--unknown` | `#a9bad9` |
 
-| Token | Hex | Contrast on `--bg` |
-| --- | --- | --- |
-| `--bg` | `#0b1d33` | — |
-| `--bg-void` | `#071526` | — |
-| `--surface` | `#122a48` | — |
-| `--surface-2` | `#1a3a5e` | — |
-| `--border` | `#2f5074` | — |
-| `--text` | `#f5ecd8` | 14.4:1 (AAA) |
-| `--muted` | `#aebcd1` | 7.9:1 (AAA) |
-| `--accent` | `#e2664f` | 5.1:1 (AA) |
-| `--accent-ink` | `= var(--bg)` | 5.05:1 on `--accent` |
-| `--brass` | `#dcac52` | 8.1:1 (AAA) |
-| `--spectral` | `#8fe8cc` | 12.6:1 (AAA, decorative use only) |
-| `--found` / `--partial` | `#f0ab5d` | 9.7:1 (AAA) |
-| `--notfound` / `--pass` | `#6fcf8e` | 8.9:1 (AAA) |
-| `--danger` | `#e6543f` | 4.9:1 (AA) |
-| `--unknown` | `#aebcd1` | 7.9:1 (AAA) |
+If you change either palette, keep `:root` (the unconditional default) and
+the `dark` media query in sync — every token must be defined in both
+places, and every self-theming SVG under `static/art/` follows the
+identical pattern (see Icons & illustration below) and must be updated to
+match.
 
 ## Typography
 
-**No external font CDN at runtime** — GhostMark's privacy stance
-(`PRIVACY.md`: "No CDN JavaScript or remote fonts") is a hard constraint.
-The one addition below is a **self-hosted** file bundled with the app, not
-a network request to Google Fonts or any other third party.
+**No external font CDN at runtime** — a hard constraint (`PRIVACY.md`: "No
+CDN JavaScript or remote fonts").
 
-- **Display (H1, hero heading, article H1/H2, "Captain's Log"-style
-  section headings, tagline):** `"Playfair Display", Georgia, "Iowan Old
-  Style", "Palatino Linotype", "Book Antiqua", serif` — `--font-display`.
-  `Playfair Display` bold (weight 700, Latin subset only, ~38KB woff2) is
-  self-hosted at `static/fonts/playfair-display-v40-latin-700.woff2`
-  under the SIL Open Font License 1.1 (license text bundled alongside it
-  at `static/fonts/OFL.txt`; see `THIRD_PARTY_LICENSES.md`). `font-display:
-  swap` avoids invisible text during load; the Georgia-based fallback
-  stack renders immediately and is visually close enough that the swap is
-  unobtrusive. This is a dramatic, editorial, slightly vintage serif —
-  used for headings only, never body copy or technical output.
-- **Body, controls, technical results, tables:** unchanged system font
-  stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto,
-  sans-serif`) — `--font-body`. Developer readability comes first; this
-  remains a fast, zero-dependency choice.
+**One font family, everywhere, headings included:** `-apple-system,
+BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif` —
+`--font-body` and `--font-display` are now the same stack. A previous
+iteration used a self-hosted antique serif (Playfair Display) for every
+heading; it read as an old-fashioned pirate-poster/parchment-website
+cliché, exactly what this rebuild is required to avoid. Personality now
+comes from **weight and spacing**, not typeface: headings are
+`font-weight: 900` with tight negative letter-spacing (`-0.02em`), the
+brand kicker is a small bold uppercase label with wide positive
+letter-spacing (`0.14em`) — both read as modern/internet-native/bold, not
+antique. No display serif ships with the app anymore; the previous
+`playfair-display-v40-latin-700.woff2` + `OFL.txt` files were removed.
+
+- **Body, controls, technical results, tables, headings:** the one system
+  sans stack above. Fast, zero-dependency, and legible at every weight the
+  brand needs.
 - **Code, hashes, metadata values:** `ui-monospace, SFMono-Regular, "SF
   Mono", Consolas, "Liberation Mono", monospace` — `--font-mono`.
-- **Never** use a novelty/pirate display face for body or UI text —
-  Playfair Display is dramatic but fully legible prose type, not a
-  gimmick font, and is reserved for headings.
+- **Never** add a decorative/novelty display face back in for headings —
+  if a heading needs to feel more "brand," reach for weight/tracking/color
+  (`--accent`), not a second font family.
 
-## Spacing, radius, shadow
+## Spacing, radius, shadow — "sticker" component language
 
 - Spacing: existing rem-based scale (`0.3rem`/`0.5rem`/`0.75rem`/`1rem`/
-  `1.5rem`/`2rem`) — an approximate 4/8pt rhythm, kept as-is.
-- Radius: `6px`–`8px` (buttons, tabs, inputs, signal rows), `10px`
-  (panels), `10px` (cards, tightened slightly from the previous `12px`
-  to read less "bubbly" against the new sharper brass top-border).
-- Shadow: cards/panels ("manifest console" components) now use a
-  deliberate `box-shadow: 0 6px 20px rgba(0,0,0,0.16)` plus a **3px solid
-  `--brass` top border** — the combination is what makes a card read as a
-  distinct panel/manifest rather than a flat rectangle, replacing the
-  previous border-only approach now that the darker navy background gives
-  a shadow room to actually show.
-
-## Atmosphere: background texture
-
-`body` carries two lightweight, pure-CSS `background-image` gradients (no
-image request, no layout cost): a very low-opacity radial "horizon glow"
-tinted with `--spectral` near the top of the page, and a faint repeating
-horizontal-line texture (`color-mix(in srgb, var(--text) 3%, transparent)`)
-suggesting chart-plotting lines. Both are intentionally subtle — the goal
-is atmosphere, not a pattern that competes with foreground text contrast
-(the contrast ratios in the Palette section are computed against the flat
-`--bg` color; the texture's opacity is low enough to not measurably affect
-them).
+  `1.5rem`/`2rem`) — unchanged, an approximate 4/8pt rhythm.
+- Radius: `--radius-sm: 10px` (buttons, tabs, inputs, signal rows),
+  `--radius-md: 16px` (cards, panels), `--radius-lg: 22px` (the hero
+  illustration frame, the bottom promo card) — visibly rounder than the
+  previous iteration's `10px` cards, for a softer/friendlier/more
+  internet-native shape language.
+- Shadow: cards, buttons, and preview tiles use a **flat, hard-edged
+  "sticker" offset shadow** (`box-shadow: 4px 4px 0 var(--text)`, no
+  blur) plus a bold `2px solid var(--text)` outline, instead of the
+  previous soft `rgba` drop-shadow + colored top-border. Interactive
+  elements shift toward their shadow on hover (`translate(-2px,-2px)` +
+  a bigger offset) and "press into" it on click
+  (`translate(2px,2px)` + a smaller offset) — a tactile, slightly
+  playful, unmistakably non-corporate interaction that reads as
+  confident/bold/shareable rather than soft/muted/parchment-y.
 
 ## Icons & illustration
 
-Two deliberately different tiers, not one style stretched too thin:
+**Hero illustration — the mandatory brand scene.** A pirate crew actively
+hunting spectral ghosts aboard their ship, dense enough to read as a real
+story at first glance: the captain on the quarterdeck locks a glowing
+teal spyglass scan-cone (a diegetic "detection beam" that visually rhymes
+with the product's own signal-detection UI) onto a shocked ghost; a
+grinning crewmate mid-lunge swings a rope net at a large fleeing ghost
+trailing luminous wisps; a third pirate throws open a treasure chest and
+laughs as a startled ghost bursts out; two lookouts up in the rigging
+point and shout at a fourth ghost slipping over the railing. Warm golden
+lanterns hang from the rigging, their glow pooling against the cool teal
+ghost-light for depth.
 
-1. **The homepage hero art** (`static/art/hero-mark.webp`) is
-   deliberately small and secondary — a supporting brand detail, not the
-   main event. This is the site's third hero-art iteration, and the
-   change each time tracks a real lesson (see git history for "reassess
-   the entire hero composition" / "hard reset of the art direction" for
-   the full reasoning):
-   - v1/v2 were flat cel-shaded cartoon character scenes → read as a
-     children's game / clip art.
-   - v3 was a large, full-bleed, painterly/cinematic dark scene spanning
-     the entire viewport width → technically well-executed, but made the
-     illustration the star of the page instead of the product, and its
-     dark-navy register fought the site's own warm default palette.
-   - **Current approach:** a single small (`max-width: 320px`), framed,
-     **flat editorial-illustration** graphic mark — confident linework,
-     the site's own palette tokens, no cartoon faces, no photorealism, no
-     dark/moody rendering. It sits in a normal two-column `.hero-split`
-     next to the copy (`grid-template-columns: minmax(0,1.4fr)
-     minmax(0,1fr)` — copy gets more room than the art), framed in a
-     bordered card matching the site's own card style (brass top-border,
-     `var(--surface)` background) rather than bleeding across the page.
-     The hero section is intentionally short so the actual tool panel
-     sits close to the fold — **the product is the primary thing a
-     visitor sees and reaches, not the illustration.**
-   **No visual jokes:** the "MarkMyAss" pun lives only in the brand-name
-   text (nav, hero kicker) — no hero illustration has ever depicted it
-   literally, and that's deliberate: keeping the joke verbal-only lets
-   the artwork stay calm and professional while the name still carries
-   the humor.
-   Produced with an AI image-generation tool from an original text
-   prompt (no reference image, no third-party/franchise input) — see
-   `THIRD_PARTY_LICENSES.md`. Shipped as a single bundled `.webp` (no
-   runtime generation, no external request at page-load time), 720px
-   square / ~28KB — deliberately small, both in file size and in its
-   role on the page.
-   **If this asset is ever regenerated:** keep it small and secondary
-   (never full-bleed, never the dominant element), flat editorial
-   illustration rather than painterly/cinematic or cartoon, no literal
-   depiction of the brand-name pun, and matched to the site's own
-   palette tokens rather than an arbitrary illustration palette.
-2. **Everything else** stays simple, original, single-weight SVG line
-   art (rects, circles, paths built from arcs/lines, ~2px stroke) —
-   small supporting icons across the Cleaner tool stages and secondary
-   pages. No filled/outline mixing within one icon, no gradients, no
-   photorealism, no copyrighted characters or franchise imagery.
+**Rendering style — this is the load-bearing rule.** Richly rendered,
+painterly **cel-shaded** illustration with real depth, lighting, cast
+shadows, and material texture (wood grain, rope fiber, patched
+sailcloth) — the register of premium indie-game key art. It is
+explicitly **not** flat corporate vector (an earlier iteration failed
+exactly that way — thick-outline two-tone flat shapes read as generic
+startup clip art and were rejected), not pixel art, not dark cinematic
+concept art, not a children's-book cartoon, and not photoreal. Bright,
+warm, optimistic overall lighting on a cream sky/sea backdrop; drama
+comes from character acting and the warm-vs-teal light contrast, never
+from darkness. If this asset is ever regenerated: keep the prompt free
+of the words "flat", "vector", "minimal", or "geometric"; demand
+texture, lighting and depth in so many words; and supply the
+`design-references/` images to the generator as actual image inputs
+(quality/energy references with an explicit do-not-copy-style
+instruction) — describing them in prose only has empirically produced
+flat-vector regressions.
+
+Colors match the site's palette tokens (cream, navy, coral, brass gold,
+turquoise). Generated with an AI image-generation tool from an original
+text prompt, with the two `design-references/` screenshots supplied as
+quality/energy references only (see `THIRD_PARTY_LICENSES.md` for the
+originality review). Shipped as a single bundled
+`static/art/hero-scene.webp` (1376×768, ~185KB, no runtime generation,
+no external request at page-load time).
+
+**Placement is deliberately restrained: the illustration supports the
+product, it doesn't replace it.** The hero is a classic two-column
+conversion layout: copy/CTAs/trust-bar in the left column, the
+illustration *contained* in the right column at its natural aspect
+ratio (rounded frame, its own sticker border+shadow) — never a
+full-bleed backdrop spanning the viewport. The cleaner tool panel sits
+in its own strong block immediately below the hero. On mobile
+(≤900px) the hero stacks: copy first, illustration second, cleaner
+after. Page structure was decided first, without the illustration: the
+headline, the Inspect→Clean→Verify strip, the CTA, and the trust bar
+all have to work and make the product findable within three seconds
+even with the illustration hidden.
+
+**The "MarkMyAss" pun stays a text-only kicker/wordmark joke** — no hero
+illustration has ever depicted it literally, and the hunting-ghosts scene
+doesn't either. That's deliberate: the visual joke (if ever added as a
+small secondary detail — e.g. a barely-visible skull-mark stamp
+somewhere incidental) must stay a background detail someone notices on a
+second look, never the composition's subject.
+
+**Everything else** stays simple, original, single-weight SVG line/flat
+art (rects, circles, paths built from arcs/lines) — small supporting icons
+across the Cleaner tool stages and secondary pages, recolored to the new
+palette (gold/turquoise fills now use the decorative-only `--brass` /
+`--spectral` values above). No filled/outline mixing within one icon, no
+gradients, no photorealism, no copyrighted characters or franchise
+imagery.
 
 - **Self-theming pattern (required for SVG):** every SVG under
   `static/art/` and `static/run-local-hero.svg` is referenced via `<img
   src="...">`, which does **not** inherit the host page's CSS custom
-  properties or `currentColor`. Each file is therefore self-theming: an
-  internal `<style>` block with hardcoded hex values matching the
-  **default (light) palette**, plus its own `@media (prefers-color-
-  scheme: dark)` override matching "Midnight Ocean" — the same
-  default-is-light/dark-is-opt-in split as the page's own CSS custom
-  properties, and it must stay in sync with them. Never rely on
-  inherited page CSS for an `<img>`-referenced SVG.
+  properties. Each file is therefore self-theming: an internal `<style>`
+  block with hardcoded hex values matching the **default (light)
+  palette**, plus its own `@media (prefers-color-scheme: dark)` override
+  — kept in sync with the page's own CSS custom properties above. Never
+  rely on inherited page CSS for an `<img>`-referenced SVG.
 - **XML comment gotcha:** SVG/XML comments cannot contain a literal `--`
   anywhere in the body (only immediately before the closing `-->`) — a
   comment like `<!-- imagery -- simple shapes -->` is invalid XML and
   silently breaks the entire file's rendering in the browser (no error
-  shown, the `<img>` just renders as empty/broken). Validate new/edited
-  SVGs with `python -c "import xml.etree.ElementTree as ET; ET.parse(path)"`
+  shown, the `<img>` just renders empty/broken). Validate new/edited SVGs
+  with `python -c "import xml.etree.ElementTree as ET; ET.parse(path)"`
   before committing.
 - **SVG asset set** (`static/art/`, reused rather than one illustration
-  per page):
-  - `mascot-captain.svg` — a smaller captain + spyglass + ghost/document
-    vignette, available for reuse in empty states or smaller contexts.
-  - `spyglass.svg` — inspection motif; used on the Cleaner's Inspect
-    stage heading.
-  - `ghost-mark.svg` — a single spectral ghost, for "signal detected"
-    moments, the Clean stage heading, and empty states.
-  - `compass-rose.svg` — Lab / navigation-of-the-unknown motif.
-  - `verify-seal.svg` — a wax-seal/stamp shape for the Verify stage
-    heading.
-  - `run-local-hero.svg` (`static/`, not `static/art/`) — a ship leaving
-    a harbor, for the Run Models Locally page.
-  - `wave-divider.svg` — a low-key horizontal wave motif for section
-    breaks.
-- **Decorative vs. meaningful:** every decorative SVG is inlined with
-  `aria-hidden="true"` (or `<img alt="">` for `<img>`-referenced
-  versions) so screen readers skip it entirely. None of them carry
-  information that isn't also present as real text.
+  per page): `mascot-captain.svg` (captain + spyglass + ghost/document
+  vignette), `spyglass.svg` (Inspect stage), `ghost-mark.svg` (signal
+  detected / Clean stage), `compass-rose.svg` (Lab), `verify-seal.svg`
+  (Verify stage), `run-local-hero.svg` (`static/`, ship leaving harbor —
+  Run Models Locally page), `wave-divider.svg` (section-break motif).
+- **Decorative vs. meaningful:** every purely decorative SVG/illustration
+  is `aria-hidden="true"` (or `<img alt="">`). The hero scene is an
+  exception — it's given real, specific `alt` text describing the pirates-
+  hunting-ghosts action, since it's the brand's primary illustration and
+  actually communicates something (not just texture).
 - **Never encode status by shape/color alone** — every themed status
   indicator sits next to the literal word (FOUND / VERIFIED CLEAN /
   PARTIAL / UNKNOWN / PASS / FAIL), never instead of it. Verdict panels
   additionally get a status-colored left border (solid for pass/partial/
-  failed, **dashed** for unverified/unknown — "uncharted waters" gets its
-  own line style, not just a color) as a second, non-color-only signal.
+  failed, **dashed** for unverified/unknown) as a second, non-color-only
+  signal.
 
 ## Motion
 
 - Duration: 150–300ms for micro-interactions (button press, ghost
-  fade-in/out, verdict badge stamp), matching `ui-ux-pro-max`'s animation
-  guidance. Nothing loops indefinitely near technical results.
+  fade-in/out, verdict badge stamp, hero settle-in). Nothing loops
+  indefinitely near technical results.
 - Easing: `ease-out` for things entering/appearing, `ease-in` for things
   leaving/dissolving.
-- **`prefers-reduced-motion: reduce` disables all decorative motion**
-  (ghost fade, seal stamp, hero settle-in) via a single global media
-  query in `style.css`, so new animations are automatically motion-safe
-  without needing their own opt-out.
+- **`prefers-reduced-motion: reduce` disables all decorative motion** via
+  a single global media query in `style.css`, so new animations are
+  automatically motion-safe without needing their own opt-out.
 - Only `transform`/`opacity` are animated (never `width`/`height`/`top`/
   `left`), so nothing here can cause layout shift.
-- At most one decorative animation plays per state transition, and never
-  on a loop — e.g. the verdict badge "stamps" in once when verification
-  completes; the hero illustration settles in once on load.
+- At most one decorative animation plays per state transition, never on a
+  loop — the verdict badge "stamps" in once, the hero illustration
+  settles in once on load.
 
 ## What this system explicitly avoids
 
@@ -277,7 +277,17 @@ Two deliberately different tiers, not one style stretched too thin:
   "islands" in the Lab — the capability matrix stays a plain, directly
   readable table generated from `lab_data.py`; the pirate-map framing
   lives in the surrounding prose and header art, not the data.
+- Building a pirate-themed website first and bolting software onto it.
+  The page structure (nav → headline/CTA → cleaner → info → previews →
+  footer) has to work and stay legible with every illustration hidden;
+  the pirate/ghost universe is layered on afterward, strategically, not
+  as the organizing principle.
+- Turning every component into pirate cosplay. The brand universe shows
+  up in the hero scene, the stage icons, and the in-theme flavor lines —
+  not smeared across every card, label, and button.
 - Emoji as icons (original SVG only).
-- Any new external network request (fonts, CDN scripts, tracking) — the
-  self-hosted display font is the one typography addition, and it never
-  contacts a third party at runtime.
+- Any new external network request (fonts, CDN scripts, tracking).
+- No installed design-recommendation skill was used to source this
+  iteration's direction — palette, shape language, and hero composition
+  were decided by direct visual reasoning against the brief above, not a
+  generated style/palette/font-pairing suggestion.

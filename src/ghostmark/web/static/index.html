@@ -45,11 +45,22 @@
       <a href="https://github.com/bens777/ghostmark" rel="noopener">GitHub</a>
     </nav>
 
-    <section class="hero-split">
+    <section class="hero">
       <div class="hero-copy">
-        <p class="brand-kicker">MarkMyAss</p>
+        <p class="brand-kicker">
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 21V10a7 7 0 0 1 14 0v11l-2.5-2-2.5 2-2.5-2-2.5 2-2.5-2Z" fill="currentColor"/></svg>
+          MarkMyAss
+        </p>
         <h1>Claude Watermark Remover &amp; AI Provenance Cleaner</h1>
-        <p class="hero-flow">Inspect <span aria-hidden="true">→</span> Clean <span aria-hidden="true">→</span> Verify</p>
+
+        <ul class="hero-flow">
+          <li><span class="flow-num">1</span> Inspect</li>
+          <li class="flow-sep" aria-hidden="true">→</li>
+          <li><span class="flow-num">2</span> Clean</li>
+          <li class="flow-sep" aria-hidden="true">→</li>
+          <li><span class="flow-num">3</span> Verify</li>
+        </ul>
+
         <p class="subheadline">MarkMyAss shows exactly what it removed — and what it cannot verify.</p>
         <p class="tagline">Proof, not promises.</p>
 
@@ -67,13 +78,16 @@
         </ul>
         <p id="privacy-note" class="privacy-note"></p>
         <p class="honesty-note">No fake "100% undetectable" scores.</p>
-        <p class="scope-note"><strong>Works beyond Claude.</strong> MarkMyAss analyzes supported watermark and provenance signals regardless of which AI created the content — including hidden Unicode, EXIF/XMP/IPTC metadata, PDF metadata, PNG metadata, and supported provenance structures.</p>
       </div>
 
-      <div class="hero-art" aria-hidden="true">
-        <img src="static/art/hero-mark.webp" alt="" width="360" height="360" />
-      </div>
+      <figure class="hero-scene">
+        <img src="static/art/hero-scene.webp" alt="Illustration of a pirate crew aboard their ship: the captain locks a glowing spyglass scan-beam onto a startled ghost, a crewmate nets a fleeing ghost, and another finds a ghost hiding in a treasure chest" width="1376" height="768" />
+      </figure>
     </section>
+
+    <p class="scope-note">
+      <strong>Works beyond Claude.</strong> MarkMyAss analyzes supported watermark and provenance signals regardless of which AI created the content — including hidden Unicode, EXIF/XMP/IPTC metadata, PDF metadata, PNG metadata, and supported provenance structures.
+    </p>
 
     <div class="tool-flow">
     <section id="input-section" class="input-section card">

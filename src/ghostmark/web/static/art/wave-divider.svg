@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 24" width="400" height="24" preserveAspectRatio="none" role="img" aria-label="">
   <!-- Purely decorative section-break motif. Original artwork for GhostMark. -->
   <style>
-    .gm-line { stroke: #d8c9a3; }
+    .gm-line { stroke: #f0ddba; }
 
     @media (prefers-color-scheme: dark) {
-      .gm-line { stroke: #2f5074; }
+      .gm-line { stroke: #2c4a72; }
     }
   </style>
   <path class="gm-line" fill="none" stroke-width="2" stroke-linecap="round"

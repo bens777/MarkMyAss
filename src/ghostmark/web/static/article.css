@@ -14,7 +14,7 @@
   text-decoration: none;
 }
 .article-header .brand-link:hover {
-  color: var(--brass);
+  color: var(--accent);
 }
 
 .breadcrumbs {
@@ -58,15 +58,15 @@
 .kicker {
   text-align: center;
   font-family: var(--font-display);
-  font-style: italic;
-  color: var(--brass);
+  font-weight: 800;
+  color: var(--accent);
   font-size: 1rem;
   margin: 0 0 0.25rem;
 }
 
 .article h1 {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 800;
   font-size: clamp(1.6rem, 1.3rem + 1.5vw, 2.25rem);
   line-height: 1.2;
   letter-spacing: 0.005em;
@@ -80,6 +80,7 @@
 }
 .article h2 {
   font-family: var(--font-display);
+  font-weight: 800;
   font-size: 1.4rem;
   margin: 2.2rem 0 0.8rem;
   padding-top: 0.6rem;
