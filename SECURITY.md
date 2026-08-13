@@ -40,7 +40,7 @@ difference.
   filenames are sanitized before touching the filesystem, and uploads are
   size-limited.
 
-### Hosted mode (public web deployment, e.g. moseisley.sh/ghostmark)
+### Hosted mode (public web deployment, e.g. ghostmark.moseisley.sh)
 
 This IS a supported configuration as of 0.2.0, deployed per
 `DEPLOY_MOSEISLEY.md`, with additional protections specifically because

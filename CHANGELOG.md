@@ -2,7 +2,73 @@
 
 All notable changes to GhostMark are documented in this file.
 
-## [0.4.0] - 2026-08-13
+## [0.5.0] - 2026-08-13
+
+Technical SEO and public discoverability, built from current Google
+Search documentation and real SERP research -- not guesswork, and not
+programmatic keyword-swap pages. See `SEO_LAUNCH_CHECKLIST.md` for the
+manual Search Console steps this enables.
+
+### Added
+
+- **New canonical hostname**: `https://ghostmark.moseisley.sh`.
+  `WebConfig`'s default `public_url` now points there (root base path);
+  the existing subpath deployment style
+  (`GHOSTMARK_BASE_PATH=/ghostmark/`) remains fully supported for anyone
+  who prefers it -- see `docker-compose.prod.yml` and
+  `deploy/Caddyfile.snippet` (now documents both options).
+- **Seven new SEO landing pages**, each targeting a genuinely distinct
+  search intent (no doorway-page keyword-swap duplicates -- see
+  `tests/test_seo.py`'s similarity guard): `/claude-watermark-remover`,
+  `/claude-watermark-detector`, `/ai-watermark-remover`,
+  `/ai-metadata-cleaner`, `/c2pa-remover`, `/content-credentials-remover`,
+  `/hidden-unicode-remover`. Cross-linked with the existing `/lab` pages
+  and each other; every page links back to the actual tool.
+- `/run-local` renamed to `/run-ai-locally` (clearer, matches the new
+  landing pages' naming); the old URL 301-redirects permanently rather
+  than serving duplicate content at two URLs.
+- **Structured data** (`ghostmark/web/seo.py`): `SoftwareApplication` and
+  `WebSite` JSON-LD on the homepage, `BreadcrumbList` on every landing
+  and Lab page. No fabricated `aggregateRating`/`review` -- GhostMark has
+  no real review corpus and won't invent one just to qualify for a rich
+  result. No `FAQPage` markup: Google removed FAQ rich results from
+  Search entirely in 2026, so implementing that schema would have zero
+  effect (confirmed via current Search Central documentation before
+  deciding not to build it).
+- **`/robots.txt`** (allows public pages, disallows `/api/`) and
+  **`/sitemap.xml`** (lists exactly the indexable pages, canonical URLs
+  only -- no session/download/API routes), both generated from the same
+  `INDEXABLE_PAGES` list the test suite checks against.
+- Homepage: new H1 ("Claude Watermark Remover & AI Provenance Cleaner"),
+  title, and meta description matching actual search intent; an
+  originally-drawn OG/Twitter card image (`scripts/generate_og_image.py`,
+  built with Pillow -- no external assets, no AI image generation); a
+  crawlable footer sitemap linking every page with plain `<a href>`
+  (never JavaScript-only navigation).
+- `tests/test_seo.py`: every indexable page checked for a 200 status,
+  title, description, single H1, correct canonical, no accidental
+  `noindex`, only relative internal links; `robots.txt`/`sitemap.xml`
+  correctness; structured data validity; and a lightweight anti-doorway
+  duplicate-content guard across the new landing pages.
+- `SEO_LAUNCH_CHECKLIST.md`: plain-language Google Search Console setup
+  steps for the new hostname. Explicit that none of this guarantees
+  rankings.
+
+### Changed
+
+- `/lab/claude-watermark` updated to reflect Anthropic's August 11-12,
+  2026 confirmation that Claude text watermarking is real (previously
+  undocumented publicly) -- source:
+  [Anthropic Help Center](https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content).
+  GhostMark's own capability is unchanged: no public detector exists yet,
+  so the status stays Unknown, now with the primary source cited instead
+  of "Anthropic has not published anything."
+- Fixed stale `tests/corpus/...` example paths in Lab page content left
+  over from the 0.4.0 corpus relocation into `src/ghostmark/corpus/`.
+- `PRIVACY.md`/`SECURITY.md` corrected a leftover "deleted immediately
+  after download" claim that predated 0.4.0's session-persistence change.
+
+
 
 The "moat build": GhostMark repositions from a metadata cleaner to a
 public reference lab for AI watermark and provenance verification --
