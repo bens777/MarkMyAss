@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 import webbrowser
@@ -15,6 +16,7 @@ from ghostmark.cleaner import clean_file, clean_text_content
 from ghostmark.fixtures.generate import generate_all
 from ghostmark.inspector import inspect_file, inspect_text
 from ghostmark.models import InspectionReport, Status, VerifyResult
+from ghostmark.receipt import build_receipt
 from ghostmark.security import (
     FileTooLargeError,
     UnsupportedFileTypeError,
@@ -70,6 +72,8 @@ _VERDICT_WORD = {
     "verified_clean": "VERIFIED CLEAN",
     "partial": "PARTIAL",
     "unverified": "UNVERIFIED",
+    "not_applicable": "NOT APPLICABLE",
+    "failed": "FAILED",
 }
 
 
@@ -103,13 +107,25 @@ def _print_verify_human(result: VerifyResult) -> None:
             else:
                 typer.echo("✓ ExifTool finds no remaining embedded metadata")
 
+    c2pa = result.c2pa_after
+    if c2pa is not None:
+        if not c2pa.applicable:
+            pass  # not worth a line for plain text / unsupported formats
+        elif not c2pa.available:
+            typer.echo("c2patool: unavailable (optional). See https://github.com/contentauth/c2pa-rs/tree/main/cli.")
+        else:
+            version = c2pa.version or "unknown version"
+            typer.echo(f"Verified with c2patool {version}")
+            typer.echo("⚠ c2patool still finds a C2PA manifest" if c2pa.found else "✓ c2patool finds no C2PA manifest")
+
     summary = result.summary_v2
     if summary is not None:
         typer.echo(f"\nGhostMark verification: {'PASS' if summary.ghostmark_pass else 'FAIL'}")
-        if summary.exiftool_pass is None:
-            typer.echo("ExifTool verification: NOT AVAILABLE / NOT APPLICABLE")
-        else:
-            typer.echo(f"ExifTool verification: {'PASS' if summary.exiftool_pass else 'FAIL'}")
+        for verifier in summary.external_verifiers:
+            if verifier.passed is None:
+                typer.echo(f"{verifier.label} verification: NOT AVAILABLE / NOT APPLICABLE")
+            else:
+                typer.echo(f"{verifier.label} verification: {'PASS' if verifier.passed else 'FAIL'}")
         typer.echo(f"\nOverall: {_VERDICT_WORD[summary.verdict.value]}")
         typer.echo(f"C2PA support: {summary.c2pa_status.upper()}")
         typer.echo("Statistical AI watermark: UNKNOWN / NOT CURRENTLY VERIFIABLE")
@@ -177,6 +193,12 @@ def verify(
         None, "--original", help="Original file to compare against (auto-detected for *.ghostmark.* files)."
     ),
     json_output: bool = typer.Option(False, "--json", help="Emit machine-readable JSON instead of text."),
+    receipt: Path | None = typer.Option(
+        None,
+        "--receipt",
+        help="Save a Verification Receipt to this path. Format is inferred from the extension "
+        "(.json, .html, or .txt); defaults to JSON.",
+    ),
 ) -> None:
     """Re-inspect a cleaned file and report which signals were actually removed."""
 
@@ -194,6 +216,22 @@ def verify(
                 typer.echo(json.dumps(result.to_dict(), indent=2))
             else:
                 _print_verify_human(result)
+
+            if receipt is not None:
+                receipt_obj = build_receipt(
+                    file_name=file.name,
+                    before_hash=hashlib.sha256(original.read_bytes()).hexdigest(),
+                    after_hash=hashlib.sha256(file.read_bytes()).hexdigest(),
+                    verify_result=result,
+                )
+                suffix = receipt.suffix.lower()
+                if suffix == ".html":
+                    receipt.write_text(receipt_obj.to_html(), encoding="utf-8")
+                elif suffix == ".txt":
+                    receipt.write_text(receipt_obj.to_text(), encoding="utf-8")
+                else:
+                    receipt.write_text(receipt_obj.to_json(), encoding="utf-8")
+                typer.echo(f"\nVerification Receipt written to: {receipt}")
         else:
             report = inspect_file(file)
             if json_output:
@@ -201,6 +239,12 @@ def verify(
             else:
                 typer.echo("No original file found for comparison -- showing current inspection only.\n")
                 _print_report_human(report)
+            if receipt is not None:
+                typer.echo(
+                    "\nNo Verification Receipt written: a receipt requires comparing against the "
+                    "original file (--original), which was not found.",
+                    err=True,
+                )
     except (UnsupportedFileTypeError, FileTooLargeError) as exc:
         typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(1) from exc

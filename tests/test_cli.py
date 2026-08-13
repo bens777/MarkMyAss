@@ -110,6 +110,40 @@ def test_verify_json_output(tmp_path: Path):
     assert "unicode" in payload["resolved"]
 
 
+def test_verify_receipt_json(tmp_path: Path):
+    src = tmp_path / "document.txt"
+    src.write_text(f"Hello{ZWSP}World", encoding="utf-8")
+    runner.invoke(app, ["clean", str(src)])
+    output = tmp_path / "document.ghostmark.txt"
+    receipt_path = tmp_path / "receipt.json"
+
+    result = runner.invoke(app, ["verify", str(output), "--receipt", str(receipt_path)])
+    assert result.exit_code == 0
+    assert receipt_path.exists()
+    payload = json.loads(receipt_path.read_text(encoding="utf-8"))
+    assert payload["ghostmark_verification_receipt"] is True
+    assert payload["file"] == "document.ghostmark.txt"
+    assert "sha256_original" in payload
+    assert "sha256_cleaned" in payload
+
+
+def test_verify_receipt_html_and_txt(tmp_path: Path):
+    src = tmp_path / "document.txt"
+    src.write_text(f"Hello{ZWSP}World", encoding="utf-8")
+    runner.invoke(app, ["clean", str(src)])
+    output = tmp_path / "document.ghostmark.txt"
+
+    html_path = tmp_path / "receipt.html"
+    result = runner.invoke(app, ["verify", str(output), "--receipt", str(html_path)])
+    assert result.exit_code == 0
+    assert "<!doctype html>" in html_path.read_text(encoding="utf-8")
+
+    txt_path = tmp_path / "receipt.txt"
+    result = runner.invoke(app, ["verify", str(output), "--receipt", str(txt_path)])
+    assert result.exit_code == 0
+    assert "GHOSTMARK VERIFICATION RECEIPT" in txt_path.read_text(encoding="utf-8")
+
+
 def test_demo_command_passes():
     result = runner.invoke(app, ["demo"])
     assert result.exit_code == 0
