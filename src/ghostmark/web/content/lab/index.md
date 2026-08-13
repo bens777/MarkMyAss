@@ -1,11 +1,18 @@
+<p class="article-hero">
+<img src="static/art/compass-rose.svg" alt="" width="120" height="120" class="hero-illustration" />
+</p>
+
 # GhostMark AI Watermark Lab
 
-### A living, honest technical reference for AI watermark and provenance signals
+### Chart the unknown waters of AI provenance
 
 GhostMark's core promise is that it shows exactly what it found, what it
 removed, what was independently verified, and what cannot currently be
 proven -- never the reverse. This Lab is where that promise is written
 down in detail, signal by signal, kept current, and open to correction.
+It's the reference map for what the rest of GhostMark's fleet of pages
+(the [remover and detector guides](ai-watermark-remover),
+[benchmarks](benchmarks), [receipts](.)) all point back to.
 
 [← Back to the GhostMark cleaner](.)
 
@@ -32,6 +39,13 @@ independent tool agree, repeatedly, in the test corpus), *Partial*
 ---
 
 ## How to read "Partial" and "Unknown"
+
+Think of the matrix above as a chart of AI provenance territory: some
+waters are fully **charted** (Verified), some are only **partially
+charted** (Partial), and some remain genuinely **uncharted** (Unknown --
+fog on the map, not a hidden island we're pretending isn't there). The
+map metaphor is decoration; the words *Verified* / *Partial* / *Unknown*
+in the table are the actual claim, and they're what you should trust.
 
 - **Partial** (currently: C2PA) means GhostMark detects/removes a
   *structural* signal (e.g. the JUMBF container a C2PA manifest lives in)

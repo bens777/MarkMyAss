@@ -1,8 +1,8 @@
-# GhostMark Benchmarks
+# Captain's Log — GhostMark Benchmarks
 
-### Real results from the public test corpus -- generated, not hand-typed
+### Every supported test. Every failure. Nothing hidden.
 
-This page is generated at server startup by actually running GhostMark's
+This page is the ship's log: generated at server startup by actually running GhostMark's
 [public, reproducible test corpus](https://github.com/bens777/ghostmark/tree/main/src/ghostmark/corpus)
 through the real inspect → clean → verify pipeline -- the same one you get
 from `ghostmark inspect` / `ghostmark clean` / `ghostmark verify`. Nothing

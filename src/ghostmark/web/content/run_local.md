@@ -1,6 +1,8 @@
 <p class="article-hero">
-<img src="static/run-local-hero.svg" alt="" width="220" height="120" class="hero-illustration" />
+<img src="static/run-local-hero.svg" alt="" width="240" height="130" class="hero-illustration" />
 </p>
+
+<p class="kicker">Sail your own stack.</p>
 
 # Run Models Locally
 
