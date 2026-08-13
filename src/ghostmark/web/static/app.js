@@ -14,7 +14,27 @@
     clean: (id) => `api/clean/${id}`,
     verify: (id) => `api/verify/${id}`,
     download: (id) => `api/download/${id}`,
+    receiptDownload: (id, format) => `api/receipt/${id}/download?format=${format}`,
   };
+
+  // Plain-language "Explain" copy for STEP 1 -- keyed by detector id. This
+  // is what separates "here's a table of jargon" from actually telling a
+  // non-technical user what was found.
+  const EXPLANATIONS = {
+    unicode: "Hidden or invisible characters were found in the text. These can be used to hide instructions or track where text came from.",
+    exif: "Camera/device or export-tool metadata (EXIF) was found embedded in this image.",
+    xmp: "XMP metadata was found -- structured info such as the tool or author that created this file.",
+    iptc: "IPTC metadata was found -- often used for captions, keywords, or copyright info.",
+    png_text: "Text embedded in this PNG's own metadata chunks was found (comments, software tags, etc).",
+    comment: "A comment segment was found embedded in this file.",
+    pdf_info: "This PDF's document-info fields (Title, Author, Producer, etc.) contain data.",
+    pdf_xmp: "This PDF has an embedded XMP metadata stream.",
+    c2pa: "A C2PA/JUMBF provenance container was found. GhostMark's detection here is heuristic, not a full manifest validation -- see the AI Watermark Lab for details.",
+  };
+
+  function explanationFor(detector) {
+    return EXPLANATIONS[detector] || null;
+  }
 
   const state = { mode: "text", sessionId: null, config: null };
 
@@ -37,6 +57,8 @@
   const verifySection = el("verify-section");
   const resultsTable = el("results-table");
   const resultsCount = el("results-count");
+  const explainPanel = el("explain-panel");
+  const explainList = el("explain-list");
   const cleanTable = el("clean-table");
   const verifyBeforeTable = el("verify-before-table");
   const verifyAfterTable = el("verify-after-table");
@@ -50,6 +72,10 @@
   const privacyNote = el("privacy-note");
   const footerPrivacy = el("footer-privacy");
   const uploadLimitHint = el("upload-limit-hint");
+  const receiptDownloads = el("receipt-downloads");
+  const receiptJson = el("receipt-json");
+  const receiptHtml = el("receipt-html");
+  const receiptTxt = el("receipt-txt");
 
   async function loadConfig() {
     try {
@@ -171,32 +197,52 @@
     }
   }
 
-  function renderExiftoolPanel(external) {
+  function renderExiftoolPanel(external, c2pa) {
     exiftoolPanel.innerHTML = "";
     const heading = document.createElement("h3");
     heading.textContent = "Independent verification";
     exiftoolPanel.appendChild(heading);
 
     const body = document.createElement("div");
+    const lines = [];
+
     if (!external || !external.applicable) {
-      body.textContent = external && external.note ? external.note : "Independent verification is not applicable to this input.";
+      lines.push(external && external.note ? external.note : "ExifTool: not applicable to this input.");
     } else if (!external.available) {
-      body.innerHTML =
-        "Independent verification unavailable.<br>GhostMark internal verification passed, but independent ExifTool verification could not be performed.";
+      lines.push("ExifTool: unavailable. GhostMark's own verification above still applies, but this independent cross-check could not run.");
     } else {
       const version = external.version || "unknown version";
-      const lines = [`Verified with ExifTool ${version}`];
-      const remaining = Object.keys(external.tags_by_origin.embedded_metadata || {});
+      lines.push(`Verified with ExifTool ${version}`);
+      const remaining = Object.keys((external.tags_by_origin || {}).embedded_metadata || {});
       if (remaining.length === 0) {
         lines.push("✓ No embedded metadata found");
       } else {
         lines.push(`⚠ ${remaining.length} embedded metadata tag(s) still present:`);
         remaining.slice(0, 8).forEach((k) => lines.push(`&nbsp;&nbsp;${k}`));
       }
-      body.innerHTML = lines.join("<br>");
     }
+
+    if (c2pa && c2pa.applicable) {
+      if (!c2pa.available) {
+        lines.push("c2patool: unavailable (optional). See the AI Watermark Lab for install info.");
+      } else {
+        const version = c2pa.version || "unknown version";
+        lines.push(`Verified with c2patool ${version}`);
+        lines.push(c2pa.found ? "⚠ c2patool still finds a C2PA manifest" : "✓ c2patool finds no C2PA manifest");
+      }
+    }
+
+    body.innerHTML = lines.join("<br>");
     exiftoolPanel.appendChild(body);
   }
+
+  const VERDICT_TEXT = {
+    verified_clean: "VERIFIED CLEAN",
+    partial: "PARTIAL",
+    unverified: "UNVERIFIED",
+    not_applicable: "NOT APPLICABLE",
+    failed: "FAILED",
+  };
 
   function renderVerdict(summary) {
     verdictPanel.innerHTML = "";
@@ -207,23 +253,23 @@
     verdictPanel.appendChild(heading);
 
     const badge = document.createElement("span");
-    const verdictText = { verified_clean: "VERIFIED CLEAN", partial: "PARTIAL", unverified: "UNVERIFIED" }[summary.verdict] || "UNVERIFIED";
     badge.className = `verdict-badge verdict-${summary.verdict}`;
-    badge.textContent = verdictText;
+    badge.textContent = VERDICT_TEXT[summary.verdict] || "UNVERIFIED";
     verdictPanel.appendChild(badge);
 
     const lines = document.createElement("div");
     lines.style.marginTop = "0.75rem";
     lines.style.fontSize = "0.9rem";
-    const ghostmarkLine = `GhostMark verification: ${summary.ghostmark_pass ? "PASS" : "FAIL"}`;
-    let exiftoolLine;
-    if (summary.exiftool_pass === null || summary.exiftool_pass === undefined) {
-      exiftoolLine = "ExifTool verification: NOT AVAILABLE / NOT APPLICABLE";
-    } else {
-      exiftoolLine = `ExifTool verification: ${summary.exiftool_pass ? "PASS" : "FAIL"}`;
+    const detailLines = [`GhostMark verification: ${summary.ghostmark_pass ? "PASS" : "FAIL"}`];
+    for (const verifier of summary.external_verifiers || []) {
+      if (verifier.passed === null || verifier.passed === undefined) {
+        detailLines.push(`${verifier.label} verification: NOT AVAILABLE / NOT APPLICABLE`);
+      } else {
+        detailLines.push(`${verifier.label} verification: ${verifier.passed ? "PASS" : "FAIL"}`);
+      }
     }
-    const c2paLine = `C2PA support: ${summary.c2pa_status.toUpperCase()}`;
-    lines.innerHTML = [ghostmarkLine, exiftoolLine, c2paLine].join("<br>");
+    detailLines.push(`C2PA support: ${summary.c2pa_status.toUpperCase()}`);
+    lines.innerHTML = detailLines.join("<br>");
     verdictPanel.appendChild(lines);
   }
 
@@ -281,6 +327,20 @@
       renderDetections(resultsTable, data.report.detections);
       const found = data.report.detections.filter((d) => d.status === "found");
       resultsCount.textContent = `${found.length} supported signal${found.length === 1 ? "" : "s"} detected`;
+
+      explainList.innerHTML = "";
+      const explanations = found.map((d) => explanationFor(d.detector)).filter(Boolean);
+      if (explanations.length) {
+        explanations.forEach((text) => {
+          const li = document.createElement("li");
+          li.textContent = text;
+          explainList.appendChild(li);
+        });
+        explainPanel.classList.remove("hidden");
+      } else {
+        explainPanel.classList.add("hidden");
+      }
+
       resultsSection.classList.remove("hidden");
       arrow1.classList.remove("hidden");
     } catch (err) {
@@ -328,11 +388,16 @@
       const data = await resp.json();
       renderDetections(verifyBeforeTable, data.before.detections);
       renderDetections(verifyAfterTable, data.after.detections);
-      renderExiftoolPanel(data.external_after);
+      renderExiftoolPanel(data.external_after, data.c2pa_after);
       renderVerdict(data.verification_summary);
       verifySection.classList.remove("hidden");
       arrow3.classList.remove("hidden");
       btnSave.classList.toggle("hidden", state.mode !== "file");
+
+      receiptJson.href = API.receiptDownload(state.sessionId, "json");
+      receiptHtml.href = API.receiptDownload(state.sessionId, "html");
+      receiptTxt.href = API.receiptDownload(state.sessionId, "txt");
+      receiptDownloads.classList.remove("hidden");
     } catch (err) {
       showError(String(err));
     } finally {

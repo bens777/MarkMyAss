@@ -54,10 +54,22 @@ body {
 }
 .promo-top a { color: var(--accent); }
 
+.top-nav {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+.top-nav a { color: var(--muted); text-decoration: none; }
+.top-nav a:hover { color: var(--accent); }
+
 header { text-align: center; margin-bottom: 1.5rem; }
 header h1 { font-size: 2rem; margin: 0 0 0.25rem; }
-.tagline { margin: 0; font-size: 1.15rem; font-weight: 600; }
-.subheadline { margin: 0.35rem 0 0; color: var(--muted); }
+.tagline { margin: 0; font-size: 1.3rem; font-weight: 700; }
+.subheadline { margin: 0.35rem 0 0; color: var(--text); }
+.sub-subheadline { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.9rem; }
+.honesty-note { margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--muted); font-style: italic; }
 
 .trust-bar {
   list-style: none;
@@ -193,8 +205,38 @@ textarea {
 .verdict-verified_clean { background: color-mix(in srgb, var(--pass) 18%, transparent); color: var(--pass); }
 .verdict-partial { background: color-mix(in srgb, var(--partial) 18%, transparent); color: var(--partial); }
 .verdict-unverified { background: color-mix(in srgb, var(--unknown) 18%, transparent); color: var(--unknown); }
+.verdict-not_applicable { background: color-mix(in srgb, var(--unknown) 18%, transparent); color: var(--unknown); }
+.verdict-failed { background: color-mix(in srgb, var(--danger) 18%, transparent); color: var(--danger); }
 
 .watermark-note { font-size: 0.82rem; color: var(--muted); margin-top: 1rem; }
+.watermark-note a { color: var(--accent); }
+
+.explain-panel {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  border: 1px solid var(--border);
+}
+.explain-panel h3 { margin: 0 0 0.4rem; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); }
+.explain-panel ul { margin: 0; padding-left: 1.1rem; font-size: 0.88rem; }
+.explain-panel li { margin: 0.3rem 0; }
+
+.download-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.receipt-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.receipt-label { font-size: 0.85rem; color: var(--muted); }
+.receipt-downloads .btn.secondary { margin-top: 0; }
 
 .promo-bottom {
   text-align: center;

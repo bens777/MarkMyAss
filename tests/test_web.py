@@ -26,6 +26,7 @@ def test_health(client):
     assert body["status"] == "ok"
     assert "ghostmark" in body
     assert "exiftool_available" in body
+    assert "c2patool_available" in body
     # Never leak filesystem paths or secrets in the health payload.
     assert "path" not in str(body).lower()
     assert "temp" not in str(body).lower()
@@ -84,19 +85,30 @@ def test_inspect_clean_verify_download_file_flow(client):
     assert disposition.startswith("attachment;")
     assert "photo.ghostmark.png" in disposition
 
-    assert not workdir.exists(), "temp session directory must be removed right after download completes"
+    # The session is deliberately NOT deleted on download -- a Verification
+    # Receipt for the same session is typically fetched right after the
+    # cleaned file, so single-use-on-download would break that. Cleanup is
+    # via the TTL sweep only (see test_ttl_sweep_removes_expired_sessions).
+    assert workdir.exists()
 
 
-def test_download_is_single_use(client):
+def test_download_can_be_repeated_and_receipt_still_available(client):
+    """Not single-use: both the cleaned file and the receipt must be
+    retrievable after one download, in either order."""
+
     resp = client.post("/api/inspect/file", files={"file": ("photo.png", _png_bytes(), "image/png")})
     session_id = resp.json()["session_id"]
     client.post(f"/api/clean/{session_id}")
+    client.post(f"/api/verify/{session_id}")
 
     first = client.get(f"/api/download/{session_id}")
     assert first.status_code == 200
 
     second = client.get(f"/api/download/{session_id}")
-    assert second.status_code == 404, "cleaned file must not be downloadable again after the session is consumed"
+    assert second.status_code == 200
+
+    receipt_resp = client.get(f"/api/receipt/{session_id}/download?format=json")
+    assert receipt_resp.status_code == 200
 
 
 def test_ttl_sweep_removes_expired_sessions(client):

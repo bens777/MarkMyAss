@@ -5,9 +5,11 @@ Design constraints enforced here:
   - No route ever proxies or fetches anything over the network.
   - Uploaded files are stored only in a per-session temp directory under the
     OS temp dir, with a randomized session id and a sanitized filename.
-  - Sessions (and their temp files) are cleaned up: immediately after the
-    cleaned file is downloaded, after a TTL if never downloaded, on
-    explicit delete, and on process exit -- nothing lingers on disk.
+  - Sessions (and their temp files) are cleaned up after a TTL (10-15
+    minutes, see WebConfig), on explicit delete, and on process exit --
+    nothing lingers on disk. A session is intentionally NOT deleted the
+    instant the cleaned file is downloaded, because the verification
+    receipt is a separate, later download of the same session.
   - No CORS headers are ever added -- the frontend is same-origin only.
   - The caller (ghostmark.cli.ui, or the production Docker CMD) is
     responsible for choosing the bind address; this module never binds a
@@ -18,6 +20,7 @@ Design constraints enforced here:
 from __future__ import annotations
 
 import atexit
+import hashlib
 import logging
 import secrets
 import shutil
@@ -27,17 +30,18 @@ import time
 from pathlib import Path
 from typing import Any
 
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
-from starlette.background import BackgroundTask
 from starlette.concurrency import run_in_threadpool
 
 from ghostmark import __version__
 from ghostmark.cleaner import clean_file, clean_text_content
-from ghostmark.independent_verify import ExifToolVerifier
+from ghostmark.independent_verify import C2paToolVerifier, ExifToolVerifier
 from ghostmark.inspector import inspect_file, inspect_text
+from ghostmark.models import CleanResult, VerifyResult
+from ghostmark.receipt import VerificationReceipt, build_receipt
 from ghostmark.security import (
     FileTooLargeError,
     UnsupportedFileTypeError,
@@ -47,11 +51,14 @@ from ghostmark.security import (
     suffix_of,
 )
 from ghostmark.verifier import verify_file, verify_text
+from ghostmark.web import lab_data
+from ghostmark.web.benchmarks import run_benchmarks, to_markdown_table, to_summary_markdown
 from ghostmark.web.concurrency import BoundedRunner, ProcessingTimeoutError, ServerBusyError
 from ghostmark.web.config import WebConfig, load_config
 from ghostmark.web.content_render import (
     CONTENT_DIR,
     PageMeta,
+    inject_context,
     render_article_page,
     render_markdown_to_html,
 )
@@ -70,6 +77,58 @@ RUN_LOCAL_PAGE_META = PageMeta(
 )
 _ARTICLE_NAV_HTML = '<header class="article-header"><a href="." class="brand-link">👻 GhostMark</a></header>'
 
+# AI Watermark Lab pages: "" is /lab itself, everything else is /lab/<slug>.
+LAB_PAGE_META: dict[str, PageMeta] = {
+    "": PageMeta(
+        title="GhostMark AI Watermark Lab — Proof, Not Promises",
+        description=(
+            "A living, honest technical reference for AI watermark and provenance signals: "
+            "what GhostMark can detect, remove, and independently verify -- and what it can't."
+        ),
+        path="/lab",
+    ),
+    "claude-watermark": PageMeta(
+        title='Lab: "Claude Watermark" — Metadata vs. Hidden Unicode vs. Statistical Watermarking | GhostMark',
+        description=(
+            "Three different things get called the 'Claude watermark.' This page separates "
+            "file metadata, hidden Unicode, and statistical text watermarking -- and is honest "
+            "about which of them can actually be tested today."
+        ),
+        path="/lab/claude-watermark",
+    ),
+    "c2pa": PageMeta(
+        title="Lab: C2PA / Content Credentials — Detection, Removal, Limits | GhostMark",
+        description="What GhostMark's C2PA support actually does: JUMBF container detection, "
+        "not cryptographic manifest validation. Methodology, commands, and sources.",
+        path="/lab/c2pa",
+    ),
+    "hidden-unicode": PageMeta(
+        title="Lab: Hidden Unicode — Detection & Removal Methodology | GhostMark",
+        description="How GhostMark detects and safely removes hidden/invisible Unicode "
+        "characters from text, and why load-bearing characters are preserved by default.",
+        path="/lab/hidden-unicode",
+    ),
+    "pdf-metadata": PageMeta(
+        title="Lab: PDF Metadata — DocInfo & XMP Detection and Removal | GhostMark",
+        description="How GhostMark detects and removes PDF DocInfo and XMP metadata, "
+        "independently verified with ExifTool, without altering page content.",
+        path="/lab/pdf-metadata",
+    ),
+}
+_slug_to_key = {
+    "claude-watermark": "claude_statistical_watermark",
+    "c2pa": "c2pa",
+    "hidden-unicode": "hidden_unicode",
+    "pdf-metadata": "pdf_metadata",
+}
+
+BENCHMARKS_PAGE_META = PageMeta(
+    title="GhostMark Benchmarks — Real Results From the Public Test Corpus",
+    description="Detection, cleaning, and independent-verification pass rates generated by "
+    "actually running GhostMark's reproducible test corpus -- not hand-typed numbers.",
+    path="/benchmarks",
+)
+
 log = logging.getLogger("ghostmark.web")
 
 
@@ -83,6 +142,8 @@ class _Session:
         self.cleaned_path: Path | None = None
         self.original_name: str = ""
         self.created_at = time.time()
+        self.clean_result: CleanResult | None = None
+        self.verify_result: VerifyResult | None = None
 
     def is_expired(self, ttl_seconds: float) -> bool:
         return (time.time() - self.created_at) > ttl_seconds
@@ -181,6 +242,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
     atexit.register(runner.shutdown)
 
     exif_verifier = ExifToolVerifier()
+    c2patool_verifier = C2paToolVerifier()
 
     stop_sweeper = threading.Event()
 
@@ -228,12 +290,83 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
     def run_local() -> HTMLResponse:
         return HTMLResponse(_run_local_html)
 
+    # --- AI Watermark Lab -------------------------------------------------------------
+    # Every page's HTML is rendered once at startup from Markdown + the
+    # capability data in ghostmark.web.lab_data -- the single source of
+    # truth every surface (matrix table, per-signal status lines, and the
+    # /api/lab/status JSON) reads from, so they can't drift apart.
+
+    _lab_pages: dict[str, str] = {}
+    for _slug, _meta in LAB_PAGE_META.items():
+        _md_path = CONTENT_DIR / "lab" / ("index.md" if _slug == "" else f"{_slug}.md")
+        _context = {"MATRIX_TABLE": lab_data.to_markdown_table()}
+        if _slug:
+            _context["STATUS_LINE"] = lab_data.to_status_line(_slug_to_key.get(_slug, ""))
+        _md_text = inject_context(_md_path.read_text(encoding="utf-8"), _context)
+        _lab_pages[_slug] = render_article_page(
+            meta=_meta,
+            body_html=render_markdown_to_html(_md_text),
+            base_path=config.base_path,
+            public_url=config.public_url,
+            nav_html=_ARTICLE_NAV_HTML,
+        )
+
+    @app.get("/lab", response_class=HTMLResponse)
+    def lab_index() -> HTMLResponse:
+        return HTMLResponse(_lab_pages[""])
+
+    @app.get("/lab/{slug}", response_class=HTMLResponse)
+    def lab_page(slug: str) -> HTMLResponse:
+        html = _lab_pages.get(slug)
+        if html is None:
+            raise HTTPException(status_code=404, detail="No such Lab page.")
+        return HTMLResponse(html)
+
+    @app.get("/api/lab/status")
+    def lab_status() -> dict[str, Any]:
+        return {
+            "ghostmark_version": __version__,
+            "tested_at": lab_data.LAST_REVIEWED,
+            "signals": [s.to_dict() for s in lab_data.LAB_SIGNALS],
+        }
+
+    # --- Benchmarks ---------------------------------------------------------------------
+    # Run once at startup against the real corpus -- not hand-typed numbers.
+    # If the corpus or pipeline ever regresses, this page shows it, and so
+    # does tests/test_corpus.py (same corpus, same expectations).
+
+    _benchmark_report = run_benchmarks()
+    _benchmarks_html = render_article_page(
+        meta=BENCHMARKS_PAGE_META,
+        body_html=render_markdown_to_html(
+            inject_context(
+                (CONTENT_DIR / "benchmarks.md").read_text(encoding="utf-8"),
+                {
+                    "SUMMARY": to_summary_markdown(_benchmark_report),
+                    "TABLE": to_markdown_table(_benchmark_report),
+                },
+            )
+        ),
+        base_path=config.base_path,
+        public_url=config.public_url,
+        nav_html=_ARTICLE_NAV_HTML,
+    )
+
+    @app.get("/benchmarks", response_class=HTMLResponse)
+    def benchmarks_page() -> HTMLResponse:
+        return HTMLResponse(_benchmarks_html)
+
+    @app.get("/api/benchmarks")
+    def benchmarks_api() -> dict[str, Any]:
+        return _benchmark_report.to_dict()
+
     @app.get("/health")
     def health() -> dict[str, Any]:
         return {
             "status": "ok",
             "ghostmark": __version__,
             "exiftool_available": exif_verifier.available(),
+            "c2patool_available": c2patool_verifier.available(),
         }
 
     @app.get("/api/config")
@@ -246,6 +379,8 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
             "session_ttl_minutes": config.session_ttl_seconds // 60,
             "exiftool_available": exif_verifier.available(),
             "exiftool_version": exif_verifier.version(),
+            "c2patool_available": c2patool_verifier.available(),
+            "c2patool_version": c2patool_verifier.version(),
             "ghostmark_version": __version__,
         }
 
@@ -314,6 +449,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                     raise HTTPException(status_code=400, detail="No text in this session.")
                 cleaned, result = runner.run(clean_text_content, session.text)
                 session.cleaned_text = cleaned
+                session.clean_result = result
                 payload = result.to_dict()
                 payload["cleaned_text"] = cleaned
                 return payload
@@ -330,6 +466,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
             raise HTTPException(status_code=400, detail="Could not clean this file.") from exc
 
         session.cleaned_path = Path(result.output)
+        session.clean_result = result
         return result.to_dict()
 
     @app.post("/api/verify/{session_id}")
@@ -340,11 +477,13 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
                 if session.text is None or session.cleaned_text is None:
                     raise HTTPException(status_code=400, detail="Run clean before verify.")
                 result = runner.run(verify_text, session.text, session.cleaned_text)
+                session.verify_result = result
                 return result.to_dict()
 
             if session.original_path is None or session.cleaned_path is None:
                 raise HTTPException(status_code=400, detail="Run clean before verify.")
             result = runner.run(verify_file, session.original_path, session.cleaned_path)
+            session.verify_result = result
             return result.to_dict()
         except (ServerBusyError, ProcessingTimeoutError) as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
@@ -358,16 +497,60 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
         suffix = Path(session.original_name).suffix
         download_name = f"{stem}.ghostmark{suffix}"
 
-        # The cleaned file is single-use: once the download has been sent to
-        # the client, the whole session (including the temp copy on disk) is
-        # deleted. BackgroundTask runs only after the response has finished
-        # streaming, so this never truncates the download.
+        # Deliberately NOT single-use: a Verification Receipt for this same
+        # session is typically downloaded right after the cleaned file, so
+        # deleting on first download would break that. The TTL sweep (see
+        # WebConfig.session_ttl_seconds, 10-15 minutes) is what guarantees
+        # cleanup instead.
         return FileResponse(
             session.cleaned_path,
             filename=download_name,
             media_type="application/octet-stream",
             headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
-            background=BackgroundTask(store.drop, session_id),
+        )
+
+    def _build_session_receipt(session: _Session) -> VerificationReceipt:
+        if session.verify_result is None:
+            raise HTTPException(status_code=400, detail="Run verify before requesting a receipt.")
+        if session.kind == "text":
+            file_name = "pasted-text"
+            before_hash = hashlib.sha256((session.text or "").encode("utf-8")).hexdigest()
+            after_hash = hashlib.sha256((session.cleaned_text or "").encode("utf-8")).hexdigest()
+        else:
+            file_name = Path(session.original_name).stem + ".ghostmark" + Path(session.original_name).suffix
+            before_hash = session.clean_result.before_hash if session.clean_result else ""
+            after_hash = session.clean_result.after_hash if session.clean_result else ""
+        return build_receipt(
+            file_name=file_name, before_hash=before_hash, after_hash=after_hash, verify_result=session.verify_result
+        )
+
+    @app.get("/api/receipt/{session_id}")
+    def receipt_route(session_id: str) -> dict[str, Any]:
+        session = store.get(session_id)
+        return _build_session_receipt(session).to_dict()
+
+    @app.get("/api/receipt/{session_id}/download")
+    def receipt_download_route(session_id: str, format: str = Query("json", pattern="^(json|html|txt)$")):
+        session = store.get(session_id)
+        receipt = _build_session_receipt(session)
+        base_name = Path(receipt.file_name).stem or "ghostmark"
+
+        renderers = {
+            "html": (receipt.to_html(), "text/html"),
+            "txt": (receipt.to_text(), "text/plain"),
+            "json": (receipt.to_json(), "application/json"),
+        }
+        content, media_type = renderers[format]
+        download_name = f"{base_name}.ghostmark-receipt.{format}"
+
+        # PlainTextResponse for all three: it sends the string as-is with no
+        # re-serialization, which matters for JSON (json.dumps already ran
+        # inside receipt.to_json() -- re-encoding via JSONResponse would
+        # just redundantly round-trip it).
+        return PlainTextResponse(
+            content,
+            media_type=media_type,
+            headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
         )
 
     @app.delete("/api/session/{session_id}")
