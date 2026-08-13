@@ -1,0 +1,67 @@
+# GhostMark AI Watermark Lab
+
+### A living, honest technical reference for AI watermark and provenance signals
+
+GhostMark's core promise is that it shows exactly what it found, what it
+removed, what was independently verified, and what cannot currently be
+proven -- never the reverse. This Lab is where that promise is written
+down in detail, signal by signal, kept current, and open to correction.
+
+[← Back to the GhostMark cleaner](.)
+
+---
+
+## Capability matrix
+
+This table is generated directly from GhostMark's own capability data
+(`src/ghostmark/web/lab_data.py`), not typed by hand into this page -- it
+cannot say GhostMark can do something the code doesn't actually do. The
+same data backs the [`/api/lab/status`](api/lab/status) JSON endpoint
+(links below use paths relative to the site root, e.g. `lab/c2pa`).
+
+{{MATRIX_TABLE}}
+
+**Detect** and **Remove** describe GhostMark's own Python detectors/cleaners.
+**Independent verification** describes whether (and how) a separate tool
+cross-checks GhostMark's own claim -- see each linked page for methodology.
+**Status** is the honest summary: *Verified* (both GhostMark and an
+independent tool agree, repeatedly, in the test corpus), *Partial*
+(heuristic/structural detection only, not a full validator), or *Unknown*
+(no public, independently reproducible method exists at all).
+
+---
+
+## How to read "Partial" and "Unknown"
+
+- **Partial** (currently: C2PA) means GhostMark detects/removes a
+  *structural* signal (e.g. the JUMBF container a C2PA manifest lives in)
+  but does not perform full manifest parsing or cryptographic signature
+  validation. Absence of the container is a strong signal, not formal
+  proof. See [/lab/c2pa](lab/c2pa).
+- **Unknown** (currently: all statistical/model-level text watermarks)
+  means no provider has published a public, independently reproducible
+  detector. GhostMark will not report a confidence score it cannot back
+  up -- see [/lab/claude-watermark](lab/claude-watermark) for the fullest
+  writeup of why, which generalizes to Gemini and GPT.
+
+---
+
+## Proof, not promises
+
+Every "Verified" row above is backed by GhostMark's public, reproducible
+test corpus (`tests/corpus/`) and regression suite (`tests/test_corpus.py`)
+-- see the [Benchmarks page](benchmarks) for the actual pass/fail counts
+from the current test run, generated from that same corpus, not
+hand-typed.
+
+## Something outdated or inaccurate?
+
+This is a fast-moving space -- model capabilities, provenance standards,
+and available tooling all change. [Open an issue](https://github.com/bens777/ghostmark/issues)
+or submit a pull request against
+[`src/ghostmark/web/lab_data.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/web/lab_data.py)
+(for the matrix) or the relevant page under
+[`src/ghostmark/web/content/lab/`](https://github.com/bens777/ghostmark/tree/main/src/ghostmark/web/content/lab)
+on GitHub.
+
+**Last reviewed:** 2026-08-13

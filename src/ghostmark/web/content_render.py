@@ -38,6 +38,21 @@ def render_markdown_to_html(markdown_text: str) -> str:
     )
 
 
+def inject_context(markdown_text: str, context: dict[str, str]) -> str:
+    """Substitute ``{{KEY}}`` placeholders in a Markdown source with generated content.
+
+    Deliberately simple string substitution, not a templating engine --
+    used to splice generated content (e.g. the Lab's capability table,
+    itself generated from ``ghostmark.web.lab_data`` so it can never say
+    something the code doesn't back up) into otherwise-static, hand-edited
+    Markdown prose.
+    """
+
+    for key, value in context.items():
+        markdown_text = markdown_text.replace("{{" + key + "}}", value)
+    return markdown_text
+
+
 def render_article_page(
     *,
     meta: PageMeta,
