@@ -617,6 +617,11 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
             log.warning("inspect failed for an uploaded file: %s", exc.__class__.__name__)
             raise HTTPException(status_code=400, detail="Could not inspect this file.") from exc
 
+        # report.target is the real server-side temp path (useful in the
+        # CLI, where it's the user's own path shown only to themselves) --
+        # never send that to a web client. Swap in the sanitized original
+        # filename before serializing.
+        report.target = safe_name
         return {"session_id": session_id, "report": report.to_dict()}
 
     @app.post("/api/clean/{session_id}")
@@ -646,6 +651,13 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
 
         session.cleaned_path = Path(result.output)
         session.clean_result = result
+        # Same redaction as inspect_file_route: result.source/output are the
+        # real server-side temp paths -- capture them into the session
+        # above first (needed for download/verify), then redact before this
+        # goes out over the API.
+        cleaned_name = f"{Path(session.original_name).stem}.ghostmark{Path(session.original_name).suffix}"
+        result.source = session.original_name
+        result.output = cleaned_name
         return result.to_dict()
 
     @app.post("/api/verify/{session_id}")
@@ -662,6 +674,10 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
             if session.original_path is None or session.cleaned_path is None:
                 raise HTTPException(status_code=400, detail="Run clean before verify.")
             result = runner.run(verify_file, session.original_path, session.cleaned_path)
+            # Same redaction as inspect_file_route -- result.before/after.target
+            # otherwise carry the real server-side temp path.
+            result.before.target = session.original_name
+            result.after.target = f"{Path(session.original_name).stem}.ghostmark{Path(session.original_name).suffix}"
             session.verify_result = result
             return result.to_dict()
         except (ServerBusyError, ProcessingTimeoutError) as exc:

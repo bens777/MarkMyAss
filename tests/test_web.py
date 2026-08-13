@@ -92,6 +92,46 @@ def test_inspect_clean_verify_download_file_flow(client):
     assert workdir.exists()
 
 
+def test_inspect_and_verify_never_leak_the_server_temp_path(client):
+    """Regression test: InspectionReport.target holds the real server-side
+    temp path (e.g. C:\\Users\\<name>\\AppData\\Local\\Temp\\ghostmark-session-.../original.png)
+    -- fine for the CLI (a user's own path, shown only to themselves), but
+    the web API must never send that to a client. Found via an adversarial
+    audit that printed a real /api/inspect/file response and noticed the
+    server's OS username and temp directory layout in the "target" field."""
+
+    resp = client.post("/api/inspect/file", files={"file": ("photo.png", _png_bytes(), "image/png")})
+    assert resp.status_code == 200
+    body = resp.json()
+    session_id = body["session_id"]
+    target = body["report"]["target"]
+    assert target == "photo.png"
+    assert "AppData" not in target
+    assert "Temp" not in target
+    assert "\\" not in target and "/" not in target
+
+    clean_resp = client.post(f"/api/clean/{session_id}")
+    clean_body = clean_resp.json()
+    for leaked in (clean_body["source"], clean_body["output"]):
+        assert "AppData" not in leaked
+        assert "Temp" not in leaked
+        assert "\\" not in leaked and "/" not in leaked
+    assert clean_body["source"] == "photo.png"
+    assert clean_body["output"] == "photo.ghostmark.png"
+
+    verify_resp = client.post(f"/api/verify/{session_id}")
+    assert verify_resp.status_code == 200
+    verify_body = verify_resp.json()
+    before_target = verify_body["before"]["target"]
+    after_target = verify_body["after"]["target"]
+    for leaked in (before_target, after_target):
+        assert "AppData" not in leaked
+        assert "Temp" not in leaked
+        assert "\\" not in leaked and "/" not in leaked
+    assert before_target == "photo.png"
+    assert after_target == "photo.ghostmark.png"
+
+
 def test_download_can_be_repeated_and_receipt_still_available(client):
     """Not single-use: both the cleaned file and the receipt must be
     retrievable after one download, in either order."""
