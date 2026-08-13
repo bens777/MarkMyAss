@@ -3,17 +3,18 @@
        Self-contained theming (light/dark) so this renders correctly whether inlined
        or referenced via <img>, which does not inherit the host page's CSS. -->
   <style>
-    .gm-line { stroke: #aebcd1; }
-    .gm-ink { fill: #f5ecd8; }
-    .gm-ghost { fill: #8fe8cc; }
-    .gm-brass { stroke: #dcac52; fill: #dcac52; }
-    .gm-deck { stroke: #2f5074; }
-    @media (prefers-color-scheme: light) {
-      .gm-line { stroke: #5c6b82; }
-      .gm-ink { fill: #22314a; }
-      .gm-ghost { fill: #166b5a; }
-      .gm-brass { stroke: #8a641c; fill: #8a641c; }
-      .gm-deck { stroke: #d8c9a3; }
+    .gm-line { stroke: #5c6b82; }
+    .gm-ink { fill: #22314a; }
+    .gm-ghost { fill: #166b5a; }
+    .gm-brass { stroke: #8a641c; fill: #8a641c; }
+    .gm-deck { stroke: #d8c9a3; }
+
+    @media (prefers-color-scheme: dark) {
+      .gm-line { stroke: #aebcd1; }
+      .gm-ink { fill: #f5ecd8; }
+      .gm-ghost { fill: #8fe8cc; }
+      .gm-brass { stroke: #dcac52; fill: #dcac52; }
+      .gm-deck { stroke: #2f5074; }
     }
   </style>
 

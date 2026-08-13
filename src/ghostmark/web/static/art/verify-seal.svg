@@ -1,11 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="96" height="96" role="img" aria-label="A wax-seal stamp, GhostMark's icon for independent verification">
   <!-- Original artwork for GhostMark. -->
   <style>
-    .gm-brass { fill: none; stroke: #dcac52; }
-    .gm-ghost { stroke: #8fe8cc; }
-    @media (prefers-color-scheme: light) {
-      .gm-brass { stroke: #8a641c; }
-      .gm-ghost { stroke: #166b5a; }
+    .gm-brass { stroke: #8a641c; }
+    .gm-ghost { stroke: #166b5a; }
+
+    @media (prefers-color-scheme: dark) {
+      .gm-brass { fill: none; stroke: #dcac52; }
+      .gm-ghost { stroke: #8fe8cc; }
     }
   </style>
   <g class="gm-brass" stroke-width="3">

@@ -18,72 +18,86 @@ motion, and illustration rules. Page-specific deviations (if any) should
 be called out explicitly in the relevant page's CSS comments, not
 invented ad hoc.
 
-## Palette: "Midnight Ocean" (dark) / "Parchment Map" (light)
+## Palette: "Parchment Map" (default) / "Midnight Ocean" (opt-in dark)
 
 All pairs below are verified against WCAG 2.1 contrast math (relative-
 luminance formula, not eyeballed) using a throwaway Python script run
 against the exact final hex values — never approximated by eye.
 
-### Dark ("Midnight Ocean", default)
+**"Parchment Map" (warm/light) is the site's default and primary
+identity, unconditionally, regardless of OS `prefers-color-scheme`.** An
+earlier iteration defaulted to the dark "Midnight Ocean" palette; it read
+as a "dark fantasy poster" rather than a fresh, product-led brand, and
+made the whole page feel heavier/gloomier than intended. "Midnight
+Ocean" still exists, but only behind `@media (prefers-color-scheme:
+dark)` now — an opt-in for users whose OS explicitly prefers dark, never
+the fallback. **If you change either palette, keep both `:root` (the
+unconditional default) and the `dark` media query in sync** — every
+token must be defined in both places, and every self-theming SVG under
+`static/art/` follows the identical pattern (see Icons & illustration
+below) and must be updated to match.
+
+### "Parchment Map" (default, unconditional)
 
 | Token | Hex | Role | Contrast on `--bg` |
 | --- | --- | --- | --- |
-| `--bg` | `#0b1d33` | Page background (midnight ocean navy, not near-black) | — |
-| `--bg-void` | `#071526` | Darkest atmospheric background (hero/fog sections only) | — |
-| `--surface` | `#122a48` | Card/panel background | — |
-| `--surface-2` | `#1a3a5e` | Nested panel (signal rows, verdict/exiftool panels) | — |
-| `--border` | `#2f5074` | Borders, dividers | — |
-| `--text` | `#f5ecd8` | Primary text (warm cream/parchment, not white) | 14.4:1 (AAA) |
-| `--muted` | `#aebcd1` | Secondary text | 7.9:1 (AAA) |
-| `--accent` | `#e2664f` | Interactive: links, primary CTA background, active tab, hero flow | 5.1:1 as text on `--bg` |
-| `--accent-ink` | `= var(--bg)` | Text color used ON an `--accent` background (buttons, active tab, skip-link) | 5.05:1 on `--accent` |
-| `--brass` | `#dcac52` | Secondary accent: card top-border, dividers, tagline, small icons — nautical-instrument gold | 8.1:1 (AAA) |
-| `--spectral` | `#8fe8cc` | Secondary/decorative accent: ghost glyph, focus ring, moon glow, stars — seafoam/spectral mint, never body text | 12.6:1 (AAA, though decorative use doesn't require it) |
-| `--found` | `#f0ab5d` | Signal found / partial verdict | 9.7:1 (AAA) |
-| `--notfound` / `--pass` | `#6fcf8e` | Signal absent / verified-clean verdict | 8.9:1 (AAA) |
-| `--partial` | `#f0ab5d` | Partial verdict (= `--found`) | 9.7:1 (AAA) |
-| `--danger` | `#e6543f` | Failure / destructive | 4.9:1 (AA) |
-| `--unknown` | `#aebcd1` | Unknown/uncharted (= `--muted`) | 7.9:1 (AAA) |
+| `--bg` | `#f4ecd8` | Page background — warm cream/parchment, not white | — |
+| `--bg-void` | `#eee2c4` | Deepest atmospheric background (rare) | — |
+| `--surface` | `#fbf6ea` | Card/panel background | — |
+| `--surface-2` | `#f4ecd8` | Nested panel (signal rows, verdict/exiftool panels) | — |
+| `--border` | `#d8c9a3` | Borders, dividers | — |
+| `--text` | `#22314a` | Primary text — deep navy, not black | 13.9:1 (AAA) |
+| `--muted` | `#5c6b82` | Secondary text | 4.7:1 (AA) |
+| `--accent` | `#b93b25` | Interactive: links, primary CTA background, active tab, hero flow — coral/pirate red | 4.5:1 (AA) |
+| `--accent-ink` | `#ffffff` | Text color used ON an `--accent` background (buttons, active tab, skip-link) | 5.65:1 on `--accent` |
+| `--brass` | `#8a641c` | Secondary accent: card top-border, dividers, tagline, small icons — nautical-instrument gold | 4.55:1 (AA) |
+| `--spectral` | `#166b5a` | Secondary/decorative accent: ghost glyph, focus ring, provenance motifs — turquoise/spectral cyan, never large body text | 6.9:1 (AA+) |
+| `--found` | `#8f4f0e` | Signal found / partial verdict | 5.4:1 (AA) |
+| `--notfound` / `--pass` | `#1f7a45` | Signal absent / verified-clean verdict | 5.9:1 (AA) |
+| `--partial` | `#8f4f0e` | Partial verdict (= `--found`) | 5.4:1 (AA) |
+| `--danger` | `#b23223` | Failure / destructive | 5.5:1 (AA) |
+| `--unknown` | `#5c6b82` | Unknown/uncharted (= `--muted`) | 4.7:1 (AA) |
 
 **Rule: green is reserved for verified/success states only.** It is never
-used decoratively elsewhere in the palette (the old system's spectral
-cyan and this system's spectral mint both deliberately avoid reading as
-"success" at a glance).
+used decoratively elsewhere in the palette.
 
 ### Parchment (sparing use — decorative "manifest/log" framing only)
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| `--parchment` | `#f4ecd8` (dark mode) / `#ddc99a` (light mode) | Warm paper surface for an occasional "ship's log" callout (`.log-entry`) |
+| `--parchment` | `#ddc99a` (default) / `#f4ecd8` (dark mode) | Warm paper surface for an occasional "ship's log" callout (`.log-entry`) |
 | `--parchment-ink` | `#22314a` | Text color used ONLY on `--parchment` (9.9:1+ AAA in both modes) |
 
-**Why `--parchment` itself changes per mode:** in light mode the page
-background is already parchment-toned (`--bg: #f4ecd8`), so a `.log-entry`
-callout needs a visibly deeper "aged paper" shade plus its own border to
-still read as a distinct panel — reusing the dark-mode value would make
-the callout blend into the page. `--brass` is never used as text on
-`--parchment` in either mode (fails contrast) — brass-on-parchment is
-decorative-only (a rule, a label, an icon stroke); text on parchment
-always uses `--parchment-ink` or the fixed link color `#5a4210` (dark
-mode, 8.0:1) which is re-verified against the light-mode parchment shade
-too (5.8:1).
+**Why `--parchment` itself changes per mode:** in the default (light)
+palette the page background is already parchment-toned (`--bg:
+#f4ecd8`), so a `.log-entry` callout needs a visibly deeper "aged paper"
+shade plus its own border to still read as a distinct panel — reusing
+the same value would make the callout blend into the page. `--brass` is
+never used as text on `--parchment` in either mode (fails contrast) —
+brass-on-parchment is decorative-only (a rule, a label, an icon stroke);
+text on parchment always uses `--parchment-ink` or the fixed link color
+`#5a4210` (5.8:1 on the default `--parchment`, 8.0:1 on the dark-mode
+value).
 
-### Light ("Parchment Map", `prefers-color-scheme: light`)
+### "Midnight Ocean" (opt-in, `prefers-color-scheme: dark` only)
 
 | Token | Hex | Contrast on `--bg` |
 | --- | --- | --- |
-| `--bg` | `#f4ecd8` | — |
-| `--surface` | `#fbf6ea` | — |
-| `--border` | `#d8c9a3` | — |
-| `--text` | `#22314a` | 13.9:1 (AAA) |
-| `--muted` | `#5c6b82` | 4.7:1 (AA) |
-| `--accent` | `#b93b25` | 4.5:1 (AA) — deliberately darker than the dark-mode coral so it still clears AA on a light page |
-| `--accent-ink` | `#ffffff` | 5.65:1 on `--accent` |
-| `--brass` | `#8a641c` | 4.55:1 (AA) |
-| `--spectral` | `#166b5a` | darker green-teal so it stays legible as text/strokes on a light page (the dark-mode mint would fail) |
-| `--found` / `--partial` | `#8f4f0e` | 5.4:1 (AA) |
-| `--notfound` / `--pass` | `#1f7a45` | 5.9:1 (AA) |
-| `--danger` | `#b23223` | 5.5:1 (AA) |
+| `--bg` | `#0b1d33` | — |
+| `--bg-void` | `#071526` | — |
+| `--surface` | `#122a48` | — |
+| `--surface-2` | `#1a3a5e` | — |
+| `--border` | `#2f5074` | — |
+| `--text` | `#f5ecd8` | 14.4:1 (AAA) |
+| `--muted` | `#aebcd1` | 7.9:1 (AAA) |
+| `--accent` | `#e2664f` | 5.1:1 (AA) |
+| `--accent-ink` | `= var(--bg)` | 5.05:1 on `--accent` |
+| `--brass` | `#dcac52` | 8.1:1 (AAA) |
+| `--spectral` | `#8fe8cc` | 12.6:1 (AAA, decorative use only) |
+| `--found` / `--partial` | `#f0ab5d` | 9.7:1 (AAA) |
+| `--notfound` / `--pass` | `#6fcf8e` | 8.9:1 (AAA) |
+| `--danger` | `#e6543f` | 4.9:1 (AA) |
+| `--unknown` | `#aebcd1` | 7.9:1 (AAA) |
 
 ## Typography
 
@@ -143,62 +157,61 @@ them).
 
 Two deliberately different tiers, not one style stretched too thin:
 
-1. **The homepage hero scene** (`static/art/hero-fleet.webp`) is a single
-   wide, detailed, cel-shaded illustration — the one place the pirate/
-   ghost world gets to be genuinely rich. A disciplined four-color
-   palette (navy / brass-amber / cream / spectral mint — the same tokens
-   as the rest of the site, not an arbitrary illustration palette), one
-   bold graphic ghost-silhouette flag as the singular iconic emblem
-   (deliberately as bold/simple as a classic skull-and-crossbones), and a
-   crew whose poses tell the product's actual story: a captain in a
-   confident, victorious stance with a spyglass, crew celebrating with
-   raised fists, a spectral ghost visibly startled and dissolving into
-   particles as it's caught escaping an inspected crate. That narrative
-   ("the pirates found and defeated the hidden watermark ghost") is a
-   deliberate choice, not incidental detail — the emotional beat is part
-   of the brief whenever this asset is regenerated. Produced with an AI
-   image-generation tool from an original text prompt (no reference
-   image, no third-party/franchise input) — see `THIRD_PARTY_LICENSES.md`.
-   Shipped as a single bundled `.webp` (no runtime generation, no
-   external request at page-load time), ~2400px wide / ~205KB.
-   **Full-bleed, not boxed:** the illustration is a `background-image` on
-   `.hero-banner` spanning the entire viewport width (breaks out of
-   `.wrap` via a negative-margin trick), not an `<img>` inside a
-   two-column card — a boxed picture next to text reads as "generic SaaS
-   with an illustration pasted on the side"; a full-bleed backdrop reads
-   as an environment the page lives in. The source composition was
-   deliberately prompted with an empty, uncluttered left third so the
-   copy (inside `.hero-copy`) has somewhere calm to sit; a `linear-
-   gradient` scrim on `.hero-banner::before` is a safety net for
-   contrast, not the primary legibility mechanism. On narrow viewports,
-   text is never overlaid on the image (a copy block this long doesn't
-   fit any reasonable image-band height) — instead a short decorative
-   image strip sits above fully-solid-background copy in normal
-   document flow; see the `@media (max-width: 860px)` rule. Because it's
-   a CSS background, it has zero DOM/accessibility-tree presence — no
-   `alt`, no `aria-hidden`, nothing for a screen reader to skip.
-   **If this asset is ever regenerated:** keep the same brief (original
-   composition, no copyrighted characters/franchise/logos, the site's
-   four-color palette, the victorious-pirates/defeated-ghost narrative,
-   an empty left third for text) and re-optimize to a similar file size
-   before committing.
+1. **The homepage hero art** (`static/art/hero-mark.webp`) is
+   deliberately small and secondary — a supporting brand detail, not the
+   main event. This is the site's third hero-art iteration, and the
+   change each time tracks a real lesson (see git history for "reassess
+   the entire hero composition" / "hard reset of the art direction" for
+   the full reasoning):
+   - v1/v2 were flat cel-shaded cartoon character scenes → read as a
+     children's game / clip art.
+   - v3 was a large, full-bleed, painterly/cinematic dark scene spanning
+     the entire viewport width → technically well-executed, but made the
+     illustration the star of the page instead of the product, and its
+     dark-navy register fought the site's own warm default palette.
+   - **Current approach:** a single small (`max-width: 320px`), framed,
+     **flat editorial-illustration** graphic mark — confident linework,
+     the site's own palette tokens, no cartoon faces, no photorealism, no
+     dark/moody rendering. It sits in a normal two-column `.hero-split`
+     next to the copy (`grid-template-columns: minmax(0,1.4fr)
+     minmax(0,1fr)` — copy gets more room than the art), framed in a
+     bordered card matching the site's own card style (brass top-border,
+     `var(--surface)` background) rather than bleeding across the page.
+     The hero section is intentionally short so the actual tool panel
+     sits close to the fold — **the product is the primary thing a
+     visitor sees and reaches, not the illustration.**
+   **No visual jokes:** the "MarkMyAss" pun lives only in the brand-name
+   text (nav, hero kicker) — no hero illustration has ever depicted it
+   literally, and that's deliberate: keeping the joke verbal-only lets
+   the artwork stay calm and professional while the name still carries
+   the humor.
+   Produced with an AI image-generation tool from an original text
+   prompt (no reference image, no third-party/franchise input) — see
+   `THIRD_PARTY_LICENSES.md`. Shipped as a single bundled `.webp` (no
+   runtime generation, no external request at page-load time), 720px
+   square / ~28KB — deliberately small, both in file size and in its
+   role on the page.
+   **If this asset is ever regenerated:** keep it small and secondary
+   (never full-bleed, never the dominant element), flat editorial
+   illustration rather than painterly/cinematic or cartoon, no literal
+   depiction of the brand-name pun, and matched to the site's own
+   palette tokens rather than an arbitrary illustration palette.
 2. **Everything else** stays simple, original, single-weight SVG line
    art (rects, circles, paths built from arcs/lines, ~2px stroke) —
-   small supporting icons and secondary-page hero art, not attempts at
-   the same painterly density as the homepage hero. No filled/outline
-   mixing within one icon, no gradients, no photorealism, no copyrighted
-   characters or franchise imagery.
+   small supporting icons across the Cleaner tool stages and secondary
+   pages. No filled/outline mixing within one icon, no gradients, no
+   photorealism, no copyrighted characters or franchise imagery.
 
 - **Self-theming pattern (required for SVG):** every SVG under
   `static/art/` and `static/run-local-hero.svg` is referenced via `<img
   src="...">`, which does **not** inherit the host page's CSS custom
   properties or `currentColor`. Each file is therefore self-theming: an
-  internal `<style>` block with hardcoded hex values (matching the
-  tokens above) plus its own `@media (prefers-color-scheme: light)`
-  override. Never rely on inherited page CSS for an `<img>`-referenced
-  SVG. (Not applicable to the raster hero, which is pre-rendered for the
-  dark palette and displayed identically in both color schemes — its own
-  night-scene lighting reads fine against either page background.)
+  internal `<style>` block with hardcoded hex values matching the
+  **default (light) palette**, plus its own `@media (prefers-color-
+  scheme: dark)` override matching "Midnight Ocean" — the same
+  default-is-light/dark-is-opt-in split as the page's own CSS custom
+  properties, and it must stay in sync with them. Never rely on
+  inherited page CSS for an `<img>`-referenced SVG.
 - **XML comment gotcha:** SVG/XML comments cannot contain a literal `--`
   anywhere in the body (only immediately before the closing `-->`) — a
   comment like `<!-- imagery -- simple shapes -->` is invalid XML and

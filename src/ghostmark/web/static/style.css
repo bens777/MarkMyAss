@@ -10,29 +10,34 @@
 }
 
 :root {
-  /* "Midnight Ocean" -- dark mode (default). Every text/background pairing
-     below is WCAG-verified at 4.5:1+ for normal text; decorative-only
-     pairings (e.g. brass on parchment in .log-entry) are noted in
-     DESIGN_SYSTEM.md as an intentional exemption. */
-  --bg: #0b1d33;
-  --bg-void: #071526;
-  --surface: #122a48;
-  --surface-2: #1a3a5e;
-  --border: #2f5074;
-  --text: #f5ecd8;
-  --muted: #aebcd1;
-  --accent: #e2664f;
-  --accent-ink: var(--bg);
-  --brass: #dcac52;
-  --spectral: #8fe8cc;
-  --parchment: #f4ecd8;
+  /* "Parchment Map" -- warm/light, the site's primary identity (default,
+     regardless of OS color-scheme preference). A previous iteration
+     defaulted to a dark navy palette, which read as gloomy/generic/
+     "dark fantasy poster" rather than a fresh, product-led brand --
+     see DESIGN_SYSTEM.md. Every text/background pairing below is
+     WCAG-verified at 4.5:1+ for normal text. */
+  --bg: #f4ecd8;
+  --bg-void: #eee2c4;
+  --surface: #fbf6ea;
+  --surface-2: #f4ecd8;
+  --border: #d8c9a3;
+  --text: #22314a;
+  --muted: #5c6b82;
+  --accent: #b93b25;
+  --accent-ink: #ffffff;
+  --brass: #8a641c;
+  --spectral: #166b5a;
+  --found: #8f4f0e;
+  --notfound: #1f7a45;
+  --unknown: #5c6b82;
+  --danger: #b23223;
+  --pass: #1f7a45;
+  --partial: #8f4f0e;
+  /* The page background itself is parchment-toned, so .log-entry needs a
+     visibly deeper "aged paper" shade to still read as a distinct
+     callout (border/shadow do the rest -- see .log-entry in article.css). */
+  --parchment: #ddc99a;
   --parchment-ink: #22314a;
-  --found: #f0ab5d;
-  --notfound: #6fcf8e;
-  --unknown: #aebcd1;
-  --danger: #e6543f;
-  --pass: #6fcf8e;
-  --partial: #f0ab5d;
 
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
   --font-display: "Playfair Display", Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
@@ -48,31 +53,29 @@
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
   :root {
-    /* "Parchment Map" -- light mode. */
-    --bg: #f4ecd8;
-    --bg-void: #eee2c4;
-    --surface: #fbf6ea;
-    --surface-2: #f4ecd8;
-    --border: #d8c9a3;
-    --text: #22314a;
-    --muted: #5c6b82;
-    --accent: #b93b25;
-    --accent-ink: #ffffff;
-    --brass: #8a641c;
-    --spectral: #166b5a;
-    --found: #8f4f0e;
-    --notfound: #1f7a45;
-    --unknown: #5c6b82;
-    --danger: #b23223;
-    --pass: #1f7a45;
-    --partial: #8f4f0e;
-    /* The page background itself is already parchment-toned in light
-       mode, so .log-entry needs a visibly deeper "aged paper" shade to
-       still read as a distinct callout (border/shadow do the rest --
-       see .log-entry in article.css). */
-    --parchment: #ddc99a;
+    /* "Midnight Ocean" -- dark mode, opt-in only (OS preference), never
+       the default. */
+    --bg: #0b1d33;
+    --bg-void: #071526;
+    --surface: #122a48;
+    --surface-2: #1a3a5e;
+    --border: #2f5074;
+    --text: #f5ecd8;
+    --muted: #aebcd1;
+    --accent: #e2664f;
+    --accent-ink: var(--bg);
+    --brass: #dcac52;
+    --spectral: #8fe8cc;
+    --parchment: #f4ecd8;
+    --parchment-ink: #22314a;
+    --found: #f0ab5d;
+    --notfound: #6fcf8e;
+    --unknown: #aebcd1;
+    --danger: #e6543f;
+    --pass: #6fcf8e;
+    --partial: #f0ab5d;
   }
 }
 
@@ -162,79 +165,46 @@ img, svg { max-width: 100%; height: auto; }
 .top-nav .brand-link:hover { color: var(--brass); }
 .brand-mark { color: var(--spectral); flex-shrink: 0; }
 
-/* ---- Hero: full-bleed environmental backdrop, not a boxed picture ----
-   The illustration is a CSS background spanning the full viewport width
-   (breaking out of .wrap via the negative-margin trick below), with the
-   copy sitting directly on top of it inside a dark scrim. The source
-   artwork was deliberately composed with a calm, empty left third so
-   text stays legible without needing a heavy overlay; the scrim is a
-   thin safety net for narrower crops, not the primary contrast
-   mechanism. Decorative only -- no <img> element, so nothing here is
-   ever exposed to screen readers (see test_hero_banner_is_decorative). */
-.hero-banner {
-  position: relative;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  margin-bottom: 3rem;
-  min-height: 460px;
-  height: clamp(460px, 46vw, 680px);
-  display: flex;
+/* ---- Hero: contained, product-led -- NOT a full-bleed backdrop ----
+   A previous iteration made the illustration a full-viewport background
+   image; it read as "dark wallpaper with text on it" and made the art
+   the star instead of the product. This version is a short, ordinary
+   two-column block: copy on the left (unconstrained width, reads first),
+   a small framed illustration on the right that is clearly a supporting
+   brand detail, not the main event. The whole section is intentionally
+   short so the actual tool panel sits close to the fold. */
+.hero-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   align-items: center;
-  background-color: var(--bg);
-  background-image: url("art/hero-fleet.webp");
-  /* Height-driven sizing (not `cover`) so the full ship silhouette is
-     always visible -- `cover` was scaling to fill the width and cropping
-     the top/bottom of the ship to do it. Any left-over width shows the
-     flat --bg color, which seamlessly matches the artwork's own empty,
-     intentionally-navy left third (see the comment above). */
-  background-size: auto 100%;
-  background-position: right center;
-  background-repeat: no-repeat;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
 }
-.hero-banner::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, var(--bg) 0%, var(--bg) 30%, color-mix(in srgb, var(--bg) 88%, transparent) 42%, color-mix(in srgb, var(--bg) 45%, transparent) 58%, transparent 78%);
+.hero-art {
+  display: flex;
+  justify-content: center;
+  min-width: 0;
 }
-.hero-copy {
-  position: relative;
-  z-index: 1;
-  max-width: 1140px;
-  margin: 0 auto;
-  padding: 0 1.25rem;
+.hero-art img {
   width: 100%;
+  max-width: 320px;
+  height: auto;
+  min-width: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--brass);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
 }
-.hero-copy .inner { max-width: 30rem; }
 @media (max-width: 860px) {
-  /* Overlaying text on the image doesn't work at this width -- the copy
-     block is taller than any reasonable image band, so it would either
-     get clipped or force the band absurdly tall. Instead: a short
-     decorative image strip up top (cropped to the ship/flag/ghost), then
-     the copy flows in normal document flow on a solid background below
-     it -- legible regardless of how much text/CTA/trust-bar content
-     there is. */
-  .hero-banner {
-    height: auto;
-    display: block;
-    padding-top: 46vw;
-    max-height: none;
-    min-height: 0;
-    background-size: cover;
-    background-position: 78% 45%;
-  }
-  .hero-banner::before {
-    background: linear-gradient(180deg, transparent 0%, transparent 62%, var(--bg) 88%, var(--bg) 100%);
-  }
-  .hero-copy {
-    position: relative;
-    background: var(--bg);
+  .hero-split {
+    grid-template-columns: 1fr;
     text-align: center;
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
+    gap: 1.5rem;
   }
-  .hero-copy .inner { max-width: none; }
+  .hero-art { order: -1; }
+  .hero-art img { max-width: 220px; }
   .hero-cta-row, .trust-bar { justify-content: center; }
 }
 
@@ -512,11 +482,11 @@ textarea {
   to { opacity: 0; transform: scale(0.9); }
 }
 
-/* Hero banner: fades into view once on page load, then stops -- no
+/* Hero art: fades into view once on page load, then stops -- no
    infinite loop. ui-ux-pro-max's own animation guidance flags continuous
    decorative motion as distracting ("use for loading indicators only,
    not decorative elements"), so this plays exactly once. */
-.hero-banner { animation: hero-settle var(--dur-base) var(--ease-out); }
+.hero-art { animation: hero-settle var(--dur-base) var(--ease-out); }
 @keyframes hero-settle {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -56,16 +56,16 @@ def test_decorative_svgs_are_hidden_from_screen_readers():
             assert 'aria-hidden="true"' in svg_tag
 
 
-def test_hero_banner_illustration_is_a_css_background_not_an_unlabeled_image():
-    """The hero illustration is a CSS background-image on .hero-banner,
-    not an <img> -- which means it has zero DOM/accessibility-tree
-    presence at all (stronger than aria-hidden on a visible <img>, and
-    nothing for a screen reader to skip over in the first place)."""
+def test_hero_art_illustration_is_decorative_and_hidden_from_screen_readers():
+    """The small hero illustration is a supporting brand detail, not
+    content -- its wrapper is aria-hidden and the <img> has an empty
+    alt, so nothing here is exposed to screen readers (the adjacent
+    heading/copy already carries all the real information)."""
 
     client = TestClient(create_app(_config()))
     html = client.get("/").text
-    assert 'class="hero-banner"' in html
-    assert "hero-fleet.webp" not in html  # referenced only from CSS, never inline as an <img>
+    assert 'class="hero-art" aria-hidden="true"' in html
+    assert re.search(r'<img src="static/art/hero-mark\.webp" alt=""', html)
     assert re.search(r'<img[^>]*class="mascot-idle"', html) is None
 
 
