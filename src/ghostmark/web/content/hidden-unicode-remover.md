@@ -1,3 +1,9 @@
+<p class="article-hero">
+<img src="static/art/ghost-mark.svg" alt="" width="90" height="90" class="hero-illustration" />
+</p>
+
+<p class="kicker">Tiny stowaways hide between the letters.</p>
+
 # Hidden Unicode Remover
 
 ### Strip invisible characters from copy-pasted text — free, in your browser or via CLI
@@ -42,10 +48,10 @@ python3 -c "print('hello' + chr(0x200B) + 'world')" | xargs -0 -I{} ghostmark in
 python3 -c "print('hello' + chr(0x200B) + 'world')" | xargs -0 -I{} ghostmark clean-text "{}"
 ```
 
-## What GhostMark removes vs. preserves
+## What MarkMyAss removes vs. preserves
 
 Not every unusual Unicode character is safe to delete — some are
-load-bearing. GhostMark classifies before touching anything:
+load-bearing. MarkMyAss classifies before touching anything:
 
 - **Removed automatically**: zero-width spaces, Unicode "Tags" block
   characters — no legitimate role in ordinary text.
@@ -56,7 +62,7 @@ load-bearing. GhostMark classifies before touching anything:
   typography). Deleting these would change what the text actually says,
   not just how it's encoded.
 
-This means GhostMark won't mangle legitimate multilingual text, code, or
+This means MarkMyAss won't mangle legitimate multilingual text, code, or
 emoji while cleaning what's actually invisible-and-unnecessary. Full
 classification methodology and the complete rule set:
 [/lab/hidden-unicode](lab/hidden-unicode).

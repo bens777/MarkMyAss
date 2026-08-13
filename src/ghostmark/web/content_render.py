@@ -82,7 +82,7 @@ def render_article_page(
     jsonld_html = "\n  ".join(jsonld_script_tag(block) for block in jsonld_blocks)
 
     footer = footer_html if footer_html is not None else (
-        '<p>GhostMark is open source (MIT). '
+        '<p>MarkMyAss is open source (MIT), powered by the GhostMark engine. '
         '<a href="https://github.com/bens777/ghostmark" rel="noopener">Source on GitHub</a>.</p>'
     )
 
@@ -101,7 +101,7 @@ def render_article_page(
   <meta property="og:title" content="{meta.title}" />
   <meta property="og:description" content="{meta.description}" />
   <meta property="og:url" content="{canonical_url}" />
-  <meta property="og:site_name" content="GhostMark" />
+  <meta property="og:site_name" content="MarkMyAss" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="{meta.title}" />
   <meta name="twitter:description" content="{meta.description}" />

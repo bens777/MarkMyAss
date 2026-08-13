@@ -41,6 +41,7 @@ from fastapi.responses import (
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.concurrency import run_in_threadpool
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from ghostmark import __version__
 from ghostmark.cleaner import clean_file, clean_text_content
@@ -360,6 +361,51 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
         # Never leak internals (paths, tracebacks) to the client.
         log.error("Unhandled error on %s %s: %s", request.method, request.url.path, exc.__class__.__name__)
         return JSONResponse({"detail": "An unexpected error occurred."}, status_code=500)
+
+    _not_found_html = f"""<!doctype html>
+<html lang="en">
+<head>
+  <base href="{config.base_path}">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Uncharted waters (404) | MarkMyAss</title>
+  <meta name="robots" content="noindex" />
+  <link rel="stylesheet" href="static/style.css" />
+  <link rel="stylesheet" href="static/article.css" />
+</head>
+<body>
+  <main class="wrap article-wrap" id="main-content">
+    {_ARTICLE_NAV_HTML}
+    <article class="article" style="text-align: center;">
+      <p class="article-hero">
+        <img src="static/art/mascot-captain.svg" alt="" width="220" height="169" class="hero-illustration" />
+      </p>
+      <p class="kicker">Uncharted waters.</p>
+      <h1>404 — this page isn't on the map</h1>
+      <p>The crew searched the whole ship: no page here, not even a ghost
+      of one. Either the address has a typo, or this cargo was never
+      aboard.</p>
+      <p><a href="." class="btn primary">Back to the cleaner</a></p>
+      <p><a href="lab">AI Watermark Lab</a> · <a href="benchmarks">Benchmarks</a> · <a href="run-ai-locally">Run Models Locally</a></p>
+    </article>
+  </main>
+</body>
+</html>
+"""
+
+    @app.exception_handler(StarletteHTTPException)
+    async def _http_exception_handler(request: Request, exc: StarletteHTTPException):
+        # Registered on Starlette's base HTTPException so it also catches
+        # the router's own 404 for unknown paths (FastAPI's HTTPException
+        # subclasses it, so route-raised errors land here too). Browsers
+        # navigating to a missing page get the themed 404 page; API/JSON
+        # clients (and every non-404 error) keep the plain JSON contract
+        # unchanged.
+        accepts_html = "text/html" in request.headers.get("accept", "")
+        is_api = "/api/" in request.url.path
+        if exc.status_code == 404 and request.method == "GET" and accepts_html and not is_api:
+            return HTMLResponse(_not_found_html, status_code=404)
+        return JSONResponse({"detail": exc.detail}, status_code=exc.status_code, headers=getattr(exc, "headers", None))
 
     if STATIC_DIR.exists():
         app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")

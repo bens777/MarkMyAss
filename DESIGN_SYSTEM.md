@@ -198,12 +198,20 @@ headline, the Inspect→Clean→Verify strip, the CTA, and the trust bar
 all have to work and make the product findable within three seconds
 even with the illustration hidden.
 
-**The "MarkMyAss" pun stays a text-only kicker/wordmark joke** — no hero
-illustration has ever depicted it literally, and the hunting-ghosts scene
-doesn't either. That's deliberate: the visual joke (if ever added as a
-small secondary detail — e.g. a barely-visible skull-mark stamp
-somewhere incidental) must stay a background detail someone notices on a
-second look, never the composition's subject.
+**The "MarkMyAss" visual joke is a sanctioned SECONDARY easter egg, never
+the subject.** The hero scene carries it as a discovery detail: the
+net-swinging pirate has a round skull-stamp mark printed on the seat of
+his (fully clothed) trousers, and the crewmate at the treasure chest is
+pointing at it mid-laugh. Rules that keep it working: everyone stays
+fully clothed, nothing vulgar or sexual, the primary read of the image
+remains "crew hunting hidden ghosts" — the gag is what a visitor notices
+on the second look, not the first. The same "discovered mark" motif
+exists as a small reusable icon (`static/art/mark-stamp.svg`, a round
+woodcut skull seal) used sparingly on content surfaces (e.g. the
+homepage "What MarkMyAss actually removes" heading). Brand hierarchy:
+pirates = the MarkMyAss crew, ghosts = hidden traces, marks = what the
+crew discovers and removes. Do not put the gag on every page — one
+memorable signature beats a running joke that wears out.
 
 **Everything else** stays simple, original, single-weight SVG line/flat
 art (rects, circles, paths built from arcs/lines) — small supporting icons

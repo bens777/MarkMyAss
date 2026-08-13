@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="A round skull stamp mark, MarkMyAss's icon for a discovered mark">
+  <!-- Original artwork for MarkMyAss: the recurring "discovered mark"
+       stamp motif (a woodcut-style round skull seal). Self-theming via
+       an internal style block, like every other asset in this folder. -->
+  <style>
+    .gm-stamp { stroke: #cc2a14; }
+    .gm-skull { fill: #cc2a14; }
+
+    @media (prefers-color-scheme: dark) {
+      .gm-stamp { stroke: #ff6b4a; }
+      .gm-skull { fill: #ff6b4a; }
+    }
+  </style>
+  <g class="gm-stamp" fill="none" stroke-width="2.5">
+    <circle cx="32" cy="32" r="28" />
+    <circle cx="32" cy="32" r="22.5" stroke-width="1.5" stroke-dasharray="3 3" />
+  </g>
+  <g class="gm-skull">
+    <!-- skull: rounded cranium + jaw -->
+    <path d="M32 17
+             a10.5 10.5 0 0 1 10.5 10.5
+             v4.5
+             a3 3 0 0 1 -3 3
+             h-1v3.5a2 2 0 0 1 -2 2h-9a2 2 0 0 1 -2 -2V35h-1a3 3 0 0 1 -3 -3
+             v-4.5
+             A10.5 10.5 0 0 1 32 17Z" />
+    <!-- crossbones under the skull -->
+    <rect x="18" y="43.4" width="28" height="3.4" rx="1.7" transform="rotate(14 32 45)" />
+    <rect x="18" y="43.4" width="28" height="3.4" rx="1.7" transform="rotate(-14 32 45)" />
+  </g>
+  <!-- eyes + nose knocked out of the skull in the page/card background
+       color: they self-theme with the same media query. -->
+  <style>
+    .gm-hole { fill: #fff6e7; }
+    @media (prefers-color-scheme: dark) { .gm-hole { fill: #16294a; } }
+  </style>
+  <circle class="gm-hole" cx="27.4" cy="28" r="2.7" />
+  <circle class="gm-hole" cx="36.6" cy="28" r="2.7" />
+  <path class="gm-hole" d="M32 32.4l2 3.4h-4Z" />
+</svg>

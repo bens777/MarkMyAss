@@ -1,3 +1,9 @@
+<p class="article-hero">
+<img src="static/art/mascot-captain.svg" alt="" width="200" height="154" class="hero-illustration" />
+</p>
+
+<p class="kicker">Ghosts in the cargo hold.</p>
+
 # AI Metadata Cleaner
 
 ### File-format-level metadata removal, independently verified — not a black box
@@ -27,7 +33,7 @@ segment, so removing EXIF removes them as part of the same operation.
 
 ## Why byte-level matters
 
-GhostMark's image cleaning works at the **byte/segment level**, not by
+MarkMyAss's image cleaning works at the **byte/segment level**, not by
 decoding and re-encoding the image. That means:
 
 ```text
@@ -40,18 +46,18 @@ Visual content        unchanged (byte-identical pixel data)
 
 A tool that decodes and re-encodes your image to "clean" it is doing
 more than removing metadata — it's also silently altering compression
-and potentially quality. GhostMark doesn't do that: pixel data is never
+and potentially quality. MarkMyAss doesn't do that: pixel data is never
 touched, only the metadata segments/chunks around it.
 
 PDF cleaning works the same way conceptually: pikepdf edits the
 document's object graph directly, so pages, fonts, images, text, and
 links are untouched — only `/Info` and the XMP metadata stream are
-removed. GhostMark reopens the cleaned PDF and confirms it's still
+removed. MarkMyAss reopens the cleaned PDF and confirms it's still
 structurally valid before handing it back.
 
 ## Independent verification with ExifTool
 
-GhostMark doesn't ask you to trust its own "removed" claim. If
+MarkMyAss doesn't ask you to trust its own "removed" claim. If
 [ExifTool](https://exiftool.org/) is installed (it is, automatically, in
 the hosted deployment), `ghostmark verify` re-scans the cleaned file with
 that separate, independently maintained tool and reports whether it
@@ -63,14 +69,14 @@ ghostmark verify photo.ghostmark.jpg --original photo.jpg
 ```
 
 ```text
-GhostMark verification:  PASS
+MarkMyAss verification:  PASS
 ExifTool verification:   PASS
 Overall:                  VERIFIED CLEAN
 ```
 
 Every property ExifTool reports is categorized (embedded metadata vs.
 structural/filesystem/computed information), so a preserved ICC profile
-or the file's byte size is never mistaken for "metadata GhostMark failed
+or the file's byte size is never mistaken for "metadata MarkMyAss failed
 to remove." Full methodology: [/lab/pdf-metadata](lab/pdf-metadata).
 
 ## What this page doesn't cover
