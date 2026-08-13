@@ -84,6 +84,17 @@ def test_receipt_text_never_calls_itself_a_certificate(tmp_path: Path):
     assert "human authorship" not in text
 
 
+def test_receipt_thematic_framing_stays_out_of_machine_readable_output(tmp_path: Path):
+    """"Captain's manifest" is presentation-only flavor for the HTML
+    rendering -- the JSON and plain-text exports (the machine-readable /
+    portable-record formats) must stay purely technical."""
+
+    receipt, _, _ = _make_receipt(tmp_path)
+    assert "captain" not in receipt.to_json().lower()
+    assert "captain" not in receipt.to_text().lower()
+    assert "captain's manifest" in receipt.to_html().lower()
+
+
 def test_receipt_html_is_self_contained_and_well_formed(tmp_path: Path):
     receipt, path, cleaned_path = _make_receipt(tmp_path)
     html = receipt.to_html()

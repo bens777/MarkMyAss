@@ -168,24 +168,27 @@ class VerificationReceipt:
 <meta charset="utf-8">
 <title>GhostMark Verification Receipt -- {escape(self.file_name)}</title>
 <style>
-  body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; color: #1c1f26; background: #f6f7fb; }}
-  h1 {{ font-size: 1.4rem; }}
-  h2 {{ font-size: 1rem; text-transform: uppercase; letter-spacing: .04em; color: #5b6270; margin-top: 2rem; }}
+  body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; color: #e7e9ee; background: #0f1115; }}
+  h1 {{ font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif; font-size: 1.5rem; margin-bottom: 0.1rem; }}
+  .subtitle {{ color: #c9a44c; font-style: italic; margin: 0 0 1.25rem; font-size: 0.95rem; }}
+  h2 {{ font-size: 1rem; text-transform: uppercase; letter-spacing: .04em; color: #9aa1ad; margin-top: 2rem; }}
   table {{ width: 100%; border-collapse: collapse; margin-top: .5rem; }}
-  td {{ padding: .4rem .6rem; border: 1px solid #dfe2ea; }}
-  td.found {{ color: #b5670a; font-weight: 700; }}
-  td.clean {{ color: #1f8f5a; font-weight: 700; }}
-  td.na {{ color: #6b7280; font-weight: 700; }}
+  td {{ padding: .4rem .6rem; border: 1px solid #2a2e38; }}
+  td.found {{ color: #ffb454; font-weight: 700; }}
+  td.clean {{ color: #5fd08a; font-weight: 700; }}
+  td.na {{ color: #9aa1ad; font-weight: 700; }}
   .verdict {{ display: inline-block; padding: .4rem 1rem; border-radius: 999px; font-weight: 800; margin-top: .5rem; }}
-  .verdict.clean {{ background: #e3f5ec; color: #1f8f5a; }}
-  .verdict.found {{ background: #fdeee0; color: #b5670a; }}
-  .verdict.na {{ background: #eceef2; color: #6b7280; }}
-  code {{ background: #eceef2; padding: .1rem .3rem; border-radius: 4px; font-size: .85em; word-break: break-all; }}
-  footer {{ margin-top: 2rem; color: #5b6270; font-size: .85rem; }}
+  .verdict.clean {{ background: rgba(95,208,138,.18); color: #5fd08a; }}
+  .verdict.found {{ background: rgba(255,180,84,.18); color: #ffb454; }}
+  .verdict.na {{ background: rgba(154,161,173,.18); color: #9aa1ad; }}
+  code {{ background: #171a21; border: 1px solid #2a2e38; padding: .1rem .3rem; border-radius: 4px; font-size: .85em; word-break: break-all; font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", monospace; }}
+  footer {{ margin-top: 2rem; color: #9aa1ad; font-size: .85rem; }}
+  footer a {{ color: #7c8cff; }}
 </style>
 </head>
 <body>
 <h1>👻 GhostMark Verification Receipt</h1>
+<p class="subtitle">Captain's manifest</p>
 <p><strong>File:</strong> {escape(self.file_name)}</p>
 
 <h2>Before</h2>
