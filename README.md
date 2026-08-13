@@ -84,6 +84,22 @@ These scripts check for Python, set up a virtual environment, install
 GhostMark, and open the local web UI for you -- with plain-language
 errors if something's missing.
 
+## Learn how to run models locally
+
+Cleaning metadata after the fact is one path; avoiding provider-side
+provenance **at the source** is another. GhostMark's web UI includes a
+practical developer guide covering hosted-vs-open-weight models, a
+hardware/budget decision matrix, current recommended open-weight models
+(coding, general reasoning, lightweight), local inference tools (Ollama,
+llama.cpp, vLLM, LM Studio), and when renting a GPU beats buying one.
+
+```text
+https://moseisley.sh/ghostmark/run-local
+```
+
+Locally, the same page is available at `http://127.0.0.1:8765/run-local`
+once you've run `ghostmark ui`. Source: [`src/ghostmark/web/content/run_local.md`](src/ghostmark/web/content/run_local.md).
+
 ## The web UI
 
 ```text

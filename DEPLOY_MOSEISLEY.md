@@ -66,7 +66,7 @@ curl http://127.0.0.1:8765/health
 You should see something like:
 
 ```json
-{"status": "ok", "ghostmark": "0.2.0", "exiftool_available": true}
+{"status": "ok", "ghostmark": "0.3.0", "exiftool_available": true}
 ```
 
 If `exiftool_available` is `false`, something went wrong with the Docker

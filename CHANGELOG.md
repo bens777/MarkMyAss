@@ -2,6 +2,33 @@
 
 All notable changes to GhostMark are documented in this file.
 
+## [0.3.0] - 2026-08-13
+
+### Added
+
+- New `/run-local` page: a developer guide to avoiding provider-side
+  provenance at the source by running open-weight models locally, on a
+  workstation, or on a rented GPU. Covers hosted-vs-open-weight models
+  (with an explicit "no, you can't run the frontier closed models
+  locally" answer), a hardware/budget decision matrix, current
+  recommended open-weight model families (coding, general reasoning,
+  lightweight) with verified official links and license notes, local
+  inference tools (Ollama, llama.cpp, vLLM, LM Studio,
+  text-generation-webui), GPU rental platforms and when renting beats
+  buying, and an explicit "what this page does not claim" honesty
+  section. Every external link was checked and returns 200 at time of
+  writing; sourced and dated ("Last reviewed"), with a correction CTA
+  linking to GitHub issues.
+- Content lives in `src/ghostmark/web/content/run_local.md` (Markdown),
+  rendered via the new `ghostmark.web.content_render` module -- kept
+  separate from rendering logic so future edits don't require touching
+  Python. New `markdown` (BSD-3-Clause) dependency for this.
+- Subtle, discoverable link from the main cleaner page ("Want to avoid
+  provider-side provenance at the source? Learn how to run models
+  locally →"), and a link back from the guide to the cleaner. Works
+  under both local (`/`) and hosted (`/ghostmark/`) base paths, same as
+  the rest of the app.
+
 ## [0.2.0] - 2026-08-12
 
 Adds a production-ready public web deployment (moseisley.sh/ghostmark)

@@ -15,6 +15,7 @@ constraints; generated with `pip-licenses`).
 | `pillow`             | MIT-CMU (HPND)  | Used only for fixture generation and WebP/pixel decoding in tests; GhostMark's own metadata stripping does not depend on Pillow re-encoding |
 | `python-multipart`   | Apache-2.0      | File upload parsing in the web UI |
 | `pikepdf`            | **MPL-2.0**     | PDF object-graph editing (see below) |
+| `markdown` (Python-Markdown) | BSD-3-Clause | Renders the `/run-local` developer guide from `src/ghostmark/web/content/run_local.md` |
 
 Development-only dependencies (`pytest`, `pytest-cov`, `httpx`, `ruff`) are
 not distributed with GhostMark and do not affect end users.
