@@ -1,5 +1,5 @@
 <p class="article-hero">
-<img src="static/art/spyglass.svg" alt="" width="90" height="90" class="hero-illustration" />
+<img src="static/art/page-claude-detector.webp" alt="Illustration: the pirate captain scans the air with a brass telescope, revealing faint spectral trails and a startled ghost" width="440" height="295" class="hero-illustration" />
 </p>
 
 <p class="kicker">Spot the ghost before it stows away.</p>

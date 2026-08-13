@@ -224,38 +224,29 @@ img, svg { max-width: 100%; height: auto; }
   margin: 0 0 0.7rem;
   max-width: 18ch;
 }
+/* The Inspect -> Clean -> Verify sequence as pure typography -- bold
+   display-type labels with accent arrows. Deliberately NOT a stepper
+   widget: no numbered chips, no pills. */
 .hero-flow {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  align-items: baseline;
+  gap: 0.7rem;
   margin: 0 0 0.8rem;
-  list-style: none;
   padding: 0;
 }
-.hero-flow li {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.hero-flow .flow-step {
+  font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.95rem;
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
   color: var(--text);
-  background: var(--surface);
-  border: 2px solid var(--text);
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
 }
-.hero-flow .flow-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.3rem;
-  height: 1.3rem;
-  border-radius: 50%;
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-size: 0.72rem;
+.hero-flow .flow-sep {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.15rem;
 }
-.hero-flow .flow-sep { color: var(--border); font-weight: 400; }
 .subheadline {
   margin: 0.6rem 0 0;
   color: var(--text);
@@ -320,23 +311,38 @@ img, svg { max-width: 100%; height: auto; }
 .privacy-note { margin: 0.9rem 0 0; font-size: 0.85rem; color: var(--muted); }
 
 /* ---- Hero illustration -- the mandatory brand scene: pirates
-   actively hunting spectral ghosts aboard their ship. Contained in the
-   hero's right column at its natural aspect ratio (no cropping), framed
-   like the site's other cards. Plays a single settle-in animation on
+   actively hunting spectral ghosts aboard their ship. Deliberately NOT
+   a framed card: the artwork sits directly on the page background as an
+   integrated scene anchored to the right, bleeding toward the viewport
+   edge, with a soft fade on its left edge so it melts into the hero
+   background instead of reading as "an image in a box". The artwork's
+   own sky is the same warm cream family as --bg, so no border is needed
+   for it to feel intentional. Plays a single settle-in animation on
    load, never loops. */
 .hero-scene {
   margin: 0;
   min-width: 0;
-  border: 2px solid var(--text);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
+  /* Bleed out of the centered 1140px .wrap toward the right viewport
+     edge (the max() keeps it sane below the wrap's max-width; body has
+     overflow-x hidden as the scrollbar-width safety net). */
+  margin-right: calc(-1 * max((100vw - 1140px) / 2, 0px) - 1.25rem);
   animation: hero-settle var(--dur-base) var(--ease-out);
 }
 .hero-scene img {
   display: block;
   width: 100%;
   height: auto;
+  /* Soft blend into the page: fade the left edge (protects text
+     readability) and every outer edge so the artwork's rectangle never
+     shows against the page background. Two mask layers intersected --
+     horizontal fade x vertical fade. The single-layer -webkit fallback
+     still kills the most important (left) edge on engines without
+     mask-composite. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 16%, #000 97%, transparent 100%);
+  mask-image:
+    linear-gradient(to right, transparent 0%, #000 16%, #000 97%, transparent 100%),
+    linear-gradient(to bottom, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  mask-composite: intersect;
 }
 @keyframes hero-settle {
   from { opacity: 0; transform: translateY(6px); }
@@ -351,7 +357,18 @@ img, svg { max-width: 100%; height: auto; }
   .hero h1 { margin-left: auto; margin-right: auto; }
   .subheadline { margin-left: auto; margin-right: auto; }
   .hero-flow, .hero-cta-row, .trust-bar { justify-content: center; }
-  .hero-scene { max-width: 560px; margin: 0 auto; }
+  /* Full-width illustration below the text -- still frameless; fade
+     both side edges gently instead of only the left. */
+  .hero-scene {
+    margin: 0 calc(50% - 50vw);
+  }
+  .hero-scene img {
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    mask-image:
+      linear-gradient(to right, transparent 0%, #000 8%, #000 92%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, #000 9%, #000 91%, transparent 100%);
+    mask-composite: intersect;
+  }
 }
 
 .stage-heading {
@@ -367,6 +384,7 @@ img, svg { max-width: 100%; height: auto; }
 }
 
 .card, .input-section {
+  position: relative;
   background: var(--surface);
   border: 2px solid var(--text);
   border-radius: var(--radius-md);
@@ -374,6 +392,32 @@ img, svg { max-width: 100%; height: auto; }
   margin-bottom: 1.5rem;
   margin-top: 1.5rem;
   box-shadow: var(--shadow-card);
+}
+
+/* A small brand ghost peeking over the top edge of the cleaner card --
+   a deliberate "something is hiding inside" wink right where files get
+   inspected. Decorative only (empty alt). */
+.card-peek {
+  position: absolute;
+  top: -30px;
+  right: 26px;
+  transform: rotate(-7deg);
+  pointer-events: none;
+}
+
+/* Small in-universe spot illustration floated inside an info section
+   (e.g. the crate-ghosts scene beside "What MarkMyAss actually
+   removes"). Radial mask melts its cream edges into the card. */
+.section-spot {
+  float: right;
+  width: 215px;
+  height: auto;
+  margin: -0.4rem -0.3rem 0.4rem 1rem;
+  -webkit-mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, #000 52%, transparent 95%);
+  mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, #000 52%, transparent 95%);
+}
+@media (max-width: 640px) {
+  .section-spot { width: 150px; margin-right: -0.5rem; }
 }
 
 .tabs { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
@@ -673,6 +717,19 @@ textarea {
 }
 .preview-card:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-card-hover); }
 .preview-card:focus-visible { outline: 2px solid var(--spectral); outline-offset: 2px; }
+/* Full-bleed illustrated cover band at the top of each preview card --
+   each card shows its destination page's own scene (Lab chart room,
+   Captain's Log, navigator), so the brand universe is visible on the
+   homepage beyond the hero without repeating one image. */
+.preview-thumb {
+  width: calc(100% + 3rem);
+  max-width: calc(100% + 3rem);
+  height: 150px;
+  object-fit: cover;
+  margin: -1.5rem -1.5rem 0.25rem;
+  border-radius: 13px 13px 0 0;
+  border-bottom: 2px solid var(--text);
+}
 .preview-card h3 { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; }
 .preview-card p { margin: 0; color: var(--muted); font-size: 0.92rem; flex-grow: 1; }
 .preview-link { color: var(--accent); font-weight: 700; font-size: 0.9rem; }

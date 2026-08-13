@@ -1,5 +1,5 @@
 <p class="article-hero">
-<img src="static/art/ghost-mark.svg" alt="" width="90" height="90" class="hero-illustration" />
+<img src="static/art/page-hidden-unicode.webp" alt="Illustration: a pirate examines a scroll with a magnifying glass, revealing tiny ghosts hiding between the lines of writing" width="440" height="295" class="hero-illustration" />
 </p>
 
 <p class="kicker">Tiny stowaways hide between the letters.</p>

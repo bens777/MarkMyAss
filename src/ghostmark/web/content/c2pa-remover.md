@@ -1,5 +1,5 @@
 <p class="article-hero">
-<img src="static/art/verify-seal.svg" alt="" width="90" height="90" class="hero-illustration" />
+<img src="static/art/page-c2pa.webp" alt="Illustration: the pirate captain holds a sealed manifest up to the light while a sneaky ghost hides behind the paper" width="440" height="295" class="hero-illustration" />
 </p>
 
 <p class="kicker">The captain reads the manifest first.</p>

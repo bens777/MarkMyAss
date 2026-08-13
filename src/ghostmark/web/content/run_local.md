@@ -1,5 +1,5 @@
 <p class="article-hero">
-<img src="static/run-local-hero.svg" alt="" width="240" height="130" class="hero-illustration" />
+<img src="static/art/page-run-local.webp" alt="Illustration: a confident pirate navigator at the ship's wheel beside a large brass compass, sailing clear open water" width="440" height="295" class="hero-illustration" />
 </p>
 
 <p class="kicker">Sail your own stack.</p>

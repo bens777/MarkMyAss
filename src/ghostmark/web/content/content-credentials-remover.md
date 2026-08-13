@@ -1,5 +1,5 @@
 <p class="article-hero">
-<img src="static/art/verify-seal.svg" alt="" width="90" height="90" class="hero-illustration" />
+<img src="static/art/page-content-credentials.webp" alt="Illustration: a pirate quartermaster inspects a sealed certificate through a loupe while a small ghost watches from behind an ink pot" width="440" height="295" class="hero-illustration" />
 </p>
 
 <p class="kicker">No seal leaves this ship unexamined.</p>

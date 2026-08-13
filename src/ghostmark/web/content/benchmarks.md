@@ -1,3 +1,7 @@
+<p class="article-hero">
+<img src="static/art/page-benchmarks.webp" alt="Illustration: the pirate captain writes in the leather-bound captain's log while a small ghost holds up a tally slate" width="440" height="295" class="hero-illustration" />
+</p>
+
 # Captain's Log — MarkMyAss Benchmarks
 
 ### Every supported test. Every failure. Nothing hidden.

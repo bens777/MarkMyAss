@@ -20,7 +20,7 @@ constraints; generated with `pip-licenses`).
 Development-only dependencies (`pytest`, `pytest-cov`, `httpx`, `ruff`) are
 not distributed with GhostMark and do not affect end users.
 
-## About the homepage hero illustration -- AI-assisted, original composition
+## About the illustrations -- AI-assisted, original compositions
 
 `src/ghostmark/web/static/art/hero-scene.webp` (the wide illustration
 beneath the homepage headline) was produced with an AI image generation
@@ -43,6 +43,14 @@ any copyrighted character, franchise, or existing artwork (no named
 fictional ship or pirate character); it was reviewed before inclusion to
 confirm this. If this image is ever regenerated or replaced, apply the
 same review before committing it.
+
+The per-page spot illustrations (`src/ghostmark/web/static/art/page-*.webp`
+-- landing pages, Lab, Benchmarks, Run Models Locally, and the 404 page)
+were produced the same way: generated with the same AI tool, each from an
+original text prompt, using only the hero illustration itself as the
+style reference so every scene shares one original visual universe. The
+same originality review applies to each of them, and the same "bundled
+static asset, no runtime generation call" property holds.
 
 ## About Bricolage Grotesque (SIL Open Font License 1.1) -- bundled, subsetted
 

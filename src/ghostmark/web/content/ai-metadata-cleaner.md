@@ -1,5 +1,5 @@
 <p class="article-hero">
-<img src="static/art/mascot-captain.svg" alt="" width="200" height="154" class="hero-illustration" />
+<img src="static/art/page-metadata-cleaner.webp" alt="Illustration: a pirate pries open a cargo crate and two startled ghosts escape from inside" width="440" height="295" class="hero-illustration" />
 </p>
 
 <p class="kicker">Ghosts in the cargo hold.</p>

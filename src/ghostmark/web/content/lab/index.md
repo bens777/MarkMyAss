@@ -1,5 +1,5 @@
 <p class="article-hero">
-<img src="static/art/compass-rose.svg" alt="" width="120" height="120" class="hero-illustration" />
+<img src="static/art/page-lab.webp" alt="Illustration: three pirates study a chart-room navigation table where glowing spectral clues float above the map and a small ghost is trapped under a glass jar" width="520" height="290" class="hero-illustration" />
 </p>
 
 # MarkMyAss AI Watermark Lab

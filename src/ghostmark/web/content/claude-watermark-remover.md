@@ -1,5 +1,5 @@
 <p class="article-hero">
-<img src="static/art/spyglass.svg" alt="" width="90" height="90" class="hero-illustration" />
+<img src="static/art/page-claude-remover.webp" alt="Illustration: a pirate's spyglass scan-beam catches a worried ghost half-hidden inside a document" width="440" height="295" class="hero-illustration" />
 </p>
 
 <p class="kicker">The crew's spyglass is on your hidden marks.</p>

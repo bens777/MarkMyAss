@@ -378,7 +378,7 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
     {_ARTICLE_NAV_HTML}
     <article class="article" style="text-align: center;">
       <p class="article-hero">
-        <img src="static/art/mascot-captain.svg" alt="" width="220" height="169" class="hero-illustration" />
+        <img src="static/art/page-404.webp" alt="Illustration: a lost pirate in a rowboat holds up a lantern and an upside-down map while an equally lost ghost floats beside the boat, shrugging" width="440" height="295" class="hero-illustration" />
       </p>
       <p class="kicker">Uncharted waters.</p>
       <h1>404 — this page isn't on the map</h1>

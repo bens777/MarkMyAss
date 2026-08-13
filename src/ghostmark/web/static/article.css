@@ -43,12 +43,15 @@
   margin: 0 0 1rem;
 }
 .hero-illustration {
-  /* These are <img>-embedded SVGs, which don't inherit the host page's
-     CSS (color/custom properties) -- each SVG under static/art/ and
-     run-local-hero.svg is self-theming via an internal <style> with its
-     own light/dark media query instead. See DESIGN_SYSTEM.md. */
+  /* Raster page illustrations (static/art/page-*.webp) sit directly on
+     the page background -- the soft radial mask melts their edges into
+     the page so they never read as a framed rectangle. (Any remaining
+     <img>-embedded SVGs are self-theming via an internal <style> block
+     -- see DESIGN_SYSTEM.md.) */
   max-width: 100%;
   height: auto;
+  -webkit-mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, #000 55%, transparent 96%);
+  mask-image: radial-gradient(ellipse 72% 72% at 50% 50%, #000 55%, transparent 96%);
 }
 
 .article {

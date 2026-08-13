@@ -151,9 +151,9 @@ def test_home_page_links_to_run_ai_locally(client):
 def test_static_assets_referenced_are_served(client):
     html = client.get("/run-ai-locally").text
     assert client.get("/static/article.css").status_code == 200
-    assert client.get("/static/run-local-hero.svg").status_code == 200
+    assert client.get("/static/art/page-run-local.webp").status_code == 200
     assert "static/article.css" in html
-    assert "static/run-local-hero.svg" in html
+    assert "static/art/page-run-local.webp" in html
 
 
 def test_route_works_at_root_base_path_too():
