@@ -49,12 +49,24 @@ def test_lab_page_has_skip_link_targeting_main_content():
 def test_decorative_svgs_are_hidden_from_screen_readers():
     client = TestClient(create_app(_config()))
     html = client.get("/").text
-    # The brand-mark wordmark icon and the hero mascot are both decorative
-    # (the adjacent text/alt already conveys the same information).
-    assert 'class="hero-art" aria-hidden="true"' in html
+    # The brand-mark wordmark icon is decorative (the adjacent "GhostMark"
+    # text already conveys the same information).
     for svg_tag in re.findall(r"<svg[^>]*>", html):
         if 'class="brand-mark"' in svg_tag:
             assert 'aria-hidden="true"' in svg_tag
+
+
+def test_hero_banner_illustration_is_a_css_background_not_an_unlabeled_image():
+    """The hero illustration is a CSS background-image on .hero-banner,
+    not an <img> -- which means it has zero DOM/accessibility-tree
+    presence at all (stronger than aria-hidden on a visible <img>, and
+    nothing for a screen reader to skip over in the first place)."""
+
+    client = TestClient(create_app(_config()))
+    html = client.get("/").text
+    assert 'class="hero-banner"' in html
+    assert "hero-fleet.webp" not in html  # referenced only from CSS, never inline as an <img>
+    assert re.search(r'<img[^>]*class="mascot-idle"', html) is None
 
 
 def test_buttons_have_visible_focus_style():

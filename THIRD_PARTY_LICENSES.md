@@ -20,6 +20,25 @@ constraints; generated with `pip-licenses`).
 Development-only dependencies (`pytest`, `pytest-cov`, `httpx`, `ruff`) are
 not distributed with GhostMark and do not affect end users.
 
+## About the homepage hero illustration -- AI-assisted, original composition
+
+`src/ghostmark/web/static/art/hero-fleet.webp` (the pirate-ship/ghost
+illustration on the homepage hero) was produced with an AI image
+generation tool during development, from an original text prompt written
+for this project (no reference image, no third-party artwork, franchise
+character, or logo used as input). The resulting image is a bundled,
+static asset served directly by GhostMark -- the app never calls out to
+the generation service at runtime, so this does not introduce a required
+paid API or third-party runtime dependency (see "no external network
+request" performance/privacy constraints elsewhere in this repo). The
+composition (ship, crew, a ghost dissolving out of an inspected crate, an
+original ghost-silhouette flag emblem) was deliberately prompted to be
+original and generic-nautical rather than reproducing any copyrighted
+character, franchise, or existing artwork (explicitly not a skull-and-
+crossbones or any named fictional ship); it was reviewed before inclusion
+to confirm this. If this image is ever regenerated or
+replaced, apply the same review before committing it.
+
 ## About Playfair Display (SIL Open Font License 1.1) -- bundled, unmodified
 
 The site's display heading font, `src/ghostmark/web/static/fonts/playfair-display-v40-latin-700.woff2`

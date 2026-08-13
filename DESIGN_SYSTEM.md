@@ -141,19 +141,64 @@ them).
 
 ## Icons & illustration
 
-- **Style:** original, simple geometric SVG shapes (rects, circles,
-  paths built from arcs/lines), single-weight line art (~2px stroke)
-  where applicable. No filled/outline mixing within one icon, no
-  gradients, no photorealism, no copyrighted characters, franchise
-  imagery, or literal recreation of any reference image — original
-  compositions only.
-- **Self-theming pattern (required):** every SVG under `static/art/` and
-  `static/run-local-hero.svg` is referenced via `<img src="...">`, which
-  does **not** inherit the host page's CSS custom properties or
-  `currentColor`. Each file is therefore self-theming: an internal
-  `<style>` block with hardcoded hex values (matching the tokens above)
-  plus its own `@media (prefers-color-scheme: light)` override. Never
-  rely on inherited page CSS for an `<img>`-referenced SVG.
+Two deliberately different tiers, not one style stretched too thin:
+
+1. **The homepage hero scene** (`static/art/hero-fleet.webp`) is a single
+   wide, detailed, cel-shaded illustration — the one place the pirate/
+   ghost world gets to be genuinely rich. A disciplined four-color
+   palette (navy / brass-amber / cream / spectral mint — the same tokens
+   as the rest of the site, not an arbitrary illustration palette), one
+   bold graphic ghost-silhouette flag as the singular iconic emblem
+   (deliberately as bold/simple as a classic skull-and-crossbones), and a
+   crew whose poses tell the product's actual story: a captain in a
+   confident, victorious stance with a spyglass, crew celebrating with
+   raised fists, a spectral ghost visibly startled and dissolving into
+   particles as it's caught escaping an inspected crate. That narrative
+   ("the pirates found and defeated the hidden watermark ghost") is a
+   deliberate choice, not incidental detail — the emotional beat is part
+   of the brief whenever this asset is regenerated. Produced with an AI
+   image-generation tool from an original text prompt (no reference
+   image, no third-party/franchise input) — see `THIRD_PARTY_LICENSES.md`.
+   Shipped as a single bundled `.webp` (no runtime generation, no
+   external request at page-load time), ~2400px wide / ~205KB.
+   **Full-bleed, not boxed:** the illustration is a `background-image` on
+   `.hero-banner` spanning the entire viewport width (breaks out of
+   `.wrap` via a negative-margin trick), not an `<img>` inside a
+   two-column card — a boxed picture next to text reads as "generic SaaS
+   with an illustration pasted on the side"; a full-bleed backdrop reads
+   as an environment the page lives in. The source composition was
+   deliberately prompted with an empty, uncluttered left third so the
+   copy (inside `.hero-copy`) has somewhere calm to sit; a `linear-
+   gradient` scrim on `.hero-banner::before` is a safety net for
+   contrast, not the primary legibility mechanism. On narrow viewports,
+   text is never overlaid on the image (a copy block this long doesn't
+   fit any reasonable image-band height) — instead a short decorative
+   image strip sits above fully-solid-background copy in normal
+   document flow; see the `@media (max-width: 860px)` rule. Because it's
+   a CSS background, it has zero DOM/accessibility-tree presence — no
+   `alt`, no `aria-hidden`, nothing for a screen reader to skip.
+   **If this asset is ever regenerated:** keep the same brief (original
+   composition, no copyrighted characters/franchise/logos, the site's
+   four-color palette, the victorious-pirates/defeated-ghost narrative,
+   an empty left third for text) and re-optimize to a similar file size
+   before committing.
+2. **Everything else** stays simple, original, single-weight SVG line
+   art (rects, circles, paths built from arcs/lines, ~2px stroke) —
+   small supporting icons and secondary-page hero art, not attempts at
+   the same painterly density as the homepage hero. No filled/outline
+   mixing within one icon, no gradients, no photorealism, no copyrighted
+   characters or franchise imagery.
+
+- **Self-theming pattern (required for SVG):** every SVG under
+  `static/art/` and `static/run-local-hero.svg` is referenced via `<img
+  src="...">`, which does **not** inherit the host page's CSS custom
+  properties or `currentColor`. Each file is therefore self-theming: an
+  internal `<style>` block with hardcoded hex values (matching the
+  tokens above) plus its own `@media (prefers-color-scheme: light)`
+  override. Never rely on inherited page CSS for an `<img>`-referenced
+  SVG. (Not applicable to the raster hero, which is pre-rendered for the
+  dark palette and displayed identically in both color schemes — its own
+  night-scene lighting reads fine against either page background.)
 - **XML comment gotcha:** SVG/XML comments cannot contain a literal `--`
   anywhere in the body (only immediately before the closing `-->`) — a
   comment like `<!-- imagery -- simple shapes -->` is invalid XML and
@@ -161,21 +206,17 @@ them).
   shown, the `<img>` just renders as empty/broken). Validate new/edited
   SVGs with `python -c "import xml.etree.ElementTree as ET; ET.parse(path)"`
   before committing.
-- **Asset set** (`static/art/`, reused rather than one illustration per
-  page):
-  - `hero-fleet.svg` — the homepage hero: a ship sailing dark water at
-    night (hull, mast, sail, brass pennant), a small captain figure with
-    a raised spyglass on deck, a moon and faint stars, layered wave-line
-    horizon, and a glowing crate flanked by two small spectral ghost
-    wisps. The single most elaborate asset in the set — everything else
-    stays simpler.
+- **SVG asset set** (`static/art/`, reused rather than one illustration
+  per page):
   - `mascot-captain.svg` — a smaller captain + spyglass + ghost/document
     vignette, available for reuse in empty states or smaller contexts.
-  - `spyglass.svg` — inspection motif.
+  - `spyglass.svg` — inspection motif; used on the Cleaner's Inspect
+    stage heading.
   - `ghost-mark.svg` — a single spectral ghost, for "signal detected"
-    moments and empty states.
+    moments, the Clean stage heading, and empty states.
   - `compass-rose.svg` — Lab / navigation-of-the-unknown motif.
-  - `verify-seal.svg` — a wax-seal/stamp shape for the verification step.
+  - `verify-seal.svg` — a wax-seal/stamp shape for the Verify stage
+    heading.
   - `run-local-hero.svg` (`static/`, not `static/art/`) — a ship leaving
     a harbor, for the Run Models Locally page.
   - `wave-divider.svg` — a low-key horizontal wave motif for section
