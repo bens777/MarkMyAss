@@ -50,6 +50,10 @@ from ghostmark.inspector import inspect_file, inspect_text
 from ghostmark.models import CleanResult, VerifyResult
 from ghostmark.receipt import VerificationReceipt, build_receipt
 from ghostmark.security import (
+    MAX_TEXT_UPLOAD_BYTES,
+    MAX_TEXT_UPLOAD_MB,
+    TEXT_EXTENSIONS,
+    TEXT_LIMIT_MESSAGE,
     FileTooLargeError,
     UnsupportedFileTypeError,
     check_supported,
@@ -742,6 +746,7 @@ Proof, not promises.
             "base_path": config.base_path,
             "public_url": config.public_url,
             "max_upload_mb": config.max_upload_mb,
+            "max_text_upload_mb": MAX_TEXT_UPLOAD_MB,
             "session_ttl_minutes": config.session_ttl_seconds // 60,
             "exiftool_available": exif_verifier.available(),
             "exiftool_version": exif_verifier.version(),
@@ -779,6 +784,14 @@ Proof, not promises.
 
     @app.post("/api/inspect/text")
     def inspect_text_route(body: TextIn) -> dict[str, Any]:
+        # Same CPU-bound degradation path as large text FILES (see
+        # ghostmark.security.TEXT_EXTENSIONS comment) -- reject before any
+        # session or processing work is created.
+        if len(body.text.encode("utf-8", errors="ignore")) > MAX_TEXT_UPLOAD_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Pasted text is currently limited to {MAX_TEXT_UPLOAD_MB} MB.",
+            )
         session_id, session = store.create("text")
         session.text = body.text
         try:
@@ -798,16 +811,28 @@ Proof, not promises.
         except UnsupportedFileTypeError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
+        # Text formats have a dedicated, much lower ceiling: their cleaning
+        # is CPU-bound and a too-big text job can outlive its timeout as an
+        # unkillable worker thread (see ghostmark.security). Enforced here,
+        # server-side, BEFORE the body is even read where possible and
+        # always before any parsing/processing.
+        is_text = suffix_of(safe_name) in TEXT_EXTENSIONS
+        effective_max = MAX_TEXT_UPLOAD_BYTES if is_text else max_bytes
+        oversize_detail = TEXT_LIMIT_MESSAGE if is_text else f"Upload exceeds the {config.max_upload_mb} MB limit."
+
         # Reject early from the declared Content-Length when present, before
-        # reading any body at all.
+        # reading any body at all. Content-Length covers the whole multipart
+        # body (boundaries + part headers included), so allow a small slack
+        # here -- the bounded reader below enforces the EXACT limit on the
+        # actual file bytes.
         declared_length = request.headers.get("content-length")
-        if declared_length and declared_length.isdigit() and int(declared_length) > max_bytes:
-            raise HTTPException(status_code=413, detail=f"Upload exceeds the {config.max_upload_mb} MB limit.")
+        if declared_length and declared_length.isdigit() and int(declared_length) > effective_max + 64 * 1024:
+            raise HTTPException(status_code=413, detail=oversize_detail)
 
         try:
-            data = await _read_upload_bounded(file, max_bytes)
+            data = await _read_upload_bounded(file, effective_max)
         except FileTooLargeError as exc:
-            raise HTTPException(status_code=413, detail=str(exc)) from exc
+            raise HTTPException(status_code=413, detail=oversize_detail) from exc
 
         if not sniff_mime_matches_extension(data, suffix_of(safe_name)):
             raise HTTPException(status_code=400, detail="File content does not match its extension.")

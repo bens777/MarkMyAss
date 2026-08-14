@@ -207,7 +207,7 @@ behavior:
 
 | Variable | Default | What it does |
 | --- | --- | --- |
-| `GHOSTMARK_MAX_UPLOAD_MB` | `10` | Max upload size |
+| `GHOSTMARK_MAX_UPLOAD_MB` | `10` | Max upload size for binary formats (images/PDF). Text files (TXT/MD/JSON/CSV) are additionally capped at 2 MB in code -- large-text cleaning is CPU-bound and can outlive the processing timeout |
 | `GHOSTMARK_SESSION_TTL_MINUTES` | `8` | How long an unclaimed cleaned file is kept before automatic deletion (max 15) |
 | `GHOSTMARK_RATE_LIMIT_PER_MINUTE` | `20` | Requests per minute allowed per visitor IP on the API |
 | `GHOSTMARK_MAX_CONCURRENT` | `4` | Max file-processing jobs running at once |

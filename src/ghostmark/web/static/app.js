@@ -105,7 +105,11 @@
       privacyNote.textContent = text;
       footerPrivacy.textContent = "Local MarkMyAss: nothing is ever uploaded anywhere.";
     }
-    if (config.max_upload_mb) {
+    if (config.max_upload_mb && config.max_text_upload_mb) {
+      // Both numbers come from the server (/api/config), so this copy can
+      // never drift from what the backend actually enforces.
+      uploadLimitHint.textContent = `Images & PDFs: up to ${config.max_upload_mb} MB · Text files: up to ${config.max_text_upload_mb} MB.`;
+    } else if (config.max_upload_mb) {
       uploadLimitHint.textContent = `Maximum file size: ${config.max_upload_mb} MB.`;
     }
   }

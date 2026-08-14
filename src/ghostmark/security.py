@@ -43,6 +43,19 @@ SUPPORTED_EXTENSIONS = {
     ".png", ".jpg", ".jpeg", ".webp",
 }
 
+# Text formats get a much lower ceiling than the global upload limit.
+# Load testing (2026-08) showed hidden-unicode cleaning is CPU-bound at
+# roughly 5s/MB on the production container: >~3MB text cannot finish
+# inside the 30s processing timeout, and a timed-out job's worker thread
+# keeps burning CPU/RAM after the client already got its 503 (Python
+# threads cannot be killed). Binary formats (images/PDF) are byte/segment
+# level and stay fast at any supported size, so they keep the global
+# limit. Enforced server-side BEFORE any parsing/cleaning begins.
+TEXT_EXTENSIONS = {".txt", ".md", ".json", ".csv"}
+MAX_TEXT_UPLOAD_MB = 2
+MAX_TEXT_UPLOAD_BYTES = MAX_TEXT_UPLOAD_MB * 1024 * 1024
+TEXT_LIMIT_MESSAGE = f"Text files are currently limited to {MAX_TEXT_UPLOAD_MB} MB."
+
 # Magic-byte sniffing for defense-in-depth against a disguised upload (e.g.
 # an executable renamed to .png). Text formats have no reliable magic bytes
 # and are intentionally not checked here.

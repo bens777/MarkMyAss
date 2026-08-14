@@ -48,17 +48,34 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 def _client_ip(request: Request) -> str:
-    """The caller's IP, trusting X-Forwarded-For from the reverse proxy.
+    """The caller's IP for rate limiting, behind exactly ONE trusted proxy.
 
-    GhostMark's web app is only ever reachable through the deployment's
-    reverse proxy (see DEPLOY_MOSEISLEY.md) -- it is not bound to a public
-    interface itself -- so the proxy is the only thing that can set this
-    header in practice.
+    Supported topology (current production): Internet -> Caddy ->
+    127.0.0.1:8765 -> app. Caddy (>=2.5) IGNORES X-Forwarded-For arriving
+    from untrusted clients by default ("the proxy will ignore their
+    values from incoming requests, to prevent spoofing" -- Caddy
+    reverse_proxy docs), so the header the app receives contains only the
+    real client address.
+
+    Defense in depth for THAT topology: we take the RIGHTMOST entry
+    rather than the first. With a single trusted reverse proxy the
+    rightmost entry is the address the proxy itself observed and is the
+    only part of the chain a client can never forge -- correct both when
+    the proxy strips inbound XFF (modern Caddy) and when a proxy appends
+    to it (the older/other common behavior, where trusting the FIRST
+    entry would let any client spoof its way past per-IP rate limiting).
+
+    NOT a universal rule: if a CDN or any second proxy layer is ever put
+    in front of Caddy, the rightmost entry becomes the CDN's OWN address
+    (rate limiting would lump all visitors together), and picking the
+    real client requires walking the chain right-to-left past an
+    explicitly configured list of trusted proxy IPs. Re-audit this
+    function (and Caddy's trusted_proxies) before any such change.
     """
 
     forwarded = request.headers.get("x-forwarded-for")
     if forwarded:
-        return forwarded.split(",")[0].strip()
+        return forwarded.split(",")[-1].strip()
     if request.client:
         return request.client.host
     return "unknown"

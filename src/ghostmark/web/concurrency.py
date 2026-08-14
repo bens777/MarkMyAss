@@ -11,6 +11,22 @@ requests:
   but a hostile or malformed file could in principle make an underlying
   parser (Pillow, pikepdf) spin -- this guarantees the request thread
   doesn't hang forever.
+
+IMPORTANT LIMITATION (confirmed by the 2026-08 production load test): the
+timeout frees the *request*, not the *work*. ``future.result(timeout=...)``
+only stops WAITING for the job; the underlying ThreadPoolExecutor task
+keeps running to completion, because a running Python thread cannot be
+killed -- ``Future.cancel()`` only prevents tasks that have not started
+yet. A job that blows its 30s budget therefore keeps consuming a core and
+its working memory long after the client got a 503 (observed: ~100% CPU at
+~500MiB for minutes after oversized-text jobs timed out). The immediate
+mitigation is upstream: inputs that could run long are rejected before
+submission (see ``ghostmark.security.MAX_TEXT_UPLOAD_BYTES``). Truly
+cancellable processing would require one of: process-based workers
+(ProcessPoolExecutor / a subprocess per job, killable via SIGKILL),
+cooperative cancellation checks inside the parsers/cleaners, or chunked
+text processing with a deadline between chunks -- a deliberate future
+architecture change, not something to bolt on here.
 """
 
 from __future__ import annotations
