@@ -150,6 +150,19 @@ def test_sitemap_content_type_is_xml(client):
     assert "xml" in resp.headers["content-type"]
 
 
+# --- No public API schema / docs UI ------------------------------------------------------
+
+
+def test_openapi_schema_and_docs_are_not_public(client):
+    # We do not publish MarkMyAss's API surface: the raw schema and both
+    # doc UIs must 404, while the app itself keeps working.
+    assert client.get("/openapi.json").status_code == 404
+    assert client.get("/docs").status_code == 404
+    assert client.get("/redoc").status_code == 404
+    assert client.get("/health").status_code == 200
+    assert client.get("/").status_code == 200
+
+
 # --- Social preview (OpenGraph / X card) -------------------------------------------------
 
 

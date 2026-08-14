@@ -352,7 +352,16 @@ async def _read_upload_bounded(file: UploadFile, max_bytes: int) -> bytes:
 def create_app(config: WebConfig | None = None) -> FastAPI:
     config = config or load_config()
 
-    app = FastAPI(title="GhostMark", version=__version__, docs_url=None, redoc_url=None)
+    # openapi_url=None also disables the raw schema at /openapi.json (docs
+    # and redoc are already off); MarkMyAss has no need to publish its API
+    # surface. Setting openapi_url to None makes docs_url/redoc_url moot too.
+    app = FastAPI(
+        title="GhostMark",
+        version=__version__,
+        docs_url=None,
+        redoc_url=None,
+        openapi_url=None,
+    )
     app.state.config = config
 
     store = _SessionStore(ttl_seconds=config.session_ttl_seconds)
