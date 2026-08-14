@@ -412,6 +412,31 @@ img, svg { max-width: 100%; height: auto; }
 
 .privacy-note { margin: 0.9rem 0 0; font-size: 0.85rem; color: var(--muted); }
 
+/* Live "pirates aboard" line: subtle, text-sized, spectral-turquoise
+   live dot with a gentle pulse (killed automatically by the global
+   prefers-reduced-motion rules at the top of this file). */
+.presence-line {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.9rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.presence-dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--spectral);
+  animation: presence-pulse 2.4s ease-in-out infinite;
+}
+@keyframes presence-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(18, 184, 166, 0.45); }
+  50% { box-shadow: 0 0 0 5px rgba(18, 184, 166, 0); }
+}
+
 /* ---- Hero illustration -- the mandatory brand scene: pirates
    actively hunting spectral ghosts aboard their ship. Deliberately NOT
    a framed card: the artwork sits directly on the page background as an

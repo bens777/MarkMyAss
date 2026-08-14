@@ -15,6 +15,7 @@
     verify: (id) => `api/verify/${id}`,
     download: (id) => `api/download/${id}`,
     receiptDownload: (id, format) => `api/receipt/${id}/download?format=${format}`,
+    presenceHeartbeat: "api/presence/heartbeat",
   };
 
   // Plain-language "Explain" copy for STEP 1 -- keyed by detector id. This
@@ -507,4 +508,53 @@
   btnSave.addEventListener("click", doSave);
 
   loadConfig();
+
+  // --- Live presence ("pirates aboard") -------------------------------------
+  // Real aggregate count of active visitors -- never fabricated, never
+  // inflated. The session id is random, generated fresh per tab, kept only
+  // in this closure (no cookie, no storage), and the server keeps it in
+  // memory for at most 3 minutes. Heartbeats pause while the tab is hidden.
+  const presenceLine = el("presence-line");
+  const presenceText = el("presence-text");
+  const PRESENCE_INTERVAL_MS = 45000;
+
+  function presenceCopy(count, capped) {
+    // When the server-side registry is at its hard cap, more visitors may
+    // exist than it can admit -- say "N+" instead of a falsely exact number.
+    if (capped) return `${count}+ pirates are hunting hidden AI traces right now`;
+    if (count === 1) return "1 pirate is hunting hidden AI traces right now";
+    if (count > 1) return `${count} pirates are hunting hidden AI traces right now`;
+    return "No pirates hunting traces right now — be the first aboard.";
+  }
+
+  if (presenceLine && presenceText && window.crypto && crypto.getRandomValues) {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    const presenceSid = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+
+    async function presenceBeat() {
+      try {
+        const resp = await fetch(API.presenceHeartbeat, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sid: presenceSid }),
+        });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (typeof data.active !== "number") return;
+        presenceText.textContent = presenceCopy(data.active, data.capped === true);
+        presenceLine.classList.remove("hidden");
+      } catch {
+        // Presence is decoration -- never surface an error for it.
+      }
+    }
+
+    presenceBeat();
+    setInterval(() => {
+      if (document.visibilityState === "visible") presenceBeat();
+    }, PRESENCE_INTERVAL_MS);
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") presenceBeat();
+    });
+  }
 })();

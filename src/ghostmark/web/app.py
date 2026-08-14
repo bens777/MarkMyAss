@@ -39,7 +39,7 @@ from fastapi.responses import (
     RedirectResponse,
 )
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette.concurrency import run_in_threadpool
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -69,6 +69,7 @@ from ghostmark.web.content_render import (
     render_article_page,
     render_markdown_to_html,
 )
+from ghostmark.web.presence import PresenceRegistry, is_valid_session_id
 from ghostmark.web.security_middleware import RateLimitMiddleware, SecurityHeadersMiddleware
 from ghostmark.web.seo import jsonld_script_tag, software_application_jsonld, website_jsonld
 
@@ -306,6 +307,12 @@ class _SessionStore:
 
 class TextIn(BaseModel):
     text: str
+
+
+class PresenceBeatIn(BaseModel):
+    # Length-capped at the schema layer; format-validated by
+    # presence.is_valid_session_id. Nothing else is accepted or stored.
+    sid: str = Field(min_length=1, max_length=64)
 
 
 def _inject_base_href(html: str, base_path: str) -> str:
@@ -742,6 +749,33 @@ Proof, not promises.
             "c2patool_version": c2patool_verifier.version(),
             "ghostmark_version": __version__,
         }
+
+    # --- Live presence ("pirates aboard") ------------------------------------------------
+    # Anonymous, aggregate-only, in-memory -- see ghostmark.web.presence
+    # for the privacy model and the single-worker/restart semantics.
+    # Covered by the same per-IP /api/* rate limit as everything else,
+    # and never logged (uvicorn runs at log_level="warning", and the app
+    # itself logs nothing per-request).
+
+    presence = PresenceRegistry()
+    app.state.presence = presence  # exposed for tests
+
+    def _presence_payload() -> dict[str, Any]:
+        # Aggregate only. "capped" tells the UI to render "N+" when the
+        # registry is full -- never an exact-looking number that isn't.
+        active, capped = presence.snapshot()
+        return {"active": active, "capped": capped}
+
+    @app.post("/api/presence/heartbeat")
+    def presence_heartbeat(body: PresenceBeatIn) -> dict[str, Any]:
+        if not is_valid_session_id(body.sid):
+            raise HTTPException(status_code=400, detail="Invalid presence session id.")
+        presence.beat(body.sid)
+        return _presence_payload()
+
+    @app.get("/api/presence/count")
+    def presence_count() -> dict[str, Any]:
+        return _presence_payload()
 
     @app.post("/api/inspect/text")
     def inspect_text_route(body: TextIn) -> dict[str, Any]:

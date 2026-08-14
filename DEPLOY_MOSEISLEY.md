@@ -212,3 +212,12 @@ behavior:
 | `GHOSTMARK_RATE_LIMIT_PER_MINUTE` | `20` | Requests per minute allowed per visitor IP on the API |
 | `GHOSTMARK_MAX_CONCURRENT` | `4` | Max file-processing jobs running at once |
 | `GHOSTMARK_PROCESSING_TIMEOUT_SECONDS` | `30` | Hard timeout per processing job |
+
+One small note about the homepage's live activity counter: it counts
+active visitors in the memory of the single Uvicorn worker this
+deployment runs, which is exact for this architecture. A container
+restart resets it to zero (it repopulates within minutes as visitors'
+heartbeats arrive) -- that's acceptable for a decorative counter. If
+MarkMyAss ever scales to multiple workers or replicas, the presence
+layer would need shared state (e.g. Redis); deliberately not added
+today.
