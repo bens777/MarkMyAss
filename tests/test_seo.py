@@ -150,6 +150,29 @@ def test_sitemap_content_type_is_xml(client):
     assert "xml" in resp.headers["content-type"]
 
 
+# --- Social preview (OpenGraph / X card) -------------------------------------------------
+
+
+def test_homepage_social_image_is_absolute_and_fetchable(client):
+    """X/Facebook crawlers do not resolve relative og:image URLs -- both
+    social image tags must be absolute on the production host, exactly
+    once each, and the image itself must be served as a real PNG."""
+
+    html = client.get("/").text
+    og = re.findall(r'property="og:image" content="([^"]*)"', html)
+    tw = re.findall(r'name="twitter:image" content="([^"]*)"', html)
+    card = re.findall(r'name="twitter:card" content="([^"]*)"', html)
+    assert og == [f"{PUBLIC_URL}/static/og-image.png"]
+    assert tw == [f"{PUBLIC_URL}/static/og-image.png"]
+    assert card == ["summary_large_image"]
+    assert re.search(r'property="og:image:width" content="1200"', html)
+    assert re.search(r'property="og:image:height" content="630"', html)
+    resp = client.get("/static/og-image.png")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "image/png"
+    assert resp.content[:8] == b"\x89PNG\r\n\x1a\n"
+
+
 # --- llms.txt ----------------------------------------------------------------------------
 
 

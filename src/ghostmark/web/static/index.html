@@ -14,11 +14,18 @@
   <meta property="og:description" content="MarkMyAss shows exactly what it removed — and what it cannot verify. Free, open source, no account, independently verified." />
   <meta property="og:url" content="{{PUBLIC_URL}}" />
   <meta property="og:site_name" content="MarkMyAss" />
-  <meta property="og:image" content="static/og-image.png" />
+  <!-- Social crawlers (X/Facebook/LinkedIn) do NOT resolve relative
+       image URLs against the page -- og:image and twitter:image must be
+       absolute, so they go through the same {{PUBLIC_URL}} substitution
+       as the canonical/og:url tags. -->
+  <meta property="og:image" content="{{PUBLIC_URL}}/static/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="MarkMyAss — a pirate crew hunting ghosts on a ship, with the MarkMyAss skull logo" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Claude Watermark Remover & AI Metadata Cleaner | MarkMyAss" />
   <meta name="twitter:description" content="Inspect, clean and independently verify AI metadata and supported provenance signals. Free and open source." />
-  <meta name="twitter:image" content="static/og-image.png" />
+  <meta name="twitter:image" content="{{PUBLIC_URL}}/static/og-image.png" />
 
   <link rel="icon" href="static/favicon.ico" sizes="48x48" />
   <link rel="icon" type="image/png" href="static/art/markmyass-logo-64.png" sizes="64x64" />
