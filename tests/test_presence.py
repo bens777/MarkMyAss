@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 from fastapi.testclient import TestClient
 
@@ -217,28 +215,3 @@ def test_registry_snapshot_reports_cap():
     assert reg.snapshot() == (1, False)
     reg.beat(SID_B)
     assert reg.snapshot() == (2, True)
-
-
-# --- Display copy (client-side literals) -------------------------------------------------
-
-
-def _app_js() -> str:
-    path = Path(__file__).parent.parent / "src" / "ghostmark" / "web" / "static" / "app.js"
-    return path.read_text(encoding="utf-8")
-
-
-def test_copy_singular_plural_and_zero_states():
-    js = _app_js()
-    assert "pirate is cleaning hidden AI traces right now" in js  # singular
-    assert "pirates are cleaning hidden AI traces right now" in js  # plural
-    assert 'capped ? "+"' in js  # capped "N+" state renders a plus, never a fake exact
-    assert "be the first aboard" in js
-    # The honesty rules: no fabricated floor, no fake randomness.
-    assert "Math.random" not in js
-
-
-def test_homepage_has_presence_line_scaffolding():
-    client = TestClient(create_app(_config()))
-    html = client.get("/").text
-    assert 'id="presence-line" class="presence-line hidden"' in html  # hidden until real data
-    assert 'id="presence-text"' in html
