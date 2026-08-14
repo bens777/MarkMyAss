@@ -268,8 +268,22 @@ def test_homepage_has_social_proof_scaffolding(client):
     assert 'id="social-proof" class="social-proof hidden"' in html  # hidden until real data
     assert "files cleaned with MarkMyAss" in html
     assert 'id="social-proof-count"' in html
-    assert 'id="social-proof-24h"' in html
-    assert "cleaned in the last 24 hours" in html
+
+
+def test_homepage_no_longer_shows_24h_line(client):
+    # The secondary "X cleaned in the last 24 hours" line was removed from
+    # the UI (frontend cleanup); the backend metric may still be returned.
+    html = client.get("/").text
+    assert "cleaned in the last 24 hours" not in html
+    assert 'id="social-proof-24h"' not in html
+    assert "social-proof-dot" not in html
+    js = (
+        __import__("pathlib").Path(__file__).parent.parent
+        / "src" / "ghostmark" / "web" / "static" / "app.js"
+    ).read_text(encoding="utf-8")
+    assert "files_cleaned_last_24h" not in js  # frontend no longer renders it
+    # The endpoint still returns it for now.
+    assert "files_cleaned_last_24h" in client.get("/api/public-stats").json()
 
 
 def test_app_js_hides_social_proof_on_failure_and_zero():

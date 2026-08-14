@@ -662,22 +662,6 @@ img, svg { max-width: 100%; height: auto; }
   margin-right: 0.15rem;
 }
 .social-proof-label { font-weight: 600; }
-.social-proof-24h {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0.15rem 0 0;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--muted);
-}
-.social-proof-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--spectral);
-  flex-shrink: 0;
-}
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;
@@ -688,7 +672,6 @@ img, svg { max-width: 100%; height: auto; }
   .subheadline { margin-left: auto; margin-right: auto; }
   .hero-flow, .hero-cta-row, .trust-bar { justify-content: center; }
   .social-proof { text-align: center; }
-  .social-proof-24h { justify-content: center; }
   /* Full-width illustration below the text -- still frameless; fade
      both side edges gently instead of only the left. */
   .hero-scene {

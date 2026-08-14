@@ -521,11 +521,8 @@
   // real clean, nothing is shown (never a 0, never a fake number). The
   // 24h line is shown only when its real value meets a small threshold.
   const SOCIAL_PROOF_MIN_TOTAL = 1;
-  const SOCIAL_PROOF_MIN_24H = 1;
   const socialProof = el("social-proof");
   const socialProofCount = el("social-proof-count");
-  const socialProof24h = el("social-proof-24h");
-  const socialProof24hCount = el("social-proof-24h-count");
 
   async function loadSocialProof() {
     if (!socialProof || !socialProofCount) return;
@@ -534,15 +531,8 @@
       if (!resp.ok) return; // stays hidden
       const data = await resp.json();
       const total = data.files_cleaned_total;
-      const last24 = data.files_cleaned_last_24h;
       if (typeof total !== "number" || total < SOCIAL_PROOF_MIN_TOTAL) return; // never show 0
       socialProofCount.textContent = total.toLocaleString("en-US");
-      if (typeof last24 === "number" && last24 >= SOCIAL_PROOF_MIN_24H) {
-        socialProof24hCount.textContent = last24.toLocaleString("en-US");
-        socialProof24h.classList.remove("hidden");
-      } else {
-        socialProof24h.classList.add("hidden");
-      }
       socialProof.classList.remove("hidden");
     } catch {
       // Network/parse error -> leave the block hidden, never show fallbacks.
