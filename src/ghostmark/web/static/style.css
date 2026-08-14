@@ -413,8 +413,10 @@ img, svg { max-width: 100%; height: auto; }
 .privacy-note { margin: 0.9rem 0 0; font-size: 0.85rem; color: var(--muted); }
 
 /* Live "pirates aboard" line: subtle, text-sized, spectral-turquoise
-   live dot with a gentle pulse (killed automatically by the global
-   prefers-reduced-motion rules at the top of this file). */
+   live dot. The pulse plays a few times when the line appears and then
+   rests -- this project deliberately bans infinite decorative animation
+   (see tests/test_accessibility.py), and the global
+   prefers-reduced-motion rules kill even these iterations. */
 .presence-line {
   display: flex;
   align-items: center;
@@ -430,7 +432,7 @@ img, svg { max-width: 100%; height: auto; }
   height: 8px;
   border-radius: 50%;
   background: var(--spectral);
-  animation: presence-pulse 2.4s ease-in-out infinite;
+  animation: presence-pulse 2.4s ease-in-out 3;
 }
 @keyframes presence-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(18, 184, 166, 0.45); }
