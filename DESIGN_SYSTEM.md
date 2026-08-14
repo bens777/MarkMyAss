@@ -145,6 +145,28 @@ antique. No display serif ships with the app anymore; the previous
   playful, unmistakably non-corporate interaction that reads as
   confident/bold/shareable rather than soft/muted/parchment-y.
 
+## Logo
+
+**The official MarkMyAss logo is the approved asset at
+`design-references/markmyass-logo.png`** — a circular salmon badge with
+arched "MARKMYASS" lettering and a navy pirate skull (X-stamped bandana,
+eye patch) in a distressed stamp/tattoo register. That file is the
+source of truth and must never be redrawn, regenerated, restyled, or
+overwritten. Production copies (background made transparent, resized —
+pixels otherwise untouched) live at `static/art/markmyass-logo.png`
+(320px), `-180.png` (apple-touch), `-64.png` (nav/kicker/favicon-png),
+plus `static/favicon.ico`. Used in: the top-nav and article-header brand
+links, the hero brand kicker, the homepage "What MarkMyAss actually
+removes" heading badge, browser favicons, and the OG/social card (the
+approved hero scene with the badge overlaid top-left — the scene itself
+is never modified).
+
+The logo's salmon is available as the decorative-only token
+`--brand-salmon: #f87868` — a restrained brand signature (currently:
+the `::selection` highlight, navy-on-salmon 6.0:1). Never use it as a
+text color on cream, never repaint existing components with it, and
+never recolor the pirate/ghost artwork toward it.
+
 ## Icons & illustration
 
 **Hero illustration — the mandatory brand scene.** A pirate crew actively

@@ -106,6 +106,10 @@ def render_article_page(
   <meta name="twitter:title" content="{meta.title}" />
   <meta name="twitter:description" content="{meta.description}" />
 
+  <link rel="icon" href="static/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" href="static/art/markmyass-logo-64.png" sizes="64x64" />
+  <link rel="apple-touch-icon" href="static/art/markmyass-logo-180.png" />
+
   <link rel="stylesheet" href="static/style.css" />
   <link rel="stylesheet" href="static/article.css" />
   {jsonld_html}

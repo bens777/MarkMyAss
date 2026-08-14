@@ -39,10 +39,14 @@
 
   /* Decorative-only vivid accents: icon fills, borders, tinted
      backgrounds, badge chips with dark text on top. Never used as a
-     foreground text color -- at full saturation neither passes 4.5:1
-     against a bright cream page. */
+     foreground text color -- at full saturation none of these pass
+     4.5:1 against a bright cream page. --brand-salmon is the official
+     MarkMyAss logo's badge color (sampled from the approved asset) --
+     a restrained brand signature, never a text color and never a
+     replacement for the site palette. */
   --brass: #e8a233;
   --spectral: #12b8a6;
+  --brand-salmon: #f87868;
 
   /* Status text -- each independently checked against the tinted
      surface-2 chip background it renders on. */
@@ -92,6 +96,7 @@
     --accent-ink: #0e1b33;
     --brass: #f2b84d;
     --spectral: #4fe0cc;
+    --brand-salmon: #f87868;
     --found: #ffb066;
     --notfound: #6fe0a0;
     --unknown: #a9bad9;
@@ -117,6 +122,10 @@
 }
 
 * { box-sizing: border-box; }
+
+/* Brand signature: text selection in the logo's salmon (navy text on
+   top stays AA -- 6.0:1 against #f87868). */
+::selection { background: var(--brand-salmon); color: #12213d; }
 
 html { scroll-behavior: smooth; }
 
@@ -183,7 +192,8 @@ img, svg { max-width: 100%; height: auto; }
   letter-spacing: -0.01em;
 }
 .top-nav .brand-link:hover { color: var(--accent); }
-.brand-mark { color: var(--spectral); flex-shrink: 0; }
+.brand-mark { flex-shrink: 0; }
+.brand-kicker img { vertical-align: -3px; }
 
 /* ---- Hero: product-first, headline+CTA read in under 3 seconds ----
    Classic conversion layout: copy/CTAs in the left column, the brand

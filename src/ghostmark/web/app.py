@@ -84,7 +84,11 @@ RUN_LOCAL_PAGE_META = PageMeta(
     path="/run-ai-locally",
     breadcrumbs=(("Home", "/"), ("Run AI Models Locally", "/run-ai-locally")),
 )
-_ARTICLE_NAV_HTML = '<header class="article-header"><a href="." class="brand-link">👻 MarkMyAss</a></header>'
+_ARTICLE_NAV_HTML = (
+    '<header class="article-header"><a href="." class="brand-link">'
+    '<img src="static/art/markmyass-logo-64.png" alt="" width="22" height="22" '
+    'style="vertical-align: -4px; margin-right: 0.35rem;" /> MarkMyAss</a></header>'
+)
 
 # AI Watermark Lab pages: "" is /lab itself, everything else is /lab/<slug>.
 LAB_PAGE_META: dict[str, PageMeta] = {
@@ -370,6 +374,8 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Uncharted waters (404) | MarkMyAss</title>
   <meta name="robots" content="noindex" />
+  <link rel="icon" href="static/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" href="static/art/markmyass-logo-64.png" sizes="64x64" />
   <link rel="stylesheet" href="static/style.css" />
   <link rel="stylesheet" href="static/article.css" />
 </head>
