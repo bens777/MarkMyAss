@@ -897,10 +897,13 @@ Proof, not promises.
         return {"session_id": session_id, "report": report.to_dict()}
 
     def _count_clean(session: _Session) -> None:
-        # Increment the durable usage counter exactly once per session, and
-        # only after a clean has actually succeeded and produced output.
-        # Failed cleans, inspect-only sessions, re-cleans, reloads and
-        # repeat downloads never reach here / never double-count.
+        # Increment the durable "files cleaned" counter exactly once per
+        # session, and only after a clean has actually succeeded and
+        # produced output. Called ONLY for uploaded-file sessions -- the
+        # public metric is "files cleaned", so pasted-text cleans are
+        # deliberately excluded. Failed cleans, inspect-only sessions,
+        # re-cleans, reloads and repeat downloads never reach here /
+        # never double-count.
         if not session.stats_counted:
             session.stats_counted = True
             stats.record_clean()
@@ -915,7 +918,8 @@ Proof, not promises.
                 cleaned, result = runner.run(clean_text_content, session.text)
                 session.cleaned_text = cleaned
                 session.clean_result = result
-                _count_clean(session)
+                # Text cleans are intentionally NOT counted -- the public
+                # metric is "files cleaned" (uploaded files only).
                 payload = result.to_dict()
                 payload["cleaned_text"] = cleaned
                 return payload

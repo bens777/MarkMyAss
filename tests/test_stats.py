@@ -158,11 +158,26 @@ def test_inspect_only_and_failed_clean_do_not_increment(client):
     assert client.get("/api/public-stats").json()["files_cleaned_total"] == 0
 
 
-def test_text_clean_counts_once(client):
+def test_text_clean_does_not_increment_either_metric(client):
+    # The public metric is "files cleaned" -- a successful pasted-text
+    # clean must NOT touch lifetime or the 24h count.
     sid = client.post("/api/inspect/text", json={"text": "hi​there"}).json()["session_id"]
-    assert client.get("/api/public-stats").json()["files_cleaned_total"] == 0
-    client.post(f"/api/clean/{sid}")
-    assert client.get("/api/public-stats").json()["files_cleaned_total"] == 1
+    assert client.post(f"/api/clean/{sid}").status_code == 200  # clean succeeds
+    stats = client.get("/api/public-stats").json()
+    assert stats["files_cleaned_total"] == 0
+    assert stats["files_cleaned_last_24h"] == 0
+
+
+def test_only_file_cleans_are_counted_mixed(client):
+    # A file clean counts; a text clean alongside it does not.
+    jpg = _jpeg_bytes()
+    fsid = client.post("/api/inspect/file", files={"file": ("x.jpg", jpg)}).json()["session_id"]
+    tsid = client.post("/api/inspect/text", json={"text": "hello"}).json()["session_id"]
+    client.post(f"/api/clean/{tsid}")   # text: not counted
+    client.post(f"/api/clean/{fsid}")   # file: counted once
+    stats = client.get("/api/public-stats").json()
+    assert stats["files_cleaned_total"] == 1
+    assert stats["files_cleaned_last_24h"] == 1
 
 
 def test_stats_survive_store_restart_via_api(db_path):
