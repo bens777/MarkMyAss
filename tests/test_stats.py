@@ -296,3 +296,5 @@ def test_app_js_hides_social_proof_on_failure_and_zero():
     assert "toLocaleString" in js               # real formatted number
     assert "SOCIAL_PROOF_MIN_TOTAL" in js       # never show 0
     assert "Math.random" not in js              # never fabricate
+    # Singular/plural: "1 file cleaned" vs "N files cleaned".
+    assert 'total === 1 ? "file" : "files"' in js

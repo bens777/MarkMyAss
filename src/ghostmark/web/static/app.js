@@ -523,6 +523,7 @@
   const SOCIAL_PROOF_MIN_TOTAL = 1;
   const socialProof = el("social-proof");
   const socialProofCount = el("social-proof-count");
+  const socialProofLabel = el("social-proof-label");
 
   async function loadSocialProof() {
     if (!socialProof || !socialProofCount) return;
@@ -533,6 +534,10 @@
       const total = data.files_cleaned_total;
       if (typeof total !== "number" || total < SOCIAL_PROOF_MIN_TOTAL) return; // never show 0
       socialProofCount.textContent = total.toLocaleString("en-US");
+      if (socialProofLabel) {
+        socialProofLabel.textContent =
+          (total === 1 ? "file" : "files") + " cleaned with MarkMyAss";
+      }
       socialProof.classList.remove("hidden");
     } catch {
       // Network/parse error -> leave the block hidden, never show fallbacks.
