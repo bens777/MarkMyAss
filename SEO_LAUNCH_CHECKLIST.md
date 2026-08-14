@@ -46,7 +46,7 @@ Pick whichever is easiest given how DNS/hosting is set up:
   your DNS provider for `moseisley.sh`. This can take a few minutes to
   a few hours to propagate.
 - **HTML file upload**: Search Console gives you a file to upload to the
-  site's root. Since GhostMark's static files are served from
+  site's root. Since MarkMyAss's static files are served from
   `src/ghostmark/web/static/`, this would need a small route added to
   serve that file, or a file dropped into the static directory --
   simplest if using the DNS method instead.
@@ -114,10 +114,10 @@ reasonable early on, less often later):
   watermark remover"-style queries are surfacing the site at all --
   there's no guarantee they will, especially early on against a crowded
   SERP (see `/lab` and the landing pages' own competitive-honesty
-  framing for why GhostMark leans on accuracy rather than trying to
+  framing for why MarkMyAss leans on accuracy rather than trying to
   out-market more aggressive competitors).
 - **Core Web Vitals** (under Experience): worth a periodic glance, but
-  GhostMark's frontend is deliberately minimal (no large JS frameworks,
+  MarkMyAss's frontend is deliberately minimal (no large JS frameworks,
   no external fonts/CDN scripts), so this shouldn't need much attention
   unless something regresses.
 

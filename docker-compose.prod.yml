@@ -1,6 +1,6 @@
 # Production deployment for https://markmyass.com
 #
-# GhostMark itself is NEVER exposed directly to the internet -- it only
+# MarkMyAss itself is NEVER exposed directly to the internet -- it only
 # listens on 127.0.0.1 on the host, and a reverse proxy (Caddy; see
 # deploy/Caddyfile.snippet) is the sole public entry point. See
 # DEPLOY_MOSEISLEY.md for the full, plain-language deployment steps.

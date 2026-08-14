@@ -5,12 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "ghostmark"
 version = "0.5.0"
-description = "Open-source AI watermark & provenance cleaner. Inspect, sanitize and verify metadata and supported watermark signals in AI-generated text, images and documents."
+description = "MarkMyAss (GhostMark engine): free open-source AI watermark, metadata & provenance cleaner. Inspect, clean and verify supported signals in AI-generated text, images and documents."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
-authors = [{ name = "GhostMark contributors" }]
+authors = [{ name = "MarkMyAss contributors" }]
 keywords = [
   "ai",
   "watermark",
@@ -56,7 +56,7 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/bens777/MarkMyAss"
+Homepage = "https://markmyass.com"
 Repository = "https://github.com/bens777/MarkMyAss"
 Issues = "https://github.com/bens777/MarkMyAss/issues"
 

@@ -28,7 +28,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
 
-      - name: Install GhostMark (editable, with dev extras)
+      - name: Install MarkMyAss (editable, with dev extras)
         run: python -m pip install -e ".[dev]"
 
       - name: Ruff lint
@@ -80,19 +80,19 @@ jobs:
           cargo install c2patool
           c2patool --version
 
-      - name: Install GhostMark (editable, with dev extras)
+      - name: Install MarkMyAss (editable, with dev extras)
         run: python -m pip install -e ".[dev]"
 
-      - name: Confirm GhostMark detects ExifTool and c2patool
+      - name: Confirm MarkMyAss detects ExifTool and c2patool
         run: |
           python -c "
           from ghostmark.independent_verify import C2paToolVerifier, ExifToolVerifier
           e = ExifToolVerifier()
-          assert e.available(), 'ExifTool was installed but GhostMark could not find it on PATH'
-          print(f'ExifTool {e.version()} detected by GhostMark')
+          assert e.available(), 'ExifTool was installed but MarkMyAss could not find it on PATH'
+          print(f'ExifTool {e.version()} detected by MarkMyAss')
           c = C2paToolVerifier()
-          assert c.available(), 'c2patool was installed but GhostMark could not find it on PATH'
-          print(f'c2patool {c.version()} detected by GhostMark')
+          assert c.available(), 'c2patool was installed but MarkMyAss could not find it on PATH'
+          print(f'c2patool {c.version()} detected by MarkMyAss')
           "
 
       - name: Run integration suite (real binaries, not mocked)

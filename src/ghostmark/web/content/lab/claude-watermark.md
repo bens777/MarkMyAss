@@ -2,7 +2,7 @@
 
 {{STATUS_LINE}}
 
-[← Back to the Lab](lab) &middot; [← Back to the GhostMark cleaner](.)
+[← Back to the Lab](lab) &middot; [← Back to the MarkMyAss cleaner](.)
 
 ---
 
@@ -24,28 +24,28 @@ PNG, JPG) now get **signed C2PA provenance metadata attached directly by
 Claude**, not just by a downstream export pipeline -- see the same
 [Anthropic Help Center article](https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content).
 Either way, this is the same category of signal any C2PA-aware
-document/image tool can add, and it's exactly what GhostMark's
+document/image tool can add, and it's exactly what MarkMyAss's
 PDF-metadata, EXIF/XMP, and C2PA detectors target -- see
 [/lab/pdf-metadata](lab/pdf-metadata) and [/lab/c2pa](lab/c2pa) for what
-GhostMark can and cannot do with a *signed* manifest specifically
-(short version: GhostMark detects/strips the JUMBF container
+MarkMyAss can and cannot do with a *signed* manifest specifically
+(short version: MarkMyAss detects/strips the JUMBF container
 structurally; it does not validate or forge cryptographic signatures).
 
-**GhostMark's status: Supported.** Detect: Yes. Remove: Yes. Independently
+**MarkMyAss's status: Supported.** Detect: Yes. Remove: Yes. Independently
 verified: Yes, via ExifTool (and c2patool for the C2PA container).
 
 ### 2. Hidden Unicode characters in text
 
 Some people call invisible Unicode characters (zero-width spaces,
 Unicode "Tags" block steganography, etc.) found in AI-generated text a
-"watermark." **This is not correct, and GhostMark does not call it
+"watermark." **This is not correct, and MarkMyAss does not call it
 one.** Hidden Unicode is a text-encoding artifact that can appear in text
 from any source -- it is not a statistical signature tied to a specific
 model, and its presence doesn't identify which model (if any) produced
 the surrounding text. See [/lab/hidden-unicode](lab/hidden-unicode) for
 the full, separate writeup of this mechanism.
 
-**GhostMark's status: Supported (as its own, distinct signal).** Detect:
+**MarkMyAss's status: Supported (as its own, distinct signal).** Detect:
 Yes. Remove: Yes (with load-bearing characters like ZWJ/NBSP preserved by
 default). Independently verified: Yes, deterministically.
 
@@ -72,20 +72,20 @@ That same article is explicit that **no detector exists publicly yet**:
 Claude's embedded watermarks and provenance metadata... We'll share
 details on detection mechanisms in forthcoming technical documentation."
 Until that documentation ships, there is nothing independently runnable
-for GhostMark (or anyone outside Anthropic) to implement or test against.
-GhostMark will not fabricate a detection result for a mechanism nobody
+for MarkMyAss (or anyone outside Anthropic) to implement or test against.
+MarkMyAss will not fabricate a detection result for a mechanism nobody
 outside the provider can currently verify.
 
-**GhostMark's status: Unknown.** Detect: Unknown. Remove: Unknown.
+**MarkMyAss's status: Unknown.** Detect: Unknown. Remove: Unknown.
 Independent verification: No public verifier exists yet.
 
-## Why GhostMark reports "Unknown" instead of a score
+## Why MarkMyAss reports "Unknown" instead of a score
 
 Reporting a confidence percentage here -- "87% likely watermarked," "0%
 detectable" -- would require either (a) Anthropic's own private
-detection key, which GhostMark does not have and never will, or (b) an
-independently published, peer-reviewed detection methodology GhostMark
-could implement and that others could verify GhostMark implemented
+detection key, which MarkMyAss does not have and never will, or (b) an
+independently published, peer-reviewed detection methodology MarkMyAss
+could implement and that others could verify MarkMyAss implemented
 correctly. Neither exists publicly today. Any tool claiming otherwise is
 either guessing or measuring something else (like hidden Unicode or
 formatting) and mislabeling it as "the watermark."
@@ -101,7 +101,7 @@ detector would use:
 Anthropic has already committed to publishing "forthcoming technical
 documentation" on detection. When that ships -- or if an independent
 researcher publishes a reproducible detection methodology and open code
-first -- GhostMark would implement it behind the same
+first -- MarkMyAss would implement it behind the same
 `StatisticalWatermarkDetector` interface already defined for this
 purpose, and this page's status would change from Unknown to whatever
 the evidence actually supports. Until then, this page states the current
@@ -117,7 +117,7 @@ ghostmark inspect-text "any text you like" --json
 ## Related pages
 
 - [Claude Watermark Remover](claude-watermark-remover) -- the practical,
-  action-oriented version of this page: what GhostMark actually cleans.
+  action-oriented version of this page: what MarkMyAss actually cleans.
 - [Claude Watermark Detector](claude-watermark-detector) -- for
   "how do I check a file/text," rather than "how does the mechanism work."
 

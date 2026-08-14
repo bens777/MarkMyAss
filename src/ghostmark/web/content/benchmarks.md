@@ -44,7 +44,7 @@ not benchmarked anywhere: no public detector exists to test against. See
 
 ```bash
 git clone https://github.com/bens777/MarkMyAss.git
-cd ghostmark
+cd MarkMyAss
 pip install -e ".[dev]"
 pytest tests/test_corpus.py -v
 ```

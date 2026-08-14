@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to GhostMark are documented in this file.
+All notable changes to MarkMyAss (engine name: GhostMark) are documented in this file.
 
 ## [Unreleased]
 

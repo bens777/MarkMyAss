@@ -14,20 +14,21 @@ Please include:
 
 - A description of the vulnerability and its impact.
 - Steps to reproduce (a minimal file/text input is ideal).
-- The GhostMark version and OS you tested on.
+- The MarkMyAss version and OS you tested on.
 
-We aim to acknowledge reports within a few days. GhostMark is a small
+We aim to acknowledge reports within a few days. MarkMyAss is a small
 volunteer-maintained project -- please be patient.
 
 ## Supported versions
 
-Only the latest released version of GhostMark receives security fixes.
+Only the latest released version of MarkMyAss receives security fixes.
 
 ## Scope and threat model
 
-GhostMark ships in two supported configurations with different threat
+MarkMyAss ships in two supported configurations with different threat
 models -- see `PRIVACY.md` for the user-facing explanation of the
-difference.
+difference. (MarkMyAss is powered by the GhostMark engine; the CLI
+command remains `ghostmark`.)
 
 ### Local mode (`ghostmark ui` on your own machine)
 
@@ -46,7 +47,7 @@ This IS a supported configuration as of 0.2.0, deployed per
 `DEPLOY_MOSEISLEY.md`, with additional protections specifically because
 it's reachable by the public internet:
 
-- GhostMark's own process is never bound to a public interface -- it
+- MarkMyAss's own process is never bound to a public interface -- it
   only listens on `127.0.0.1` on the host; a reverse proxy (Caddy) is the
   sole public entry point (see `docker-compose.prod.yml`).
 - Runs as a non-root user inside its container.
@@ -66,7 +67,7 @@ it's reachable by the public internet:
   downloaded separately, in either order), so retention is enforced by an
   automatic TTL purge instead: every session is deleted after a 10-15
   minute TTL regardless of what was or wasn't downloaded.
-- ExifTool and c2patool, GhostMark's independent verifiers, are invoked
+- ExifTool and c2patool, MarkMyAss's independent verifiers, are invoked
   as separate OS processes with a fixed argument list and `shell=False`
   (never string-interpolated into a shell command), and only ever read
   the file being verified -- never passed untrusted user text. Both are
@@ -79,15 +80,15 @@ it's reachable by the public internet:
 
 Things that remain explicitly **out of scope** in both modes:
 
-- Cryptographic guarantees about C2PA manifest validity -- GhostMark's C2PA
+- Cryptographic guarantees about C2PA manifest validity -- MarkMyAss's C2PA
   support is a structural heuristic, not a conformant validator, and the
   optional c2patool cross-check only reports whether a manifest is
   present, not whether its signature/trust chain is valid (see README's
   support matrix and `/lab/c2pa`).
-- Defeating statistical/model-level text watermarks -- GhostMark does not
+- Defeating statistical/model-level text watermarks -- MarkMyAss does not
   claim to do this (see README).
 - Running the hosted deployment behind anything other than the documented
-  reverse-proxy setup (i.e. exposing GhostMark's own port directly to the
+  reverse-proxy setup (i.e. exposing MarkMyAss's own port directly to the
   internet) -- not supported, not hardened for that.
 
 ## Reporting other issues

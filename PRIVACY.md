@@ -1,9 +1,11 @@
 # Privacy
 
-GhostMark exists in two modes with genuinely different privacy
+MarkMyAss exists in two modes with genuinely different privacy
 guarantees. Read this before uploading anything you consider sensitive.
+MarkMyAss is powered by the GhostMark engine; the CLI command remains
+`ghostmark`.
 
-## Local GhostMark (CLI or `ghostmark ui` on your own computer)
+## Local MarkMyAss (CLI or `ghostmark ui` on your own computer)
 
 **100% local. Nothing ever leaves your device.**
 
@@ -16,17 +18,17 @@ guarantees. Read this before uploading anything you consider sensitive.
 - Temporary files (used internally during processing) live in your OS's
   temp directory and are cleaned up when the operation finishes.
 
-This is the same guarantee GhostMark has always made, and it hasn't
+This is the same guarantee MarkMyAss has always made, and it hasn't
 changed.
 
-## Hosted GhostMark (https://markmyass.com)
+## Hosted MarkMyAss (https://markmyass.com)
 
 **This is different. Files ARE temporarily uploaded to a server.**
 
-If you use the hosted version instead of running GhostMark locally:
+If you use the hosted version instead of running MarkMyAss locally:
 
 - Uploaded files and pasted text are sent to, and temporarily processed
-  on, the GhostMark server running at markmyass.com.
+  on, the MarkMyAss server running at markmyass.com.
 - Files are held only in a randomized, per-session temporary directory
   on that server -- never written to a database, never made
   permanent, and never included in application logs (server access
@@ -44,13 +46,13 @@ If you use the hosted version instead of running GhostMark locally:
 - No CORS is configured and the API is not intended for cross-origin use
   by other websites.
 
-If you would rather not upload anything anywhere, use local GhostMark
-instead -- see the README's "Run GhostMark locally" section. Both modes
+If you would rather not upload anything anywhere, use local MarkMyAss
+instead -- see the README's "Run MarkMyAss locally" section. Both modes
 run the exact same open-source code
 (https://github.com/bens777/MarkMyAss); the only difference is where the
 processing happens.
 
-## What GhostMark never does, in either mode
+## What MarkMyAss never does, in either mode
 
 - Never sells or shares data with third parties (there is nothing
   collected to share).
@@ -60,7 +62,7 @@ processing happens.
 
 ## Independent verification (ExifTool + c2patool)
 
-When available, GhostMark shells out to a locally/server-installed copy
+When available, MarkMyAss shells out to a locally/server-installed copy
 of [ExifTool](https://exiftool.org/) and/or
 [c2patool](https://github.com/contentauth/c2pa-rs) to independently
 cross-check a cleaned file. This happens entirely within the same

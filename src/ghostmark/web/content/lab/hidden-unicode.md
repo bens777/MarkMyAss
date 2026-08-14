@@ -2,7 +2,7 @@
 
 {{STATUS_LINE}}
 
-[← Back to the Lab](lab) &middot; [← Back to the GhostMark cleaner](.)
+[← Back to the Lab](lab) &middot; [← Back to the MarkMyAss cleaner](.)
 
 ---
 
@@ -20,7 +20,7 @@ statistical/model-level watermark (see [/lab/claude-watermark](lab/claude-waterm
 AI-generated, and its presence or absence says nothing about which
 model (if any) produced the text.
 
-## What GhostMark can test
+## What MarkMyAss can test
 
 - Detection: every character in the input is scanned and classified
   (see methodology below). Implementation:
@@ -30,7 +30,7 @@ model (if any) produced the text.
   normal space. Implementation:
   [`src/ghostmark/cleaners/text.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/cleaners/text.py).
 
-## What GhostMark can remove
+## What MarkMyAss can remove
 
 Only what it can classify as safe. Characters classified
 `potentially_semantic` -- bidi marks, ZWJ/ZWNJ (load-bearing in
@@ -38,10 +38,10 @@ Arabic/Persian/Hebrew/Indic scripts and emoji sequences), NBSP (French
 typography) -- are **preserved by default**, never silently deleted,
 because removing them could change what the text actually says.
 
-## What GhostMark cannot test
+## What MarkMyAss cannot test
 
 - Whether a hidden-Unicode payload, if present, decodes to a meaningful
-  hidden message. GhostMark strips the safe-to-remove characters; it
+  hidden message. MarkMyAss strips the safe-to-remove characters; it
   does not attempt to decode or interpret them.
 - Any statistical/model-level watermark -- a completely different
   mechanism (see above).
@@ -61,7 +61,7 @@ linked source file above -- anyone can audit it.
 ## Reproducible test commands
 
 ```bash
-# Using GhostMark's own reproducible corpus fixture:
+# Using MarkMyAss's own reproducible corpus fixture:
 ghostmark inspect src/ghostmark/corpus/text/hidden-unicode.txt --json
 ghostmark clean src/ghostmark/corpus/text/hidden-unicode.txt
 ghostmark inspect src/ghostmark/corpus/text/hidden-unicode.ghostmark.txt --json

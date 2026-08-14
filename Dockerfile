@@ -1,5 +1,5 @@
 # ExifTool and c2patool are installed as separate, independently-licensed
-# external binaries -- GhostMark never vendors either's source or binary
+# external binaries -- MarkMyAss never vendors either's source or binary
 # in this repository or in the Python package; it only shells out to
 # whatever it finds on PATH at runtime. See THIRD_PARTY_LICENSES.md.
 #
@@ -7,7 +7,7 @@
 # conveniently apt-installable Debian package, so it's built from the
 # official source in a throwaway Rust build stage and only the resulting
 # binary is copied into the final image -- the Rust toolchain itself
-# never ships in the image GhostMark actually runs.
+# never ships in the image MarkMyAss actually runs.
 FROM rust:1-slim-bookworm AS c2patool-builder
 # c2patool depends on openssl-sys with the "vendored" feature, which always
 # compiles its own OpenSSL from source (system libssl-dev is not enough).

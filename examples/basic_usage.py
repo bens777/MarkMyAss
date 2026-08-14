@@ -1,4 +1,4 @@
-"""Example: using GhostMark as a library instead of the CLI/web UI.
+"""Example: using MarkMyAss as a library instead of the CLI/web UI.
 
 Run with: python examples/basic_usage.py
 """

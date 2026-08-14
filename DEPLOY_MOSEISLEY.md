@@ -17,7 +17,7 @@ names.
 
 ## What you're deploying
 
-- A small Docker container running GhostMark's web app on
+- A small Docker container running MarkMyAss's web app on
   `127.0.0.1:8765` -- **not** exposed to the internet directly.
 - The image is **built by GitHub Actions and pulled from GHCR**
   (`ghcr.io/bens777/markmyass:latest`) -- the VPS never compiles
@@ -25,9 +25,9 @@ names.
 - ExifTool and c2patool (for independent verification) installed inside
   that same image, automatically, when GitHub Actions builds it.
 - Caddy serves `https://markmyass.com` as its own site and
-  proxies every request to that container. GhostMark itself never
+  proxies every request to that container. MarkMyAss itself never
   touches the public internet directly.
-- (If you'd rather keep GhostMark at a subpath of an existing domain
+- (If you'd rather keep MarkMyAss at a subpath of an existing domain
   instead of its own domain -- e.g. `https://example.com/ghostmark` -- both
   `docker-compose.prod.yml` and `deploy/Caddyfile.snippet` document that
   as "Option B." Everything else in this guide is the same either way.)
@@ -63,7 +63,7 @@ anonymously, with no `docker login` and no token stored on the VPS:
 This only ever needs to be done once (note: GitHub does not let you make
 a public package private again).
 
-**4. Get the GhostMark deploy files onto the VPS.**
+**4. Get the MarkMyAss deploy files onto the VPS.**
 
 If you don't already have them there:
 
@@ -83,7 +83,7 @@ git pull
 (The clone is only needed for `docker-compose.prod.yml` and the Caddy
 snippet -- the application code itself arrives inside the pulled image.)
 
-**5. Pull and start GhostMark.**
+**5. Pull and start MarkMyAss.**
 
 ```bash
 docker compose -f docker-compose.prod.yml pull
@@ -112,12 +112,12 @@ You should see something like:
 
 If `exiftool_available` or `c2patool_available` is `false`, something is
 wrong with the published image -- check the "Publish Docker image" run on
-the repo's GitHub Actions page, then re-run step 5. GhostMark still runs fine with either one missing (it degrades to
+the repo's GitHub Actions page, then re-run step 5. MarkMyAss still runs fine with either one missing (it degrades to
 "unknown"/"unverified" for the checks that tool would have performed), so
 this isn't fatal, but you won't get independent verification for that
 signal.
 
-**7. Add GhostMark to your Caddy configuration.**
+**7. Add MarkMyAss to your Caddy configuration.**
 
 Open your existing Caddyfile (commonly `/etc/caddy/Caddyfile`):
 
@@ -149,11 +149,11 @@ you run it directly.)
 https://markmyass.com
 ```
 
-You should see the GhostMark page. Try pasting some text or uploading a
+You should see the MarkMyAss page. Try pasting some text or uploading a
 small PDF/image and running through Inspect → Clean → Verify → Download
 to confirm everything works end to end.
 
-## Updating GhostMark later
+## Updating MarkMyAss later
 
 ```bash
 cd /opt/MarkMyAss
@@ -186,9 +186,9 @@ To restart it:
 docker compose -f docker-compose.prod.yml restart
 ```
 
-## What's different from running GhostMark locally
+## What's different from running MarkMyAss locally
 
-The local desktop version of GhostMark (`ghostmark ui` on your own
+The local desktop version of MarkMyAss (`ghostmark ui` on your own
 computer) keeps files 100% on your machine. This hosted version at
 markmyass.com is different: uploaded files are processed
 temporarily on the VPS and automatically deleted within a few minutes

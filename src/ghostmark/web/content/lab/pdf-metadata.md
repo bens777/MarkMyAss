@@ -2,7 +2,7 @@
 
 {{STATUS_LINE}}
 
-[← Back to the Lab](lab) &middot; [← Back to the GhostMark cleaner](.)
+[← Back to the Lab](lab) &middot; [← Back to the MarkMyAss cleaner](.)
 
 ---
 
@@ -20,35 +20,35 @@ Either can carry provenance information -- the tool that generated the
 PDF, an author name, timestamps -- independent of anything about the PDF's
 visible content.
 
-## What GhostMark can test
+## What MarkMyAss can test
 
 Detection reads both containers directly from the PDF object graph via
 [pikepdf](https://github.com/pikepdf/pikepdf) (a Python binding to
 qpdf). Implementation:
 [`src/ghostmark/detectors/metadata.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/detectors/metadata.py).
 
-## What GhostMark can remove
+## What MarkMyAss can remove
 
 Both the `/Info` dictionary and the `/Metadata` (XMP) stream are deleted
 entirely from the PDF's object graph -- not blanked, removed. Pages,
-fonts, images, text, links, and page order are untouched; GhostMark edits
+fonts, images, text, links, and page order are untouched; MarkMyAss edits
 the PDF's object graph directly rather than rasterizing or re-rendering
 it. Implementation:
 [`src/ghostmark/cleaners/pdf.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/cleaners/pdf.py).
 
-After cleaning, GhostMark reopens the produced PDF and confirms it's
+After cleaning, MarkMyAss reopens the produced PDF and confirms it's
 still structurally valid (parses, page count matches) before handing it
 back -- a metadata-removal bug that corrupts the file is treated as a
 cleaning failure, not a success.
 
-## What GhostMark cannot test
+## What MarkMyAss cannot test
 
 - Metadata embedded in individual PDF objects in nonstandard,
   non-DocInfo/non-XMP locations (rare, but possible in hand-crafted or
-  unusual PDFs). GhostMark's detector targets the two standard
+  unusual PDFs). MarkMyAss's detector targets the two standard
   containers.
 - Any provenance signal embedded in images placed *inside* the PDF (those
-  are covered separately by GhostMark's image EXIF/XMP/IPTC detectors
+  are covered separately by MarkMyAss's image EXIF/XMP/IPTC detectors
   when you clean the image directly, not automatically unpacked from
   inside a PDF).
 
@@ -56,11 +56,11 @@ cleaning failure, not a success.
 
 Independent verification uses [ExifTool](https://exiftool.org/)
 (`exiftool -j -G1 -a -s FILE`), a long-established, widely trusted
-third-party tool GhostMark does not control. Every property ExifTool
+third-party tool MarkMyAss does not control. Every property ExifTool
 reports is categorized into `embedded_metadata` / `structural` /
 `filesystem` / `computed` so that, for example, `PDF:PageCount` (a
 structural fact needed for the file to make sense) is never confused
-with `PDF:Author` (metadata GhostMark actually targets). See
+with `PDF:Author` (metadata MarkMyAss actually targets). See
 [`src/ghostmark/independent_verify.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/independent_verify.py)
 for the exact categorization rules.
 

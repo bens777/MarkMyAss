@@ -1,23 +1,35 @@
-# 👻 GhostMark
+<img src="src/ghostmark/web/static/art/markmyass-logo-180.png" alt="MarkMyAss logo" width="90" align="left" />
 
-**Proof, not promises.** The open-source AI watermark & provenance
-verification lab. Free. Open source.
+# MarkMyAss
+
+**Proof, not promises.** Free open-source AI watermark, metadata &
+provenance cleaner.
+
+<br clear="left" />
+
+Website: **https://markmyass.com**
+· Repository: **https://github.com/bens777/MarkMyAss**
 
 Inspect → Clean → Verify → Download your cleaned file → Download a
 Verification Receipt
 
-GhostMark inspects files and text for hidden Unicode characters, embedded
+MarkMyAss inspects files and text for hidden Unicode characters, embedded
 metadata, and provenance signals, removes the ones it can safely remove,
-and then independently re-verifies its own output -- with GhostMark's own
-detectors *and*, where applicable, [ExifTool](https://exiftool.org/) and
-[c2patool](https://github.com/contentauth/c2pa-rs) -- so it can tell you
-what actually changed, with evidence, not vibes. No fake "100%
+and then independently re-verifies its own output -- with MarkMyAss's own
+native detectors *and*, where applicable, [ExifTool](https://exiftool.org/)
+and [c2patool](https://github.com/contentauth/c2pa-rs) -- so it can tell
+you what actually changed, with evidence, not vibes. No fake "100%
 undetectable" scores: a signal is only ever reported `VERIFIED CLEAN`
-when an independent tool agrees, and every claim GhostMark makes about a
+when an independent tool agrees, and every claim MarkMyAss makes about a
 watermark or provenance mechanism is documented, sourced, and dated at
 [**/lab**](https://markmyass.com/lab), the AI Watermark Lab.
 
-## Use GhostMark online
+> **Naming note:** MarkMyAss is powered by the **GhostMark engine**. The
+> Python package and CLI command remain `ghostmark` for compatibility --
+> so you'll type `ghostmark inspect ...` and see "GhostMark" in CLI
+> output, while the product, website and documentation are MarkMyAss.
+
+## Use MarkMyAss online
 
 ```text
 https://markmyass.com
@@ -27,13 +39,13 @@ No installation. Free, open source tool by [Moseisley.sh](https://moseisley.sh).
 Files are processed temporarily on the server and deleted automatically
 -- see "Privacy" below for exactly what that means.
 
-## Run GhostMark locally
+## Run MarkMyAss locally
 
 For anyone who'd rather not upload anything anywhere:
 
 ```bash
 git clone https://github.com/bens777/MarkMyAss.git
-cd ghostmark
+cd MarkMyAss
 pip install -e .
 
 ghostmark demo     # generates synthetic fixtures and proves the pipeline works
@@ -52,11 +64,22 @@ Both the hosted site and the local tool run the exact same open-source
 code. The only difference is where processing happens -- see
 [`PRIVACY.md`](PRIVACY.md) for the precise distinction.
 
+Not comfortable with a terminal? Double-click, instead of the `pip
+install` step above:
+
+- **Windows:** `START-MARKMYASS.bat` (or `START-MARKMYASS.ps1`)
+- **Linux / macOS:** `start-markmyass.sh`
+
+These scripts check for Python, set up a virtual environment, install
+MarkMyAss, and open the local web UI for you -- with plain-language
+errors if something's missing. (The former `START-GHOSTMARK` /
+`start-ghostmark.sh` names still work as compatibility wrappers.)
+
 ---
 
-## Why GhostMark is honest about what "AI watermark" means
+## Why MarkMyAss is honest about what "AI watermark" means
 
-"AI watermark" gets used for at least seven different things. GhostMark
+"AI watermark" gets used for at least seven different things. MarkMyAss
 treats them as genuinely separate mechanisms, because they are:
 
 1. **Hidden Unicode characters** -- zero-width spaces, Unicode "tag"
@@ -73,28 +96,16 @@ treats them as genuinely separate mechanisms, because they are:
    their private detection key.
 7. **Visible image watermarks** -- a logo or text baked into the pixels.
 
-GhostMark **detects and cleans 1-5** to varying degrees (see the table
+MarkMyAss **detects and cleans 1-5** to varying degrees (see the table
 below). It does **not** implement 6 or 7 in this release, and says so
-plainly in its own output rather than pretending otherwise. If GhostMark
+plainly in its own output rather than pretending otherwise. If MarkMyAss
 can't verify something, it reports `UNKNOWN` or `UNVERIFIED` -- never a
 fabricated result.
-
----
-
-Not comfortable with a terminal? Double-click, instead of the `pip
-install` step above:
-
-- **Windows:** `START-GHOSTMARK.bat` (or `START-GHOSTMARK.ps1`)
-- **Linux / macOS:** `start-ghostmark.sh`
-
-These scripts check for Python, set up a virtual environment, install
-GhostMark, and open the local web UI for you -- with plain-language
-errors if something's missing.
 
 ## Learn how to run models locally
 
 Cleaning metadata after the fact is one path; avoiding provider-side
-provenance **at the source** is another. GhostMark's web UI includes a
+provenance **at the source** is another. MarkMyAss's web UI includes a
 practical developer guide covering hosted-vs-open-weight models, a
 hardware/budget decision matrix, current recommended open-weight models
 (coding, general reasoning, lightweight), local inference tools (Ollama,
@@ -109,7 +120,7 @@ once you've run `ghostmark ui`. Source: [`src/ghostmark/web/content/run_local.md
 
 ## The AI Watermark Lab and benchmarks
 
-`/lab` is a public capability matrix -- for every signal GhostMark knows
+`/lab` is a public capability matrix -- for every signal MarkMyAss knows
 about, whether it can detect it, remove it, and independently verify the
 removal, its current status, and when it was last checked. Individual
 pages go deeper on specific mechanisms:
@@ -118,7 +129,7 @@ pages go deeper on specific mechanisms:
   -- separates file/metadata provenance, hidden Unicode, and statistical
   model-level watermarking, three genuinely different things people mean
   by "Claude watermark."
-- [`/lab/c2pa`](https://markmyass.com/lab/c2pa) -- what GhostMark's
+- [`/lab/c2pa`](https://markmyass.com/lab/c2pa) -- what MarkMyAss's
   heuristic JUMBF-container scan can and can't tell you, and why that's
   not the same as cryptographic C2PA manifest validation.
 - [`/lab/hidden-unicode`](https://markmyass.com/lab/hidden-unicode)
@@ -132,7 +143,7 @@ data (`src/ghostmark/web/lab_data.py`). Machine-readable version:
 
 [`/benchmarks`](https://markmyass.com/benchmarks) is generated
 from a reproducible, synthetic-only test corpus
-(`src/ghostmark/corpus/`) -- not hand-written. It runs GhostMark's real
+(`src/ghostmark/corpus/`) -- not hand-written. It runs MarkMyAss's real
 inspect → clean → inspect → independently-verify pipeline against every
 fixture and reports the actual pass/fail counts, including any known
 failures (nothing is hidden). Machine-readable version:
@@ -154,16 +165,16 @@ for the underlying methodology any of them link back to:
 
 Content for these lives under
 [`src/ghostmark/web/content/`](https://github.com/bens777/MarkMyAss/tree/main/src/ghostmark/web/content)
-as plain Markdown, same pattern as the Lab pages. `/robots.txt` and
-`/sitemap.xml` are generated from the same canonical list of indexable
-pages the test suite checks against (`INDEXABLE_PAGES` in
-[`src/ghostmark/web/app.py`](src/ghostmark/web/app.py)) -- neither ever
-lists a session/download/API route.
+as plain Markdown, same pattern as the Lab pages. `/robots.txt`,
+`/sitemap.xml` and `/llms.txt` are generated from the same canonical list
+of indexable pages the test suite checks against (`INDEXABLE_PAGES` in
+[`src/ghostmark/web/app.py`](src/ghostmark/web/app.py)) -- none of them
+ever lists a session/download/API route.
 
 ## The web UI
 
 ```text
-👻 GhostMark
+MarkMyAss
 Free AI Metadata & Provenance Cleaner
 
 [ Paste Text ]  [ Upload File ]
@@ -207,15 +218,15 @@ Locally, the server binds to `127.0.0.1` only -- never reachable from
 other devices, nothing uploaded anywhere. The hosted deployment is only
 reachable through its reverse proxy (see `DEPLOY_MOSEISLEY.md`).
 
-Verification always re-runs GhostMark's own detectors on the cleaned
-output *and*, if [ExifTool](https://exiftool.org/) and/or
+Verification always re-runs MarkMyAss's own native detectors on the
+cleaned output *and*, if [ExifTool](https://exiftool.org/) and/or
 [c2patool](https://github.com/contentauth/c2pa-rs) are installed,
 independently cross-checks it with those separate, widely trusted tools --
-so you don't have to take GhostMark's own word for it. GhostMark can
+so you don't have to take MarkMyAss's own word for it. MarkMyAss can
 never award itself **VERIFIED CLEAN**: that verdict requires at least one
 available, applicable external verifier to agree. Disagreement is
 reported as **PARTIAL**; no verifier able to run at all is **UNVERIFIED**;
-nothing to check is **NOT APPLICABLE**; a failure in GhostMark's own
+nothing to check is **NOT APPLICABLE**; a failure in MarkMyAss's own
 cleaning is **FAILED** -- never inflated. See
 [`/lab`](https://markmyass.com/lab) for what "independent
 verification" actually means per signal. Downloading the cleaned file
@@ -290,7 +301,7 @@ file too large, demo failure), non-zero on usage errors.
 See [`/lab`](https://markmyass.com/lab) for the live, per-signal
 version of this table with "last tested" dates.
 
-"Partial" for C2PA means: GhostMark scans for the JUMBF container structure
+"Partial" for C2PA means: MarkMyAss scans for the JUMBF container structure
 (JPEG APP11 segment, PNG `caBX` chunk) a C2PA manifest is embedded in, and
 can strip that container. It does **not** parse or cryptographically
 validate a C2PA manifest -- absence of the container is a strong signal,
@@ -298,8 +309,8 @@ not formal proof, and removal is a structural strip, not an audited
 guarantee against every possible embedding technique.
 
 "Unverified" for statistical watermarks means exactly that: no provider has
-published a public, independently reproducible detector GhostMark could
-implement, so GhostMark reports `UNKNOWN` rather than guessing. See
+published a public, independently reproducible detector MarkMyAss could
+implement, so MarkMyAss reports `UNKNOWN` rather than guessing. See
 [`src/ghostmark/detectors/statistical.py`](src/ghostmark/detectors/statistical.py)
 for the interface a future real detector would plug into.
 
@@ -333,7 +344,7 @@ Visual content        unchanged (byte-identical pixel data)
 PDF cleaning uses [pikepdf](https://github.com/pikepdf/pikepdf) to edit the
 document's object graph directly -- pages, fonts, images, text, and links
 are untouched; only the `/Info` dictionary and `/Metadata` (XMP) stream are
-removed. GhostMark reopens the cleaned PDF and confirms it's still
+removed. MarkMyAss reopens the cleaned PDF and confirms it's still
 structurally readable before handing it back to you.
 
 Text cleaning classifies every suspicious Unicode character before
@@ -353,7 +364,7 @@ suite specifically to make sure cleaning doesn't mangle legitimate content.
 
 ## Privacy
 
-GhostMark has two modes with different privacy guarantees -- see
+MarkMyAss has two modes with different privacy guarantees -- see
 [`PRIVACY.md`](PRIVACY.md) for the full explanation.
 
 **Local mode** (`ghostmark ui` on your own computer):
@@ -388,7 +399,7 @@ documented to use, it will be disabled by default and clearly labeled.
 - Untrusted file content is never executed, and parsing failures return a
   clean error instead of a stack trace with local filesystem paths.
 - Upload size limit enforced via a bounded/streaming reader (50 MB local
-  default; 20 MB on the hosted deployment).
+  default; 10 MB on the hosted deployment).
 - The hosted deployment additionally adds per-IP rate limiting, a
   concurrent-job cap with per-job timeouts, security response headers, and
   no CORS -- see `SECURITY.md`.
@@ -398,24 +409,26 @@ hosted) and how to report a vulnerability.
 
 ## Independent verification (ExifTool + c2patool)
 
-GhostMark's core detectors are pure Python and need nothing extra. If
-[ExifTool](https://exiftool.org/) is installed and on `PATH`, `ghostmark
-verify` (CLI and web UI) additionally cross-checks the cleaned file with
-it as an independent second opinion -- every property ExifTool reports is
-categorized (embedded metadata vs. structural/filesystem/computed
+MarkMyAss has its own **native inspection and cleaning engine** -- pure
+Python, tag-level, no external tools required. ExifTool is used as an
+**independent second opinion** for supported metadata verification, never
+as the engine itself: if [ExifTool](https://exiftool.org/) is installed
+and on `PATH`, `ghostmark verify` (CLI and web UI) additionally
+cross-checks the cleaned file with it -- every property ExifTool reports
+is categorized (embedded metadata vs. structural/filesystem/computed
 information) so file size or a preserved ICC profile is never mistaken
-for "metadata GhostMark failed to remove." See
+for "metadata MarkMyAss failed to remove." See
 [`src/ghostmark/independent_verify.py`](src/ghostmark/independent_verify.py).
 
 If [c2patool](https://github.com/contentauth/c2pa-rs) (the official C2PA
-CLI, Apache-2.0/MIT) is also installed, GhostMark runs it read-only
+CLI, Apache-2.0/MIT) is also installed, MarkMyAss runs it read-only
 against JPEG/PNG/PDF to check whether a C2PA manifest is present. This is
 explicitly *not* cryptographic trust/signature validation -- c2patool
 here only answers "is a manifest present," and a clean c2patool result is
 never treated as proof that a statistical text watermark was removed.
 
 Neither tool is a hard requirement -- if either (or both) aren't
-installed, GhostMark says so honestly, reports the relevant checks as
+installed, MarkMyAss says so honestly, reports the relevant checks as
 unverified, and continues to work without them. The production Docker
 image installs both automatically (see below).
 
@@ -435,8 +448,10 @@ installs ExifTool and c2patool automatically during build (c2patool is
 compiled from source in a throwaway build stage, so the first build takes
 a few minutes longer than a pure-Python image would).
 
-For the production/hosted deployment (`docker-compose.prod.yml`), see
-[`DEPLOY_MOSEISLEY.md`](DEPLOY_MOSEISLEY.md).
+The production/hosted deployment pulls a prebuilt image from GHCR
+(`ghcr.io/bens777/markmyass:latest`, published by GitHub Actions on every
+push to `main`) -- see [`DEPLOY_MOSEISLEY.md`](DEPLOY_MOSEISLEY.md) and
+`docker-compose.prod.yml`.
 
 ## Development
 

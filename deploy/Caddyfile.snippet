@@ -54,20 +54,20 @@ markmyass.com {
 # What each line does:
 #   - `redir` sends a visitor at the bare "/ghostmark" (no trailing
 #     slash) to "/ghostmark/" first. This matters because the page
-#     GhostMark serves assumes it's being loaded from a path ending in
+#     MarkMyAss serves assumes it's being loaded from a path ending in
 #     "/" (see <base href> in the page's <head>) -- without this redirect
 #     a bare "/ghostmark" request would not even match `handle_path`
 #     below (which requires the trailing "/*") and would fall through to
 #     your site's normal routing instead.
 #   - `handle_path /ghostmark/*` matches any request under /ghostmark/
-#     and STRIPS that prefix before forwarding, so GhostMark's own app
+#     and STRIPS that prefix before forwarding, so MarkMyAss's own app
 #     (which knows nothing about "/ghostmark") sees plain paths like
 #     "/", "/api/inspect/text", "/static/app.js" -- exactly what it
-#     expects locally too. GhostMark's frontend is built so every link
+#     expects locally too. MarkMyAss's frontend is built so every link
 #     and API call is relative to a server-injected <base href="/ghostmark/">
 #     tag, which is what makes this stripping transparent: the browser
 #     resolves e.g. `api/inspect` against that base into
-#     "/ghostmark/api/inspect", Caddy strips the prefix, and GhostMark
+#     "/ghostmark/api/inspect", Caddy strips the prefix, and MarkMyAss
 #     receives "/api/inspect" -- its real route.
 #
 # example.com {

@@ -5,14 +5,14 @@ title: "[Feature] "
 labels: enhancement
 ---
 
-**What would you like GhostMark to do?**
+**What would you like MarkMyAss to do?**
 A clear description of the feature.
 
 **What problem does this solve?**
 Why is this useful? What's the use case?
 
-**Does this affect GhostMark's privacy model?**
-GhostMark is local-first and never phones home. If your request would
+**Does this affect MarkMyAss's privacy model?**
+MarkMyAss is local-first and never phones home. If your request would
 require network access, please explain why and how it would be strictly
 opt-in.
 

@@ -1,14 +1,16 @@
-# Contributing to GhostMark
+# Contributing to MarkMyAss
 
-Thanks for considering a contribution. GhostMark is a small, local-first tool
+Thanks for considering a contribution. MarkMyAss is a small, local-first tool
 and aims to stay that way -- please keep changes focused and avoid adding
-network calls, telemetry, or new mandatory dependencies.
+network calls, telemetry, or new mandatory dependencies. MarkMyAss is
+powered by the GhostMark engine; the Python package and CLI command
+remain `ghostmark`.
 
 ## Development setup
 
 ```bash
 git clone https://github.com/bens777/MarkMyAss.git
-cd ghostmark
+cd MarkMyAss
 python -m venv .venv
 
 # Windows
@@ -98,7 +100,7 @@ front end.
 ## Adding support for a new statistical watermark detector
 
 See `src/ghostmark/detectors/statistical.py` for the `StatisticalWatermarkDetector`
-protocol. GhostMark will not report a detection result it cannot actually
+protocol. MarkMyAss will not report a detection result it cannot actually
 justify -- if you're adding a real detector, it needs to be reproducible and
 its methodology documented, not a heuristic dressed up as certainty.
 
@@ -118,7 +120,7 @@ most valuable things to contribute.
 2. **Prose pages** live under `src/ghostmark/web/content/lab/*.md`
    (plain Markdown, rendered via `content_render.py`). Every page needs:
    a "Last reviewed: YYYY-MM-DD" line (update it when you change
-   anything substantive), a "what GhostMark can/cannot test" section
+   anything substantive), a "what MarkMyAss can/cannot test" section
    that's honest about the limits of the check, reproducible commands a
    reader can run themselves, and a correction CTA
    ("Something outdated or inaccurate? Open an issue or submit a pull
@@ -146,7 +148,7 @@ most valuable things to contribute.
   detections for each one. Regenerate fixtures with
   `python scripts/generate_corpus.py` (reuses
   `ghostmark.fixtures.generate`) rather than hand-editing binary files.
-- Only synthetic, GhostMark-generated content belongs in the corpus --
+- Only synthetic, MarkMyAss-generated content belongs in the corpus --
   never real or copyrighted files.
 - `src/ghostmark/web/benchmarks.py` runs every corpus fixture through the
   real inspect → clean → inspect → independently-verify pipeline and

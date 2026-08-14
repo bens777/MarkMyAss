@@ -3,7 +3,7 @@
 ## Our pledge
 
 We as contributors and maintainers pledge to make participation in the
-GhostMark project a harassment-free experience for everyone, regardless of
+MarkMyAss project a harassment-free experience for everyone, regardless of
 age, body size, disability, ethnicity, gender identity and expression,
 level of experience, nationality, personal appearance, race, religion, or
 sexual identity and orientation.

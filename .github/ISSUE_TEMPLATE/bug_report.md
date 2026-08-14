@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Something in GhostMark doesn't work as expected
+about: Something in MarkMyAss doesn't work as expected
 title: "[Bug] "
 labels: bug
 ---
@@ -24,7 +24,7 @@ What you expected to happen.
 What actually happened, including any error output.
 
 **Environment**
-- GhostMark version: `ghostmark --version`
+- MarkMyAss version: `ghostmark --version`
 - OS:
 - Python version: `python --version`
 - CLI or web UI:
