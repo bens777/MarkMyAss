@@ -1186,6 +1186,49 @@ footer a { color: var(--accent); }
 .footer-sitemap a { color: var(--muted); }
 .footer-sitemap a:hover { color: var(--accent); }
 
+/* Discord "Join the crew" CTA: the final footer element. The image is
+   the main visual; the caption is small and secondary in the existing
+   footer link style. Compact, centered, no button box / pill / gradient
+   / heavy shadow. The whole block is one clickable link. */
+.discord-footer-cta {
+  margin: 2rem auto 1.5rem;   /* ~32px above, ~24px below */
+  max-width: 240px;
+  text-align: center;
+}
+.discord-footer-link {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  color: var(--accent);
+  transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+.discord-footer-pirate {
+  width: 160px;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.discord-footer-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.discord-footer-link:hover { transform: translateY(-2px); opacity: 0.9; }
+.discord-footer-link:hover .discord-footer-label { color: var(--accent); }
+.discord-footer-link:focus-visible {
+  outline: 2px solid var(--spectral);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+@media (max-width: 768px) {
+  .discord-footer-cta { margin: 1.5rem auto 1.25rem; }  /* ~24px / ~20px */
+  .discord-footer-pirate { width: 130px; }
+}
+@media (max-width: 430px) {
+  .discord-footer-pirate { width: 120px; }
+}
+
 .run-local-teaser {
   text-align: center;
   font-size: 0.85rem;

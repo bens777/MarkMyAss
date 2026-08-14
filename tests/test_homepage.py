@@ -108,6 +108,24 @@ def test_magicconnect_is_a_single_discreet_footer_link_only():
     assert moseisley_count > len(links)
 
 
+def test_homepage_footer_has_discord_join_the_crew_cta():
+    client = TestClient(create_app(_config()))
+    html = client.get("/").text
+    # Exactly one Discord invite in the CTA.
+    assert html.count("https://discord.gg/PnQGFKWMA") == 1
+    # Exact copy, aria-label, and image alt.
+    assert "Join the crew →" in html
+    assert 'aria-label="Join the MarkMyAss Discord community"' in html
+    assert 'alt="Pirate looking through a spyglass"' in html
+    assert 'class="discord-footer-cta"' in html
+    # The CTA lives inside the <footer>, as the footer's content.
+    footer = html.split("<footer>", 1)[1].split("</footer>", 1)[0]
+    assert "https://discord.gg/PnQGFKWMA" in footer
+    assert "discord-footer-cta" in footer
+    # Not duplicated anywhere else on the page (single CTA).
+    assert html.count('class="discord-footer-cta"') == 1
+
+
 def test_homepage_never_calls_moseisley_promo_a_popup_or_interstitial():
     """Sanity check the promo stays inline copy, not a modal/popup pattern."""
 
