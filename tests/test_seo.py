@@ -169,21 +169,31 @@ def test_openapi_schema_and_docs_are_not_public(client):
 def test_homepage_social_image_is_absolute_and_fetchable(client):
     """X/Facebook crawlers do not resolve relative og:image URLs -- both
     social image tags must be absolute on the production host, exactly
-    once each, and the image itself must be served as a real PNG."""
+    once each, point at the versioned social image, and that image must
+    be served as a real 200 PNG."""
 
+    image_url = f"{PUBLIC_URL}/static/markmyass-social-v2.png"
     html = client.get("/").text
     og = re.findall(r'property="og:image" content="([^"]*)"', html)
     tw = re.findall(r'name="twitter:image" content="([^"]*)"', html)
     card = re.findall(r'name="twitter:card" content="([^"]*)"', html)
-    assert og == [f"{PUBLIC_URL}/static/og-image.png"]
-    assert tw == [f"{PUBLIC_URL}/static/og-image.png"]
+    assert og == [image_url]
+    assert tw == [image_url]
     assert card == ["summary_large_image"]
+    # X-recommended tags for a reliable large-image card.
+    assert re.search(rf'property="og:image:secure_url" content="{re.escape(image_url)}"', html)
+    assert re.search(r'property="og:image:type" content="image/png"', html)
     assert re.search(r'property="og:image:width" content="1200"', html)
     assert re.search(r'property="og:image:height" content="630"', html)
-    resp = client.get("/static/og-image.png")
+    assert re.search(r'name="twitter:image:alt" content="[^"]+"', html)
+    assert re.search(r'property="og:image:alt" content="[^"]+"', html)
+    # The versioned social image is served directly as a real PNG, 200,
+    # no redirect/auth/cookies.
+    resp = client.get("/static/markmyass-social-v2.png")
     assert resp.status_code == 200
     assert resp.headers["content-type"] == "image/png"
     assert resp.content[:8] == b"\x89PNG\r\n\x1a\n"
+    assert "set-cookie" not in {k.lower() for k in resp.headers}
 
 
 # --- llms.txt ----------------------------------------------------------------------------
