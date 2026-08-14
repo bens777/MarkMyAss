@@ -40,6 +40,11 @@ class WebConfig:
     max_concurrent_jobs: int
     processing_timeout_seconds: int
     max_upload_mb: int
+    # Path to the durable, aggregate-only usage-stats SQLite DB. None ->
+    # a default temp-dir file (fine for local/dev; ephemeral). Production
+    # sets GHOSTMARK_STATS_DB to a file on a dedicated writable volume so
+    # the counter survives restarts (see docker-compose.prod.yml).
+    stats_db_path: str | None = None
 
     @property
     def is_hosted(self) -> bool:
@@ -87,4 +92,5 @@ def load_config() -> WebConfig:
         max_concurrent_jobs=_env_int("GHOSTMARK_MAX_CONCURRENT", 4),
         processing_timeout_seconds=_env_int("GHOSTMARK_PROCESSING_TIMEOUT_SECONDS", 30),
         max_upload_mb=_env_int("GHOSTMARK_MAX_UPLOAD_MB", 50),
+        stats_db_path=(os.environ.get("GHOSTMARK_STATS_DB", "").strip() or None),
     )

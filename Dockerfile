@@ -36,6 +36,12 @@ RUN pip install --no-cache-dir .
 # Run as a non-root user at runtime.
 RUN useradd --create-home --shell /usr/sbin/nologin ghostmark \
     && chown -R ghostmark:ghostmark /app
+# Dedicated writable mount point for the durable usage-stats SQLite DB.
+# Created owned by the non-root user so that a freshly-initialized Docker
+# named volume mounted here (see docker-compose.prod.yml) inherits that
+# ownership and is writable even with read_only: true on the root fs.
+# This holds ONLY aggregate counts -- never any uploaded file.
+RUN mkdir -p /data && chown ghostmark:ghostmark /data
 USER ghostmark
 
 EXPOSE 8765

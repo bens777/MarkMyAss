@@ -634,6 +634,50 @@ img, svg { max-width: 100%; height: auto; }
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Social proof: an intentional, emphasized element (coral number, not
+   tiny helper text) sitting directly under the hero title so the usage
+   number is visible above the fold, including on mobile. Uses the
+   existing palette/type; no generic SaaS card chrome. Left-aligned with
+   the hero copy on desktop, centered with it on mobile. Hidden until
+   real data arrives (see app.js). */
+.social-proof {
+  margin: 0.5rem 0 1rem;
+  text-align: left;
+}
+.social-proof-total {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text);
+  line-height: 1.25;
+}
+.social-proof-count {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.9rem;
+  letter-spacing: -0.01em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  vertical-align: -0.12em;
+  margin-right: 0.15rem;
+}
+.social-proof-label { font-weight: 600; }
+.social-proof-24h {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.social-proof-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--spectral);
+  flex-shrink: 0;
+}
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;
@@ -643,6 +687,8 @@ img, svg { max-width: 100%; height: auto; }
   .hero h1 { margin-left: auto; margin-right: auto; }
   .subheadline { margin-left: auto; margin-right: auto; }
   .hero-flow, .hero-cta-row, .trust-bar { justify-content: center; }
+  .social-proof { text-align: center; }
+  .social-proof-24h { justify-content: center; }
   /* Full-width illustration below the text -- still frameless; fade
      both side edges gently instead of only the left. */
   .hero-scene {

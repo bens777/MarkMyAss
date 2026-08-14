@@ -34,6 +34,10 @@ services:
       GHOSTMARK_RATE_LIMIT_PER_MINUTE: "20"
       GHOSTMARK_MAX_CONCURRENT: "4"
       GHOSTMARK_PROCESSING_TIMEOUT_SECONDS: "30"
+      # Durable, aggregate-only usage stats live on the dedicated volume
+      # below (survives restarts). Only the homepage social-proof counts
+      # are stored here -- never any uploaded file.
+      GHOSTMARK_STATS_DB: "/data/stats.db"
     # Basic resource safeguards so one bad actor can't exhaust the host.
     mem_limit: 512m
     pids_limit: 256
@@ -48,6 +52,14 @@ services:
     read_only: true
     tmpfs:
       - /tmp:rw,nosuid,noexec,size=256m,mode=1777
+    # The ONLY persistent writable path: a dedicated named volume for the
+    # aggregate usage-stats SQLite DB. Does not weaken read_only -- the
+    # root filesystem stays read-only; this is an explicit data mount that
+    # survives restarts / reboots / container recreation. Never holds any
+    # uploaded file (those stay in the ephemeral /tmp tmpfs and are
+    # deleted on TTL exactly as before).
+    volumes:
+      - markmyass-stats:/data
     # Bounded container logs (max ~30MB) so a disk-constrained host can
     # never fill up with json-file logs.
     logging:
@@ -61,3 +73,9 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+# Persistent, aggregate-only usage statistics (homepage social-proof
+# counter). This is the sole persistent volume; it contains a single
+# small SQLite file of counts, never any uploaded user file.
+volumes:
+  markmyass-stats:

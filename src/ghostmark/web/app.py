@@ -76,6 +76,7 @@ from ghostmark.web.content_render import (
 from ghostmark.web.presence import PresenceRegistry, is_valid_session_id
 from ghostmark.web.security_middleware import RateLimitMiddleware, SecurityHeadersMiddleware
 from ghostmark.web.seo import jsonld_script_tag, software_application_jsonld, website_jsonld
+from ghostmark.web.stats import UsageStats
 
 STATIC_DIR = Path(__file__).parent / "static"
 TTL_SWEEP_INTERVAL_SECONDS = 60
@@ -260,6 +261,10 @@ class _Session:
         self.created_at = time.time()
         self.clean_result: CleanResult | None = None
         self.verify_result: VerifyResult | None = None
+        # Guards the usage counter so a session is counted at most once, no
+        # matter how many times /api/clean is called for it (re-clean,
+        # reload) -- see _count_clean in create_app.
+        self.stats_counted = False
 
     def is_expired(self, ttl_seconds: float) -> bool:
         return (time.time() - self.created_at) > ttl_seconds
@@ -367,6 +372,14 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
     store = _SessionStore(ttl_seconds=config.session_ttl_seconds)
     app.state.store = store  # exposed for tests/introspection, not used by any route
     atexit.register(store.cleanup_all)
+
+    # Durable, aggregate-only usage stats (homepage social proof). Default
+    # path is a temp-dir file for local/dev; production points
+    # GHOSTMARK_STATS_DB at a dedicated writable volume so the counter
+    # survives restarts. Stores ONLY aggregate numbers -- never any file.
+    stats_db_path = config.stats_db_path or str(Path(tempfile.gettempdir()) / "ghostmark-usage-stats.db")
+    stats = UsageStats(stats_db_path)
+    app.state.stats = stats
 
     runner = BoundedRunner(max_concurrent=config.max_concurrent_jobs, timeout_seconds=config.processing_timeout_seconds)
     app.state.runner = runner
@@ -791,6 +804,17 @@ Proof, not promises.
     def presence_count() -> dict[str, Any]:
         return _presence_payload()
 
+    # Public, aggregate-only social-proof numbers. No personal data, no
+    # IPs, no filenames, no identifiers -- just two counts. On DB failure
+    # this 503s so the frontend hides the block rather than showing 0.
+    @app.get("/api/public-stats")
+    def public_stats() -> dict[str, int]:
+        snap = stats.snapshot()
+        if snap is None:
+            raise HTTPException(status_code=503, detail="Stats temporarily unavailable.")
+        total, last_24h = snap
+        return {"files_cleaned_total": total, "files_cleaned_last_24h": last_24h}
+
     @app.post("/api/inspect/text")
     def inspect_text_route(body: TextIn) -> dict[str, Any]:
         # Same CPU-bound degradation path as large text FILES (see
@@ -872,6 +896,15 @@ Proof, not promises.
         report.target = safe_name
         return {"session_id": session_id, "report": report.to_dict()}
 
+    def _count_clean(session: _Session) -> None:
+        # Increment the durable usage counter exactly once per session, and
+        # only after a clean has actually succeeded and produced output.
+        # Failed cleans, inspect-only sessions, re-cleans, reloads and
+        # repeat downloads never reach here / never double-count.
+        if not session.stats_counted:
+            session.stats_counted = True
+            stats.record_clean()
+
     @app.post("/api/clean/{session_id}")
     def clean_route(session_id: str) -> dict[str, Any]:
         session = store.get(session_id)
@@ -882,6 +915,7 @@ Proof, not promises.
                 cleaned, result = runner.run(clean_text_content, session.text)
                 session.cleaned_text = cleaned
                 session.clean_result = result
+                _count_clean(session)
                 payload = result.to_dict()
                 payload["cleaned_text"] = cleaned
                 return payload
@@ -899,6 +933,7 @@ Proof, not promises.
 
         session.cleaned_path = Path(result.output)
         session.clean_result = result
+        _count_clean(session)
         # Same redaction as inspect_file_route: result.source/output are the
         # real server-side temp paths -- capture them into the session
         # above first (needed for download/verify), then redact before this

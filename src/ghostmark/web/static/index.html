@@ -87,6 +87,20 @@
         </p>
         <h1>Claude Watermark Remover &amp; AI Provenance Cleaner</h1>
 
+        <!-- Real social proof from /api/public-stats (durable aggregate
+             counts, never fabricated). Placed high, directly under the
+             title, so the usage number is visible above the fold on
+             mobile. Hidden by default and only shown once the endpoint
+             returns a real lifetime total >= 1 (a brand-new deployment
+             shows nothing rather than "0"); the 24h line is hidden when
+             its real value is below the threshold. -->
+        <div id="social-proof" class="social-proof hidden" aria-live="polite">
+          <p class="social-proof-total"><strong id="social-proof-count" class="social-proof-count"></strong> <span class="social-proof-label">files cleaned with MarkMyAss</span></p>
+          <p id="social-proof-24h" class="social-proof-24h hidden">
+            <span class="social-proof-dot" aria-hidden="true"></span><span id="social-proof-24h-count"></span> cleaned in the last 24 hours
+          </p>
+        </div>
+
         <p class="hero-flow">
           <span class="flow-step">Inspect</span>
           <span class="flow-sep" aria-hidden="true">→</span>
