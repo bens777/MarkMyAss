@@ -48,33 +48,43 @@ def test_homepage_links_to_lab_and_benchmarks_and_run_local():
     assert 'href="run-ai-locally"' in html
 
 
-def test_homepage_moseisley_copy_updated():
+def test_homepage_moseisley_acquisition_placements_present():
     client = TestClient(create_app(_config()))
     html = client.get("/").text
-    assert "An open-source project by" in html
-    assert "Meet Moseisley" in html
-    assert "Explore Moseisley" in html
+    assert "An open-source project by" in html      # hosted top attribution
+    assert "Get your AI crew" in html               # navbar chip
+    assert "From one tool to a whole crew" in html  # homepage section
+    assert "Want the whole crew?" in html           # post-verify card
+    assert "MarkMyAss is built by" in html          # footer attribution
+    # Value first, Moseisley second: the post-verify card starts hidden
+    # and is only revealed after the user has their verified result.
+    assert 'id="moseisley-cta" class="moseisley-cta hidden"' in html
 
 
 def test_homepage_moseisley_links_point_to_moseisley_with_utm_attribution():
-    """Both Moseisley links (top attribution, bottom CTA) must point to the
-    real moseisley.sh domain (never a lookalike/typo domain) and carry
-    simple, privacy-compatible UTM query params for attribution -- no
+    """Every Moseisley link must point to the real moseisley.sh domain
+    (never a lookalike/typo domain) and carry simple, privacy-compatible
+    UTM query params with a DISTINCT utm_medium per placement -- no
     tracking pixels, no third-party scripts, no cookies."""
 
     client = TestClient(create_app(_config()))
     html = client.get("/").text
-    # Matches only the two outbound "visit Moseisley" links (bare domain +
-    # query string) -- NOT this test fixture's own self-referential
-    # canonical/OG URL, which happens to also live on the moseisley.sh
-    # domain (https://moseisley.sh/ghostmark, a path, not a query string)
-    # when public_url is configured for the subpath deployment style.
-    moseisley_links = re.findall(r'href="(https://moseisley\.sh\?[^"]*)"', html)
-    assert len(moseisley_links) == 2
+    # Matches only outbound "visit Moseisley" links (domain root + query
+    # string) -- NOT this test fixture's own self-referential canonical/OG
+    # URL (https://moseisley.sh/ghostmark, a path without a query string).
+    moseisley_links = re.findall(r'href="(https://moseisley\.sh/\?[^"]*)"', html)
+    # top attribution + navbar + homepage section (inline link + button) +
+    # post-verify card + footer
+    assert len(moseisley_links) >= 5
+    media = set()
     for link in moseisley_links:
-        assert link.startswith("https://moseisley.sh?")
-        assert "utm_source=ghostmark" in link
-        assert "utm_medium=referral" in link
+        assert link.startswith("https://moseisley.sh/?")
+        assert "utm_source=markmyass" in link
+        assert "utm_campaign=" in link
+        m = re.search(r"utm_medium=([a-z_]+)", link)
+        assert m, link
+        media.add(m.group(1))
+    assert {"navbar", "homepage", "product", "footer", "top"} <= media
 
 
 def test_homepage_never_calls_moseisley_promo_a_popup_or_interstitial():

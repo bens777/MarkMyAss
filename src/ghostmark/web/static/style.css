@@ -192,6 +192,19 @@ img, svg { max-width: 100%; height: auto; }
   letter-spacing: -0.01em;
 }
 .top-nav .brand-link:hover { color: var(--accent); }
+/* Discreet Moseisley acquisition chip: visually secondary to every
+   product link -- outline only, salmon on hover. */
+.top-nav .nav-cta {
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  font-weight: 600;
+}
+.top-nav .nav-cta:hover {
+  color: #12213d;
+  border-color: var(--text);
+  background: var(--brand-salmon);
+}
 .brand-mark { flex-shrink: 0; }
 .brand-kicker img { vertical-align: -3px; }
 
@@ -557,6 +570,16 @@ textarea {
   resize: vertical;
 }
 
+/* Always-visible supported-formats line under the Paste/Upload tabs --
+   small, secondary, but readable at a glance in BOTH tabs. */
+.formats-hint {
+  margin: -0.35rem 0 0.9rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
 .dropzone {
   display: flex;
   flex-direction: column;
@@ -876,17 +899,61 @@ textarea {
 .preview-card p { margin: 0; color: var(--muted); font-size: 0.92rem; flex-grow: 1; }
 .preview-link { color: var(--accent); font-weight: 700; font-size: 0.9rem; }
 
-.promo-bottom {
-  text-align: center;
-  padding: 2rem 1.5rem;
+/* Homepage Moseisley section -- the crew metaphor, low on the page,
+   never above the cleaner. Reuses the existing chart-room crew scene. */
+.crew-section {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  max-width: 860px;
+  margin: 0 auto 3rem;
+  padding: 1.75rem;
   border: 2px solid var(--text);
   border-radius: var(--radius-lg);
-  margin-bottom: 1.5rem;
   background: var(--surface);
   box-shadow: var(--shadow-card);
 }
-.promo-bottom h2 { margin: 0 0 0.25rem; font-size: 1.3rem; font-family: var(--font-display); font-weight: 800; }
-.promo-bottom p { margin: 0 0 1rem; color: var(--muted); }
+.crew-section-art {
+  flex-shrink: 0;
+  width: 260px;
+  height: auto;
+  border-radius: var(--radius-sm);
+  -webkit-mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, #000 55%, transparent 97%);
+  mask-image: radial-gradient(ellipse 78% 78% at 50% 50%, #000 55%, transparent 97%);
+}
+.crew-section-copy { min-width: 0; }
+.crew-section h2 { margin: 0 0 0.5rem; font-size: 1.4rem; font-family: var(--font-display); font-weight: 800; }
+.crew-section p { margin: 0 0 0.7rem; color: var(--muted); font-size: 0.95rem; line-height: 1.55; }
+.crew-section p a { color: var(--accent); font-weight: 600; }
+.crew-tagline { font-weight: 700; color: var(--text) !important; }
+.crew-section .btn { margin-top: 0.2rem; }
+@media (max-width: 720px) {
+  .crew-section { flex-direction: column; text-align: center; }
+  .crew-section-art { width: 220px; }
+}
+
+/* Post-verify Moseisley conversion card: appears only after results,
+   download and receipts are already on screen. */
+.moseisley-cta {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.4rem;
+  border: 2px solid var(--text);
+  border-left: 6px solid var(--brand-salmon);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  text-align: center;
+}
+.moseisley-cta-kicker {
+  margin: 0 0 0.1rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--notfound);
+}
+.moseisley-cta h3 { margin: 0 0 0.35rem; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; }
+.moseisley-cta p { margin: 0 0 0.9rem; color: var(--muted); font-size: 0.9rem; }
+.moseisley-cta .btn { margin-top: 0; }
 
 footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 2rem; }
 footer a { color: var(--accent); }

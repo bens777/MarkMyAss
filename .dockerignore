@@ -1,0 +1,26 @@
+# Keep the Docker build context tiny: the Dockerfile only COPYs
+# pyproject.toml, README.md, LICENSE and src/, but without this file the
+# ENTIRE repo directory (including a ~460MB .venv) is shipped to the
+# daemon as context on every build -- slow builds and needless build
+# cache on a disk-constrained host.
+.venv/
+.git/
+.github/
+.claude/
+.tmp/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+tests/
+docs/
+deploy/
+design-references/
+skill/
+docker-compose*.yml
+Dockerfile
+.dockerignore
+*.md
+!README.md
+.env
+.env.*

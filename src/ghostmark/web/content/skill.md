@@ -150,6 +150,18 @@ clean` never touches your original file.
 Proof, not promises — the Skill reports what it verified, and says
 UNKNOWN when it can't.
 
+---
+
+## Want more than one Skill?
+
+MarkMyAss is the specialist crew that hunts hidden marks and ghosts in
+your files. [Moseisley](https://moseisley.sh/?utm_source=markmyass&utm_medium=skill&utm_campaign=acquisition)
+is where you get the whole crew: build your own team of AI agents and
+assistants to help you work, research, plan and automate — free to
+start.
+
+<p><a class="btn primary" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=skill&amp;utm_campaign=acquisition" rel="noopener">Explore Moseisley →</a></p>
+
 [← Back to the MarkMyAss cleaner](.) · [Explore the AI Watermark Lab →](lab)
 
 <script src="static/copy-buttons.js" defer></script>

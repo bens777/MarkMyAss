@@ -84,6 +84,8 @@ def render_article_page(
     footer = footer_html if footer_html is not None else (
         '<p>MarkMyAss is open source (MIT), powered by the GhostMark engine. '
         '<a href="https://github.com/bens777/MarkMyAss" rel="noopener">Source on GitHub</a>.</p>'
+        '<p>MarkMyAss is built by <a href="https://moseisley.sh/?utm_source=markmyass'
+        '&amp;utm_medium=footer&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a>.</p>'
     )
 
     return f"""<!doctype html>

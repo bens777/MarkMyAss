@@ -458,6 +458,15 @@ one-time) Google Search Console setup steps for the hosted deployment.
 - Real statistical watermark detectors, if/when providers publish
   reproducible methodology.
 
+## From MarkMyAss to Moseisley
+
+MarkMyAss is a free tool from [Moseisley](https://moseisley.sh/?utm_source=markmyass&utm_medium=github&utm_campaign=acquisition).
+
+If you want more than a cleaner, Moseisley lets you build your own team
+of AI agents and assistants.
+
+[Build your AI crew →](https://moseisley.sh/?utm_source=markmyass&utm_medium=github&utm_campaign=acquisition)
+
 ## License
 
 MIT -- see [`LICENSE`](LICENSE). Third-party dependency licenses are listed

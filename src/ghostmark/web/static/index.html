@@ -30,7 +30,7 @@
   <a href="#main-content" class="skip-link">Skip to main content</a>
   <main class="wrap" id="main-content">
     <p class="promo-top hosted-only hidden">
-      An open-source project by <a href="https://moseisley.sh?utm_source=ghostmark&amp;utm_medium=referral&amp;utm_content=top_attribution" rel="noopener">Moseisley</a>
+      An open-source project by <a href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=top&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a>
     </p>
 
     <nav class="top-nav">
@@ -44,6 +44,7 @@
       <a href="benchmarks">Benchmarks</a>
       <a href="run-ai-locally">Run Models Locally</a>
       <a href="https://github.com/bens777/MarkMyAss" rel="noopener">GitHub</a>
+      <a class="nav-cta" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=navbar&amp;utm_campaign=acquisition" rel="noopener">Get your AI crew →</a>
     </nav>
 
     <section class="hero">
@@ -111,6 +112,9 @@
         <button id="tab-text" class="tab active" type="button">Paste Text</button>
         <button id="tab-file" class="tab" type="button">Upload File</button>
       </div>
+      <!-- Kept in lockstep with ghostmark.security.SUPPORTED_EXTENSIONS
+           (and this file input's accept attribute below). -->
+      <p class="hint formats-hint">Supported: TXT · MD · JSON · CSV · JPG · JPEG · PNG · WEBP · PDF</p>
 
       <div id="panel-text" class="panel">
         <textarea id="text-input" rows="8" placeholder="Paste text to inspect..."></textarea>
@@ -124,7 +128,7 @@
         </label>
         <input id="file-input" type="file" accept=".txt,.md,.json,.csv,.pdf,.png,.jpg,.jpeg,.webp" class="visually-hidden" />
         <p id="chosen-file-name" class="hint hidden"></p>
-        <p class="hint">Supported: PDF &middot; JPG &middot; JPEG &middot; PNG &middot; WEBP &middot; TXT &middot; MD &middot; JSON &middot; CSV</p>
+        <p class="hint">Images (JPG, JPEG, PNG, WebP), PDFs and text files (TXT, MD, JSON, CSV).</p>
         <p id="upload-limit-hint" class="hint"></p>
       </div>
 
@@ -203,6 +207,16 @@
       <p id="lab-teaser" class="lab-teaser hidden">
         Curious what MarkMyAss can and can't verify? <a href="lab">Explore the AI Watermark Lab →</a>
       </p>
+
+      <!-- Moseisley conversion card: revealed only AFTER the user has
+           their verified result + download + receipts (value first).
+           Never gates any MarkMyAss functionality. -->
+      <div id="moseisley-cta" class="moseisley-cta hidden">
+        <p class="moseisley-cta-kicker">Your file is clean.</p>
+        <h3>Want the whole crew?</h3>
+        <p>MarkMyAss is one tool. Moseisley gives you your own team of AI agents and assistants.</p>
+        <a class="btn primary" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=product&amp;utm_campaign=clean_success" rel="noopener">Start free on Moseisley →</a>
+      </div>
     </section>
     </div>
 
@@ -286,14 +300,19 @@
       </a>
     </section>
 
-    <div class="promo-bottom hosted-only hidden">
-      <h2>Need more than a cleaner?</h2>
-      <p>Meet Moseisley — your personal team of AI agents.</p>
-      <a class="btn primary" href="https://moseisley.sh?utm_source=ghostmark&amp;utm_medium=referral&amp;utm_content=bottom_cta" rel="noopener">Explore Moseisley →</a>
-    </div>
+    <section class="crew-section">
+      <img src="static/art/page-lab.webp" alt="" width="300" height="167" class="crew-section-art" loading="lazy" />
+      <div class="crew-section-copy">
+        <h2>From one tool to a whole crew</h2>
+        <p>MarkMyAss cleans the hidden traces in your AI content. <a href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=homepage&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a> gives you a personal crew of AI agents and assistants to help you work, research, plan and automate.</p>
+        <p class="crew-tagline">MarkMyAss cleans your AI files. Moseisley gives you the whole crew.</p>
+        <a class="btn primary" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=homepage&amp;utm_campaign=acquisition" rel="noopener">Build your AI crew — free →</a>
+      </div>
+    </section>
 
     <footer>
       <p>MarkMyAss is open source (MIT), powered by the GhostMark engine. <a href="https://github.com/bens777/MarkMyAss" rel="noopener">Source on GitHub</a>.</p>
+      <p>MarkMyAss is built by <a href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=footer&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a>.</p>
       <nav class="footer-sitemap" aria-label="More MarkMyAss pages">
         <a href="skill">Skill</a>
         <a href="lab">AI Watermark Lab</a>

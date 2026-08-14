@@ -77,6 +77,7 @@
   const receiptHtml = el("receipt-html");
   const receiptTxt = el("receipt-txt");
   const labTeaser = el("lab-teaser");
+  const moseisleyCta = el("moseisley-cta");
 
   async function loadConfig() {
     try {
@@ -486,6 +487,9 @@
       receiptTxt.href = API.receiptDownload(state.sessionId, "txt");
       receiptDownloads.classList.remove("hidden");
       labTeaser.classList.remove("hidden");
+      // Value first, Moseisley second: this card only appears after the
+      // user already has their verified result, download and receipts.
+      if (moseisleyCta) moseisleyCta.classList.remove("hidden");
     } catch (err) {
       showError(String(err));
     } finally {
