@@ -115,6 +115,7 @@ def render_article_page(
   <link rel="icon" type="image/png" href="static/art/markmyass-logo-64.png" sizes="64x64" />
   <link rel="apple-touch-icon" href="static/art/markmyass-logo-180.png" />
 
+  <script src="static/theme-init.js"></script>
   <link rel="stylesheet" href="static/style.css" />
   <link rel="stylesheet" href="static/article.css" />
   {jsonld_html}

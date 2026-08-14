@@ -24,40 +24,45 @@
    ============================================================ */
 
 :root {
-  --bg: #fff6e7;
-  --bg-void: #fbeac9;
-  --surface: #ffffff;
-  --surface-2: #fff1dc;
-  --border: #f0ddba;
-  --text: #12213d;
-  --muted: #56638a;
+  /* DARK is MarkMyAss's canonical/default identity: a fresh visitor
+     always gets these tokens regardless of prefers-color-scheme. The
+     light (warm-cream) palette below is opt-in via the navbar theme
+     toggle, persisted as localStorage "markmyass-theme" and applied
+     before first paint by static/theme-init.js (an external file
+     because the CSP blocks inline scripts). */
+  color-scheme: dark;
+  --bg: #0e1b33;
+  --bg-void: #081222;
+  --surface: #16294a;
+  --surface-2: #1e3a63;
+  --border: #2c4a72;
+  --text: #fbf3e2;
+  --muted: #a9bad9;
 
-  /* The one vivid color used for TEXT (links, kicker, hover, CTAs) --
-     verified >=4.5:1 against bg, surface-2 and white. */
-  --accent: #cc2a14;
-  --accent-ink: #ffffff;
+  /* The one vivid color used for TEXT (links, kicker, hover, CTAs). */
+  --accent: #ff6b4a;
+  --accent-ink: #0e1b33;
 
   /* Decorative-only vivid accents: icon fills, borders, tinted
      backgrounds, badge chips with dark text on top. Never used as a
-     foreground text color -- at full saturation none of these pass
-     4.5:1 against a bright cream page. --brand-salmon is the official
-     MarkMyAss logo's badge color (sampled from the approved asset) --
-     a restrained brand signature, never a text color and never a
+     foreground text color. --brand-salmon is the official MarkMyAss
+     logo's badge color (sampled from the approved asset) -- a
+     restrained brand signature, never a text color and never a
      replacement for the site palette. */
-  --brass: #e8a233;
-  --spectral: #12b8a6;
+  --brass: #f2b84d;
+  --spectral: #4fe0cc;
   --brand-salmon: #f87868;
 
   /* Status text -- each independently checked against the tinted
      surface-2 chip background it renders on. */
-  --found: #aa4b16;
-  --notfound: #177843;
-  --unknown: #56638a;
-  --danger: #d4242f;
-  --pass: #177843;
-  --partial: #aa4b16;
+  --found: #ffb066;
+  --notfound: #6fe0a0;
+  --unknown: #a9bad9;
+  --danger: #ff8a80;
+  --pass: #6fe0a0;
+  --partial: #ffb066;
 
-  --parchment: #f6dfaf;
+  --parchment: #f5dfb0;
   --parchment-ink: #12213d;
 
   /* Modern, bold, internet-native type. Body stays the fast system
@@ -73,9 +78,9 @@
   --radius-lg: 22px;
   /* "Sticker" hard shadow -- flat color offset, no blur. Reads as bold
      and internet-native, not a soft muted parchment drop-shadow. */
-  --shadow-card: 4px 4px 0 var(--text);
-  --shadow-card-hover: 6px 6px 0 var(--text);
-  --shadow-btn: 3px 3px 0 var(--text);
+  --shadow-card: 4px 4px 0 #081222;
+  --shadow-card-hover: 6px 6px 0 #081222;
+  --shadow-btn: 3px 3px 0 #081222;
 
   --dur-fast: 180ms;
   --dur-base: 260ms;
@@ -83,32 +88,35 @@
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0e1b33;
-    --bg-void: #081222;
-    --surface: #16294a;
-    --surface-2: #1e3a63;
-    --border: #2c4a72;
-    --text: #fbf3e2;
-    --muted: #a9bad9;
-    --accent: #ff6b4a;
-    --accent-ink: #0e1b33;
-    --brass: #f2b84d;
-    --spectral: #4fe0cc;
-    --brand-salmon: #f87868;
-    --found: #ffb066;
-    --notfound: #6fe0a0;
-    --unknown: #a9bad9;
-    --danger: #ff8a80;
-    --pass: #6fe0a0;
-    --partial: #ffb066;
-    --parchment: #f5dfb0;
-    --parchment-ink: #12213d;
-    --shadow-card: 4px 4px 0 #081222;
-    --shadow-card-hover: 6px 6px 0 #081222;
-    --shadow-btn: 3px 3px 0 #081222;
-  }
+/* Opt-in LIGHT theme (the original warm-cream palette, unchanged) --
+   selected only by an explicit user choice via the navbar toggle, never
+   by prefers-color-scheme. Every color used as TEXT here is
+   WCAG-verified at >=4.5:1 against whatever background it sits on. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #fff6e7;
+  --bg-void: #fbeac9;
+  --surface: #ffffff;
+  --surface-2: #fff1dc;
+  --border: #f0ddba;
+  --text: #12213d;
+  --muted: #56638a;
+  --accent: #cc2a14;
+  --accent-ink: #ffffff;
+  --brass: #e8a233;
+  --spectral: #12b8a6;
+  --brand-salmon: #f87868;
+  --found: #aa4b16;
+  --notfound: #177843;
+  --unknown: #56638a;
+  --danger: #d4242f;
+  --pass: #177843;
+  --partial: #aa4b16;
+  --parchment: #f6dfaf;
+  --parchment-ink: #12213d;
+  --shadow-card: 4px 4px 0 var(--text);
+  --shadow-card-hover: 6px 6px 0 var(--text);
+  --shadow-btn: 3px 3px 0 var(--text);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -207,6 +215,137 @@ img, svg { max-width: 100%; height: auto; }
 }
 .brand-mark { flex-shrink: 0; }
 .brand-kicker img { vertical-align: -3px; }
+
+/* Compact theme toggle: shows the icon of the mode you'd switch TO
+   (sun while dark, moon while light). No transition animation -- the
+   theme swap itself is instant by design. The BUTTON is a 44x44 touch
+   target (WCAG 2.5.5); the visible ~30px circle is drawn by ::before so
+   the design stays compact while the hit area is comfortable. */
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.theme-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+}
+.theme-toggle svg { position: relative; }
+.theme-toggle:hover { color: var(--accent); }
+.theme-toggle:hover::before { border-color: var(--accent); }
+.theme-toggle:focus-visible { outline: 2px solid var(--spectral); outline-offset: -3px; }
+.theme-toggle .theme-icon-moon { display: none; }
+:root[data-theme="light"] .theme-toggle .theme-icon-sun { display: none; }
+:root[data-theme="light"] .theme-toggle .theme-icon-moon { display: block; }
+
+/* Desktop: the secondary-nav wrapper is transparent to layout, so the
+   links flow exactly as they always did. Mobile turns it into a compact
+   dropdown behind the hamburger (below). */
+.nav-links { display: contents; }
+.nav-burger { display: none; }
+.nav-cta-short { display: none; }
+
+@media (max-width: 860px) {
+  .top-nav {
+    position: relative;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 0.6rem;
+  }
+  .top-nav .brand-link { margin-right: auto; }
+
+  /* Secondary nav collapses into a compact dropdown card. The CTA and
+     theme toggle stay in the header bar, outside the menu. */
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: 50;
+    min-width: 220px;
+    flex-direction: column;
+    padding: 0.4rem;
+    background: var(--surface);
+    border: 2px solid var(--text);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+  }
+  .nav-links.open { display: flex; }
+  .nav-links a {
+    display: block;
+    padding: 0.65rem 0.9rem;
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .nav-links a:hover { background: var(--surface-2); color: var(--accent); }
+
+  /* 44x44 touch target with a compact ~34px visible circle (::before),
+     same pattern as .theme-toggle. */
+  .nav-burger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .nav-burger::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+  }
+  .nav-burger svg { position: relative; }
+  .nav-burger:hover { color: var(--accent); }
+  .nav-burger:hover::before { border-color: var(--accent); }
+  .nav-burger:focus-visible { outline: 2px solid var(--spectral); outline-offset: -3px; }
+  .nav-burger .burger-x { display: none; }
+  .nav-burger[aria-expanded="true"] .burger-bars { display: none; }
+  .nav-burger[aria-expanded="true"] .burger-x { display: block; }
+
+  .top-nav .nav-cta { flex-shrink: 0; white-space: nowrap; }
+  .theme-toggle { flex-shrink: 0; }
+}
+
+/* Very narrow screens: shorten only the VISIBLE CTA label -- the link,
+   URL, UTM params and aria-label ("Get your AI crew") are unchanged. */
+@media (max-width: 430px) {
+  .nav-cta-full { display: none; }
+  .nav-cta-short { display: inline; }
+  .top-nav { gap: 0.4rem; }
+  .top-nav .brand-link { font-size: 0.92rem; gap: 0.28rem; }
+}
+
+/* Tightest screens: keep every control visible AND every hit target at
+   44px by trimming decorative width only (gaps, CTA padding, wordmark
+   size) -- nothing is hidden or removed. */
+@media (max-width: 360px) {
+  .top-nav { gap: 0.25rem; }
+  .top-nav .brand-link { font-size: 0.85rem; gap: 0.24rem; }
+  .top-nav .nav-cta { padding: 0.22rem 0.55rem; font-size: 0.8rem; }
+}
 
 /* ---- Hero: product-first, headline+CTA read in under 3 seconds ----
    Classic conversion layout: copy/CTAs in the left column, the brand

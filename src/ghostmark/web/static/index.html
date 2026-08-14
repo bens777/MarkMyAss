@@ -31,6 +31,9 @@
   <link rel="icon" type="image/png" href="static/art/markmyass-logo-64.png" sizes="64x64" />
   <link rel="apple-touch-icon" href="static/art/markmyass-logo-180.png" />
 
+  <!-- Theme must be applied before the stylesheet paints (no light->dark
+       flash); this tiny script is synchronous and CSP-safe. -->
+  <script src="static/theme-init.js"></script>
   <link rel="stylesheet" href="static/style.css" />
   {{JSONLD}}
 </head>
@@ -46,13 +49,34 @@
         <img class="brand-mark" src="static/art/markmyass-logo-64.png" alt="" width="22" height="22" />
         MarkMyAss
       </a>
-      <a href="#input-section">Cleaner</a>
-      <a href="skill">Skill</a>
-      <a href="lab">AI Watermark Lab</a>
-      <a href="benchmarks">Benchmarks</a>
-      <a href="run-ai-locally">Run Models Locally</a>
-      <a href="https://github.com/bens777/MarkMyAss" rel="noopener">GitHub</a>
-      <a class="nav-cta" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=navbar&amp;utm_campaign=acquisition" rel="noopener">Get your AI crew →</a>
+      <!-- Secondary navigation: inline on desktop (display: contents), a
+           compact dropdown behind the hamburger on mobile. The Moseisley
+           CTA and the theme toggle deliberately live OUTSIDE this group
+           so they stay visible at every width. -->
+      <div id="nav-links" class="nav-links">
+        <a href="#input-section">Cleaner</a>
+        <a href="skill">Skill</a>
+        <a href="lab">AI Watermark Lab</a>
+        <a href="benchmarks">Benchmarks</a>
+        <a href="run-ai-locally">Run Models Locally</a>
+        <a href="https://github.com/bens777/MarkMyAss" rel="noopener">GitHub</a>
+      </div>
+      <a class="nav-cta" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=navbar&amp;utm_campaign=acquisition" rel="noopener" aria-label="Get your AI crew"><span class="nav-cta-full">Get your AI crew →</span><span class="nav-cta-short" aria-hidden="true">AI crew →</span></a>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode">
+        <svg class="theme-icon-sun" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4.5" />
+          <path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M19.4 4.6l-1.8 1.8M6.4 17.6l-1.8 1.8" />
+        </svg>
+        <svg class="theme-icon-moon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.4 14.2A8.8 8.8 0 0 1 9.8 3.6 8.8 8.8 0 1 0 20.4 14.2Z" />
+        </svg>
+      </button>
+      <button id="nav-burger" class="nav-burger" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path class="burger-bars" d="M4 6h16M4 12h16M4 18h16" />
+          <path class="burger-x" d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
     </nav>
 
     <section class="hero">

@@ -513,6 +513,71 @@
 
   loadConfig();
 
+  // --- Theme toggle ----------------------------------------------------------
+  // static/theme-init.js already applied the theme before first paint;
+  // this only wires the explicit user control. Saved choice overrides
+  // system preference; no saved choice means DARK (the canonical brand
+  // identity).
+  const themeToggle = el("theme-toggle");
+
+  function syncThemeToggleLabel() {
+    if (!themeToggle) return;
+    const current = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+    themeToggle.setAttribute("aria-label", current === "dark" ? "Switch to light mode" : "Switch to dark mode");
+  }
+
+  if (themeToggle) {
+    syncThemeToggleLabel();
+    themeToggle.addEventListener("click", () => {
+      const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      try {
+        localStorage.setItem("markmyass-theme", next);
+      } catch {
+        // Storage blocked: the choice still applies for this page view.
+      }
+      syncThemeToggleLabel();
+    });
+  }
+
+  // --- Mobile hamburger navigation -------------------------------------------
+  // Compact dropdown for the secondary nav links only; the Moseisley CTA
+  // and theme toggle always stay visible in the header bar. Closes on
+  // link click, Escape (focus returns to the button), and outside click.
+  const navBurger = el("nav-burger");
+  const navLinks = el("nav-links");
+
+  function setMenu(open) {
+    if (!navBurger || !navLinks) return;
+    navLinks.classList.toggle("open", open);
+    navBurger.setAttribute("aria-expanded", open ? "true" : "false");
+    navBurger.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+  }
+
+  if (navBurger && navLinks) {
+    navBurger.addEventListener("click", () => {
+      setMenu(!navLinks.classList.contains("open"));
+    });
+    navLinks.addEventListener("click", (e) => {
+      if (e.target.closest("a")) setMenu(false);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && navLinks.classList.contains("open")) {
+        setMenu(false);
+        navBurger.focus();
+      }
+    });
+    document.addEventListener("click", (e) => {
+      if (
+        navLinks.classList.contains("open") &&
+        !navLinks.contains(e.target) &&
+        !navBurger.contains(e.target)
+      ) {
+        setMenu(false);
+      }
+    });
+  }
+
   // --- Live presence ("pirates aboard") -------------------------------------
   // Real aggregate count of active visitors -- never fabricated, never
   // inflated. The session id is random, generated fresh per tab, kept only
