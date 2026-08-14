@@ -614,6 +614,111 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
     def sitemap_xml() -> PlainTextResponse:
         return PlainTextResponse(_sitemap_xml, media_type="application/xml")
 
+    # --- llms.txt ------------------------------------------------------------------------
+    # Machine-readable product summary for LLMs/AI agents (llmstxt.org
+    # convention). Every capability and limitation stated here must match the
+    # shipped product -- same honesty bar as the receipts and the Lab. A
+    # separate llms-full.txt is deliberately NOT served: this file already
+    # covers capabilities, formats, verification states, and limits, and a
+    # "full" variant would only duplicate it and drift.
+    _llms_base = config.public_url.rstrip("/")
+    _llms_txt = f"""# MarkMyAss
+
+> Free, open-source AI watermark, metadata and provenance cleaner with a
+> native inspection engine and optional independent verification.
+
+MarkMyAss (engine name: ghostmark) inspects, cleans, and verifies supported
+hidden metadata, provenance, and text signals in files and pasted text. It
+runs as a hosted web app, a local web UI, a CLI, or a Python package. No
+account required; uploads live only in short-lived, isolated sessions.
+
+## Core capabilities
+
+- Hidden/invisible Unicode detection and removal in text (zero-width
+  characters, Unicode Tags steganography), preserving load-bearing
+  characters by default
+- EXIF metadata inspection and removal (JPEG APP1, WebP EXIF chunk, PNG
+  eXIf chunk) at the byte/segment level, without re-encoding pixels
+- XMP metadata inspection and removal, including multi-segment Extended
+  XMP in JPEG
+- IPTC IIM metadata inspection and removal (Photoshop 8BIM / APP13)
+- PNG text chunk inspection and removal (tEXt, zTXt, iTXt, tIME),
+  including AI-generation parameter blocks
+- PDF DocInfo and PDF XMP inspection and removal, without altering page
+  content
+- C2PA / Content Credentials: JUMBF container detection and removal --
+  partial support, NOT cryptographic manifest validation
+- Native tag-level metadata engine: field-by-field reporting (author,
+  creator, software, GPS presence, timestamps, provenance) with no
+  external tools required
+- Optional independent verification with ExifTool when installed
+- Optional C2PA verification with c2patool when installed
+- Verification receipts (JSON, HTML, TXT) recording what was detected,
+  removed, and verified
+- Claude Skill integration: installable skill for Claude Code and
+  claude.ai (see {_llms_base}/skill)
+
+## Supported content
+
+Pasted text, plus these file types: .txt, .md, .json, .csv, .pdf, .png,
+.jpg, .jpeg, .webp.
+
+## Verification model
+
+- NATIVE CLEAN -- NOT INDEPENDENTLY VERIFIED: MarkMyAss's own engine
+  detects nothing after cleaning, but no external verifier was available.
+- INDEPENDENTLY VERIFIED CLEAN: an external verifier (ExifTool and/or
+  c2patool) independently confirms the cleaned file.
+- PARTIAL -- VERIFIER DISAGREEMENT: verifiers disagree. Disagreement is
+  always surfaced; it never silently becomes VERIFIED CLEAN.
+
+## Important limitations
+
+- No claim of universal AI watermark removal: "AI watermark" covers
+  several distinct mechanisms; only the supported signals above are
+  handled.
+- No claim that content becomes 100% AI-undetectable.
+- No removal of statistical / model-level text watermarks (Claude, GPT,
+  Gemini): no public verifiable detector exists, and MarkMyAss does not
+  claim to remove what it cannot verify.
+- C2PA support is partial: container detection and removal only, not
+  cryptographic manifest validation.
+
+## Important pages
+
+- {_llms_base}/ -- main cleaner (inspect, clean, verify, download)
+- {_llms_base}/claude-watermark-remover
+- {_llms_base}/claude-watermark-detector
+- {_llms_base}/ai-watermark-remover
+- {_llms_base}/ai-metadata-cleaner
+- {_llms_base}/c2pa-remover
+- {_llms_base}/content-credentials-remover
+- {_llms_base}/hidden-unicode-remover
+- {_llms_base}/skill -- install MarkMyAss as a Claude Skill
+- {_llms_base}/lab -- AI Watermark Lab (methodology and honest limits)
+- {_llms_base}/benchmarks -- measured results from the public test corpus
+- {_llms_base}/run-ai-locally -- guide to running open-weight AI models
+  locally
+
+## Open source
+
+- GitHub: https://github.com/bens777/MarkMyAss
+- License: MIT
+
+## Related product
+
+- Moseisley: https://moseisley.sh -- Moseisley provides a personal
+  crew/team of AI agents and assistants. MarkMyAss is built by Moseisley.
+
+## Principle
+
+Proof, not promises.
+"""
+
+    @app.get("/llms.txt", response_class=PlainTextResponse)
+    def llms_txt() -> PlainTextResponse:
+        return PlainTextResponse(_llms_txt, media_type="text/plain; charset=utf-8")
+
     @app.get("/health")
     def health() -> dict[str, Any]:
         return {

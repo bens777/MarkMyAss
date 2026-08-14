@@ -150,6 +150,63 @@ def test_sitemap_content_type_is_xml(client):
     assert "xml" in resp.headers["content-type"]
 
 
+# --- llms.txt ----------------------------------------------------------------------------
+
+
+def test_llms_txt_returns_200_as_plain_text(client):
+    resp = client.get("/llms.txt")
+    assert resp.status_code == 200
+    assert resp.headers["content-type"].startswith("text/plain")
+
+
+def test_llms_txt_lists_every_indexable_page_with_the_production_host(client):
+    text = client.get("/llms.txt").text
+    for path in INDEXABLE_PAGES:
+        # Lab subpages are reachable from the /lab hub; llms.txt stays
+        # concise and lists the hub rather than every article.
+        if path.startswith("/lab/"):
+            continue
+        expected = f"{PUBLIC_URL}/" if path == "/" else PUBLIC_URL + path
+        assert expected in text, f"llms.txt missing {expected}"
+
+
+def test_llms_txt_states_verification_model_and_limits(client):
+    text = client.get("/llms.txt").text
+    assert "NATIVE CLEAN" in text
+    assert "INDEPENDENTLY VERIFIED CLEAN" in text
+    assert "VERIFIER DISAGREEMENT" in text
+    assert "Proof, not promises." in text
+    assert "https://github.com/bens777/MarkMyAss" in text
+    assert "https://moseisley.sh" in text
+
+
+def test_llms_txt_never_overclaims(client):
+    text = client.get("/llms.txt").text.lower()
+    # Affirmative marketing overclaims only -- the file legitimately uses
+    # words like "undetectable" inside explicit "No claim ..." disclaimers.
+    for phrase in (
+        "removes every",
+        "removes all",
+        "guaranteed",
+        "fully undetectable",
+        "complete c2pa",
+        "full c2pa",
+    ):
+        assert phrase not in text, f"llms.txt contains overclaim {phrase!r}"
+    # C2PA must stay honestly partial, and the undetectability disclaimer
+    # must stay phrased as a negation.
+    assert "partial" in text
+    assert "no claim that content becomes 100% ai-undetectable" in text
+
+
+def test_llms_txt_never_leaks_internal_routes(client):
+    text = client.get("/llms.txt").text.lower()
+    assert "/api/" not in text
+    assert "/health" not in text
+    assert "localhost" not in text
+    assert "127.0.0.1" not in text
+
+
 # --- Structured data ---------------------------------------------------------------------
 
 
