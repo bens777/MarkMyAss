@@ -37,6 +37,17 @@ services:
     # Basic resource safeguards so one bad actor can't exhaust the host.
     mem_limit: 512m
     pids_limit: 256
+    # Container sandbox: no privilege escalation, drop all Linux
+    # capabilities, read-only root filesystem, and the ONLY writable
+    # path is a size-capped noexec/nosuid tmpfs at /tmp (where per-session
+    # upload dirs live). Verified end-to-end with the production image.
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,noexec,size=256m,mode=1777
     # Bounded container logs (max ~30MB) so a disk-constrained host can
     # never fill up with json-file logs.
     logging:
