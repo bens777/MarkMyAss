@@ -17,8 +17,11 @@ certificate.
 
 - A small Docker container running GhostMark's web app on
   `127.0.0.1:8765` -- **not** exposed to the internet directly.
+- The image is **built by GitHub Actions and pulled from GHCR**
+  (`ghcr.io/bens777/markmyass:latest`) -- the VPS never compiles
+  anything itself. Every push to `main` publishes a fresh image.
 - ExifTool and c2patool (for independent verification) installed inside
-  that same container, automatically, during the build.
+  that same image, automatically, when GitHub Actions builds it.
 - Caddy serves `https://ghostmark.moseisley.sh` as its own site and
   proxies every request to that container. GhostMark itself never
   touches the public internet directly.
@@ -42,37 +45,61 @@ If either command says "not found," install Docker first (see
 https://docs.docker.com/engine/install/ for your VPS's Linux
 distribution), then come back here.
 
-**3. Get the GhostMark code onto the VPS.**
+**3. One-time: make sure the GHCR package is public.**
 
-If you don't already have it there:
+The very first time GitHub Actions publishes the image, GitHub creates
+the `markmyass` package as **private** (that's GitHub's default, even
+for public repositories). Make it public once so the VPS can pull it
+anonymously, with no `docker login` and no token stored on the VPS:
+
+1. On GitHub, open your profile → **Packages** → **markmyass**
+   (direct link: https://github.com/users/bens777/packages/container/package/markmyass).
+2. On the package page, click **Package settings** (right-hand side).
+3. At the bottom, under **Danger Zone**, click **Change visibility**,
+   select **Public**, and confirm by typing the package name.
+
+This only ever needs to be done once (note: GitHub does not let you make
+a public package private again).
+
+**4. Get the GhostMark deploy files onto the VPS.**
+
+If you don't already have them there:
 
 ```bash
+cd /opt
 git clone https://github.com/bens777/MarkMyAss.git
-cd ghostmark
+cd MarkMyAss
 ```
 
 If you already cloned it before, just update it:
 
 ```bash
-cd ghostmark
+cd /opt/MarkMyAss
 git pull
 ```
 
-**4. Build and start GhostMark.**
+(The clone is only needed for `docker-compose.prod.yml` and the Caddy
+snippet -- the application code itself arrives inside the pulled image.)
+
+**5. Pull and start GhostMark.**
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
 ```
 
-This builds the image (installing GhostMark, ExifTool, and c2patool inside
-it) and starts it in the background. The first build takes a few minutes
-(c2patool is compiled from source); after that, `up -d --build` only
-rebuilds what changed.
+This downloads the ready-made image from GHCR (ExifTool and c2patool are
+already inside it) and starts it in the background. Nothing is compiled
+on the VPS. If you ever need to build locally instead (for development),
+use `docker-compose.yml`, which keeps the `build: .` behavior.
 
-**5. Confirm it's running correctly, from the VPS itself:**
+**6. Confirm it's running correctly, from the VPS itself:**
 
 ```bash
-curl http://127.0.0.1:8765/health
+curl -s http://127.0.0.1:8765/health
+docker ps --filter name=markmyass
+docker system df
+df -h /
 ```
 
 You should see something like:
@@ -81,14 +108,14 @@ You should see something like:
 {"status": "ok", "ghostmark": "0.5.0", "exiftool_available": true, "c2patool_available": true}
 ```
 
-If `exiftool_available` or `c2patool_available` is `false`, something went
-wrong with the Docker build -- re-run step 4 and check the output for
-errors. GhostMark still runs fine with either one missing (it degrades to
+If `exiftool_available` or `c2patool_available` is `false`, something is
+wrong with the published image -- check the "Publish Docker image" run on
+the repo's GitHub Actions page, then re-run step 5. GhostMark still runs fine with either one missing (it degrades to
 "unknown"/"unverified" for the checks that tool would have performed), so
 this isn't fatal, but you won't get independent verification for that
 signal.
 
-**6. Add GhostMark to your Caddy configuration.**
+**7. Add GhostMark to your Caddy configuration.**
 
 Open your existing Caddyfile (commonly `/etc/caddy/Caddyfile`):
 
@@ -103,7 +130,7 @@ inside any other site's block, since it's its own subdomain.
 
 Save and exit (in `nano`: Ctrl+O, Enter, then Ctrl+X).
 
-**7. Reload Caddy so it picks up the change:**
+**8. Reload Caddy so it picks up the change:**
 
 ```bash
 sudo systemctl reload caddy
@@ -113,7 +140,7 @@ sudo systemctl reload caddy
 use to reload Caddy without dropping connections -- `caddy reload` if
 you run it directly.)
 
-**8. Visit it in a browser:**
+**9. Visit it in a browser:**
 
 ```
 https://ghostmark.moseisley.sh
@@ -126,9 +153,10 @@ to confirm everything works end to end.
 ## Updating GhostMark later
 
 ```bash
-cd ghostmark
+cd /opt/MarkMyAss
 git pull
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml pull
+docker compose -f docker-compose.prod.yml up -d
 ```
 
 No Caddy changes are needed for a routine update (only if this guide's
@@ -176,8 +204,8 @@ behavior:
 
 | Variable | Default | What it does |
 | --- | --- | --- |
-| `GHOSTMARK_MAX_UPLOAD_MB` | `20` | Max upload size |
-| `GHOSTMARK_SESSION_TTL_MINUTES` | `12` | How long an unclaimed cleaned file is kept before automatic deletion (max 15) |
+| `GHOSTMARK_MAX_UPLOAD_MB` | `10` | Max upload size |
+| `GHOSTMARK_SESSION_TTL_MINUTES` | `8` | How long an unclaimed cleaned file is kept before automatic deletion (max 15) |
 | `GHOSTMARK_RATE_LIMIT_PER_MINUTE` | `20` | Requests per minute allowed per visitor IP on the API |
 | `GHOSTMARK_MAX_CONCURRENT` | `4` | Max file-processing jobs running at once |
 | `GHOSTMARK_PROCESSING_TIMEOUT_SECONDS` | `30` | Hard timeout per processing job |

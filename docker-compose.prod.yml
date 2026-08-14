@@ -14,7 +14,10 @@
 # src/ghostmark/web/config.py.
 services:
   ghostmark:
-    build: .
+    # Pulled from GHCR (built by .github/workflows/docker-publish.yml on
+    # every push to main) -- the VPS never compiles Rust/c2patool itself.
+    # To build locally instead (development), use docker-compose.yml.
+    image: ghcr.io/bens777/markmyass:latest
     restart: unless-stopped
     ports:
       - "127.0.0.1:8765:8765"
@@ -23,14 +26,24 @@ services:
       GHOSTMARK_BASE_PATH: "/"
       GHOSTMARK_PUBLIC_URL: "https://ghostmark.moseisley.sh"
       # Public-web hardening -- see SECURITY.md for the full threat model.
-      GHOSTMARK_MAX_UPLOAD_MB: "20"
-      GHOSTMARK_SESSION_TTL_MINUTES: "12"
+      # Upload size and session TTL are deliberately tight: worst-case
+      # temp-disk usage per abusive IP is bounded by
+      # rate_limit/min x TTL_minutes x max_upload_mb.
+      GHOSTMARK_MAX_UPLOAD_MB: "10"
+      GHOSTMARK_SESSION_TTL_MINUTES: "8"
       GHOSTMARK_RATE_LIMIT_PER_MINUTE: "20"
       GHOSTMARK_MAX_CONCURRENT: "4"
       GHOSTMARK_PROCESSING_TIMEOUT_SECONDS: "30"
     # Basic resource safeguards so one bad actor can't exhaust the host.
     mem_limit: 512m
     pids_limit: 256
+    # Bounded container logs (max ~30MB) so a disk-constrained host can
+    # never fill up with json-file logs.
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/health', timeout=3)"]
       interval: 30s
