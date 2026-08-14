@@ -91,14 +91,46 @@ def test_concurrent_increments_are_not_lost(db_path):
     assert last24 == 400
 
 
-def test_degraded_db_never_crashes(tmp_path):
+def test_record_clean_returns_true_on_confirmed_write(db_path):
+    s = UsageStats(str(db_path))
+    assert s.record_clean() is True
+    assert s.snapshot() == (1, 1)
+
+
+def test_degraded_db_never_crashes_and_reports_false(tmp_path):
     # Point at an un-creatable path (a file where a directory is expected).
     bad = tmp_path / "afile"
     bad.write_text("not a dir")
     s = UsageStats(str(bad / "nested" / "stats.db"))
     assert s.available is False
-    s.record_clean()              # no-op, must not raise
-    assert s.snapshot() is None   # signals the API to hide the block
+    assert s.record_clean() is False  # no-op, must not raise, reports failure
+    assert s.snapshot() is None       # signals the API to hide the block
+
+
+def test_session_not_marked_counted_until_write_confirmed(db_path, monkeypatch):
+    """A transient stats write failure must NOT permanently block the
+    session from counting: it stays un-counted and a later clean retries."""
+
+    app = create_app(_config(db_path))
+    client = TestClient(app)
+    jpg = _jpeg_bytes()
+    sid = client.post("/api/inspect/file", files={"file": ("x.jpg", jpg)}).json()["session_id"]
+    real_record = app.state.stats.record_clean
+
+    # First clean: stats write fails transiently. The clean itself must
+    # still succeed (200), and nothing is counted.
+    monkeypatch.setattr(app.state.stats, "record_clean", lambda *a, **k: False)
+    assert client.post(f"/api/clean/{sid}").status_code == 200
+    assert client.get("/api/public-stats").json()["files_cleaned_total"] == 0
+
+    # Recovery: stats write works again. Re-cleaning the SAME session now
+    # counts it (it was never marked counted), exactly once.
+    monkeypatch.setattr(app.state.stats, "record_clean", real_record)
+    assert client.post(f"/api/clean/{sid}").status_code == 200
+    assert client.get("/api/public-stats").json()["files_cleaned_total"] == 1
+    # And it does not double-count on a further re-clean.
+    client.post(f"/api/clean/{sid}")
+    assert client.get("/api/public-stats").json()["files_cleaned_total"] == 1
 
 
 def test_db_stores_only_aggregate_data_no_pii(db_path):
@@ -178,6 +210,43 @@ def test_only_file_cleans_are_counted_mixed(client):
     stats = client.get("/api/public-stats").json()
     assert stats["files_cleaned_total"] == 1
     assert stats["files_cleaned_last_24h"] == 1
+
+
+def test_full_browser_flow_increments_via_real_api(db_path):
+    """End-to-end through the SAME endpoints the browser calls, in the
+    same order (inspect/file -> clean -> verify -> download), against a
+    real temporary stats DB -- nothing about the route/session flow is
+    mocked."""
+
+    app = create_app(_config(db_path))
+    client = TestClient(app)
+    jpg = _jpeg_bytes()
+
+    # 1. upload + inspect (exactly what the frontend POSTs)
+    r_inspect = client.post("/api/inspect/file", files={"file": ("photo.jpg", jpg)})
+    assert r_inspect.status_code == 200
+    sid = r_inspect.json()["session_id"]
+    assert client.get("/api/public-stats").json() == {
+        "files_cleaned_total": 0,
+        "files_cleaned_last_24h": 0,
+    }
+
+    # 2. clean (the "Clean File" button -> POST /api/clean/{id})
+    r_clean = client.post(f"/api/clean/{sid}")
+    assert r_clean.status_code == 200
+
+    # 3. + 4. verify then download, like the real UI, to prove they don't
+    #    interfere with (or double) the count.
+    assert client.post(f"/api/verify/{sid}").status_code == 200
+    assert client.get(f"/api/download/{sid}").status_code == 200
+
+    stats = client.get("/api/public-stats").json()
+    assert stats["files_cleaned_total"] == 1
+    assert stats["files_cleaned_last_24h"] == 1
+
+    # The app's OWN stats instance (not a fresh one) must agree -- catches
+    # any wiring bug where the route and the endpoint use different objects.
+    assert app.state.stats.snapshot()[0] == 1
 
 
 def test_stats_survive_store_restart_via_api(db_path):

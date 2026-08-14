@@ -904,9 +904,14 @@ Proof, not promises.
         # deliberately excluded. Failed cleans, inspect-only sessions,
         # re-cleans, reloads and repeat downloads never reach here /
         # never double-count.
-        if not session.stats_counted:
+        #
+        # The session is marked counted ONLY after record_clean confirms a
+        # durable write. A transient stats failure returns False and leaves
+        # the session un-counted so a later attempt can retry -- it can
+        # never permanently block this session from counting, and a stats
+        # failure never propagates to break the user's actual clean.
+        if not session.stats_counted and stats.record_clean():
             session.stats_counted = True
-            stats.record_clean()
 
     @app.post("/api/clean/{session_id}")
     def clean_route(session_id: str) -> dict[str, Any]:

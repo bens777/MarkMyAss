@@ -34,6 +34,7 @@ import logging
 import sqlite3
 import threading
 import time
+from contextlib import closing
 
 log = logging.getLogger("ghostmark.web")
 
@@ -62,7 +63,7 @@ class UsageStats:
         return conn
 
     def _init_db(self) -> None:
-        with self._lock, self._connect() as conn:
+        with self._lock, closing(self._connect()) as conn, conn:
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS totals ("
                 "  id INTEGER PRIMARY KEY CHECK (id = 1),"
@@ -72,19 +73,27 @@ class UsageStats:
             conn.execute("CREATE TABLE IF NOT EXISTS clean_events (ts REAL NOT NULL)")
             conn.execute("CREATE INDEX IF NOT EXISTS idx_clean_events_ts ON clean_events (ts)")
 
-    def record_clean(self, now: float | None = None) -> None:
-        """Count exactly one successful cleaned file. Atomic; never raises."""
+    def record_clean(self, now: float | None = None) -> bool:
+        """Count exactly one successful cleaned file. Atomic; never raises.
+
+        Returns True ONLY when the increment was durably committed, so the
+        caller can mark the session counted only after a confirmed write
+        (a transient failure returns False and can be retried later --
+        the session is never permanently blocked from counting).
+        """
 
         if not self._ok:
-            return
+            return False
         now = time.time() if now is None else now
         try:
-            with self._lock, self._connect() as conn:
+            with self._lock, closing(self._connect()) as conn, conn:
                 conn.execute("UPDATE totals SET lifetime = lifetime + 1 WHERE id = 1")
                 conn.execute("INSERT INTO clean_events (ts) VALUES (?)", (now,))
                 conn.execute("DELETE FROM clean_events WHERE ts < ?", (now - _DAY_SECONDS,))
+            return True
         except Exception as exc:  # noqa: BLE001 - a stats hiccup must never fail a real clean
             log.warning("usage stats write failed: %s", exc.__class__.__name__)
+            return False
 
     def snapshot(self, now: float | None = None) -> tuple[int, int] | None:
         """(lifetime_total, last_24h) or None if stats are unavailable."""
@@ -93,7 +102,7 @@ class UsageStats:
             return None
         now = time.time() if now is None else now
         try:
-            with self._lock, self._connect() as conn:
+            with self._lock, closing(self._connect()) as conn, conn:
                 conn.execute("DELETE FROM clean_events WHERE ts < ?", (now - _DAY_SECONDS,))
                 lifetime = conn.execute("SELECT lifetime FROM totals WHERE id = 1").fetchone()[0]
                 last_24h = conn.execute(
