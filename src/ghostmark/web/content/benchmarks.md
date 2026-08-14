@@ -7,7 +7,7 @@
 ### Every supported test. Every failure. Nothing hidden.
 
 This page is the ship's log: generated at server startup by actually running MarkMyAss's
-[public, reproducible test corpus](https://github.com/bens777/ghostmark/tree/main/src/ghostmark/corpus)
+[public, reproducible test corpus](https://github.com/bens777/MarkMyAss/tree/main/src/ghostmark/corpus)
 through the real inspect → clean → verify pipeline -- the same one you get
 from `ghostmark inspect` / `ghostmark clean` / `ghostmark verify`. Nothing
 on this page is a hand-typed number. Failures, if any, are shown here,
@@ -43,18 +43,18 @@ not benchmarked anywhere: no public detector exists to test against. See
 ## Reproduce this yourself
 
 ```bash
-git clone https://github.com/bens777/ghostmark.git
+git clone https://github.com/bens777/MarkMyAss.git
 cd ghostmark
 pip install -e ".[dev]"
 pytest tests/test_corpus.py -v
 ```
 
 Every row on this page corresponds to an assertion in
-[`tests/test_corpus.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_corpus.py),
+[`tests/test_corpus.py`](https://github.com/bens777/MarkMyAss/blob/main/tests/test_corpus.py),
 run against the fixtures in
-[`src/ghostmark/corpus/`](https://github.com/bens777/ghostmark/tree/main/src/ghostmark/corpus)
+[`src/ghostmark/corpus/`](https://github.com/bens777/MarkMyAss/tree/main/src/ghostmark/corpus)
 per the expectations documented in
-[`manifest.json`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/corpus/manifest.json).
+[`manifest.json`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/corpus/manifest.json).
 Machine-readable capability data (not this specific benchmark run) is
 also available at [`/api/lab/status`](api/lab/status).
 
@@ -62,9 +62,9 @@ also available at [`/api/lab/status`](api/lab/status).
 
 If a fixture's documented expectation looks wrong, or you think the
 corpus should cover something it doesn't yet,
-[open an issue](https://github.com/bens777/ghostmark/issues) or submit a
+[open an issue](https://github.com/bens777/MarkMyAss/issues) or submit a
 pull request against
-[`src/ghostmark/corpus/manifest.json`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/corpus/manifest.json)
-and [`scripts/generate_corpus.py`](https://github.com/bens777/ghostmark/blob/main/scripts/generate_corpus.py).
+[`src/ghostmark/corpus/manifest.json`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/corpus/manifest.json)
+and [`scripts/generate_corpus.py`](https://github.com/bens777/MarkMyAss/blob/main/scripts/generate_corpus.py).
 
 **Last reviewed:** 2026-08-13

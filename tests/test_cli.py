@@ -148,4 +148,4 @@ def test_demo_command_passes():
     result = runner.invoke(app, ["demo"])
     assert result.exit_code == 0
     assert "GhostMark is working." in result.stdout
-    assert "5/5 tests successful." in result.stdout
+    assert "6/6 tests successful." in result.stdout

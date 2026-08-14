@@ -119,6 +119,31 @@
   overflow-x: auto;
   font-family: var(--font-mono);
 }
+
+/* Copy-to-clipboard affordance on fenced commands (added by
+   copy-buttons.js on pages that include it, e.g. /skill). Salmon =
+   the brand's action color. */
+.copy-wrap { position: relative; }
+.copy-wrap pre { padding-right: 5.2rem; }
+.copy-btn {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.55rem;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #12213d;
+  background: var(--brand-salmon);
+  border: 2px solid var(--text);
+  border-radius: 8px;
+  padding: 0.25rem 0.65rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--text);
+}
+.copy-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--text); }
+.copy-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--text); }
+.copy-btn.copied { background: var(--notfound); color: #ffffff; }
+.copy-btn:focus-visible { outline: 2px solid var(--spectral); outline-offset: 2px; }
 .article pre code {
   background: none;
   border: none;

@@ -214,16 +214,26 @@ img, svg { max-width: 100%; height: auto; }
   padding: 1.5rem 0 0;
 }
 .hero-copy { min-width: 0; }
+/* The brand lockup above the H1: approved round badge + a plain
+   salmon wordmark. No pill, no border, no background -- just the logo
+   and the name. WCAG 1.4.3 exempts text that is part of a logo or
+   brand name from contrast requirements, so the wordmark may use the
+   brand salmon directly; every INFORMATIONAL text element on the page
+   still follows the normal contrast rules. Sized ~30% above the
+   navbar brand (0.98rem -> 1.28rem), well below the H1. */
 .brand-kicker {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  margin: 0 0 0.9rem;
+  gap: 0.45rem;
+  margin: 0 0 1.6rem;
+}
+.brand-kicker .brand-word {
+  font-family: var(--font-display);
   font-weight: 800;
-  font-size: 0.82rem;
-  letter-spacing: 0.14em;
+  font-size: 1.55rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--brand-salmon);
 }
 .hero h1 {
   font-family: var(--font-display);
@@ -253,7 +263,7 @@ img, svg { max-width: 100%; height: auto; }
   color: var(--text);
 }
 .hero-flow .flow-sep {
-  color: var(--accent);
+  color: var(--brand-salmon);
   font-weight: 700;
   font-size: 1.15rem;
 }
@@ -271,30 +281,99 @@ img, svg { max-width: 100%; height: auto; }
 }
 .honesty-note { margin: 0.6rem 0 0; font-size: 0.8rem; color: var(--muted); font-style: italic; }
 
-/* Compact positioning note: MarkMyAss is not Claude-only. Visible
-   enough to not be missed, but sized well below the H1 -- a callout,
-   not a second headline. */
-.scope-note {
-  margin: 2rem auto 0;
-  padding: 0.6rem 0.9rem;
-  border: 2px solid var(--spectral);
-  background: color-mix(in srgb, var(--spectral) 12%, var(--surface));
-  border-radius: var(--radius-sm);
-  font-size: 0.88rem;
-  line-height: 1.5;
-  color: var(--text);
-  max-width: 34rem;
+/* Cross-LLM support band: a full-width salmon brand strip that makes
+   "not only for Claude" visible at a glance. Tool names appear as
+   restrained cream wordmark chips (nominative text, no third-party
+   logo files) so ecosystem compatibility reads instantly without any
+   external brand overpowering ours. All text is deep navy on the
+   salmon field (6.0:1) or on cream chips (14.9:1). */
+.llm-band {
+  margin: 2.25rem 0 0;
+  padding: 1.5rem 1.75rem 1.6rem;
+  background: var(--brand-salmon);
+  border: 2px solid var(--text);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   text-align: center;
+  color: #12213d;
 }
-.scope-note strong { color: var(--accent); }
+.llm-band h2 {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.45rem;
+  letter-spacing: -0.01em;
+  color: #12213d;
+}
+.llm-band-logos {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem 0.6rem;
+  margin: 0 0 0.9rem;
+  padding: 0;
+}
+.llm-band-logos li {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.98rem;
+  letter-spacing: 0.02em;
+  color: #12213d;
+  background: #fff6e7;
+  border: 2px solid #12213d;
+  border-radius: 999px;
+  padding: 0.32rem 1rem;
+}
+/* The one-glance value line: big, plain words, no jargon. */
+.llm-band-lead {
+  margin: 0 auto 0.55rem;
+  max-width: 46ch;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.18rem;
+  line-height: 1.35;
+  color: #12213d;
+}
+/* The honesty fine print stays visible but secondary. */
+.llm-band-fine {
+  margin: 0 auto;
+  max-width: 64ch;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #12213d;
+  opacity: 0.88;
+}
+@media (max-width: 640px) {
+  .llm-band { padding: 1.2rem 1rem 1.3rem; }
+  .llm-band-logos li { font-size: 0.88rem; padding: 0.28rem 0.8rem; }
+}
 
 .hero-cta-row {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.9rem;
   margin-top: 1.6rem;
 }
-.btn-lg { padding: 0.9rem 1.8rem; font-size: 1.05rem; margin-top: 0; }
+/* Both hero CTAs share one component family: identical fixed height,
+   identical radius, text vertically centered via inline-flex. The
+   hierarchy lives in fill (salmon primary vs outline secondary),
+   type size and horizontal padding -- never in mismatched heights. */
+.hero-cta-row .btn.btn-lg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 54px;
+  margin-top: 0;
+  border-radius: var(--radius-sm);
+}
+.btn-lg { padding: 0 1.8rem; font-size: 1.05rem; margin-top: 0; }
+.hero-cta-row .btn.secondary.btn-lg {
+  padding: 0 1.15rem;
+  font-size: 0.95rem;
+  box-shadow: 2px 2px 0 var(--text);
+}
 
 .trust-bar {
   list-style: none;
@@ -442,7 +521,7 @@ img, svg { max-width: 100%; height: auto; }
   font-size: 0.95rem;
   font-weight: 600;
 }
-.tab.active { background: var(--accent); border-color: var(--text); color: var(--accent-ink); font-weight: 700; }
+.tab.active { background: var(--brand-salmon); border-color: var(--text); color: #12213d; font-weight: 700; }
 
 .skip-link {
   position: absolute;
@@ -506,8 +585,10 @@ textarea {
   box-shadow: var(--shadow-btn);
   transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
 }
-.btn.primary { background: var(--accent); color: var(--accent-ink); }
-.btn.primary:hover:not(:disabled) { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--text); }
+/* Primary action = the brand salmon (color grammar: SALMON =
+   MarkMyAss / actions / marks). Navy text on salmon is 6.0:1 (AA). */
+.btn.primary { background: var(--brand-salmon); color: #12213d; }
+.btn.primary:hover:not(:disabled) { background: color-mix(in srgb, var(--brand-salmon) 88%, white); transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--text); }
 .btn.primary:active:not(:disabled) { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--text); }
 .btn.primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
 .btn.secondary { background: var(--surface); color: var(--text); border: 2px solid var(--text); margin-top: 0; padding: 0.5rem 1rem; font-size: 0.9rem; }
@@ -538,6 +619,33 @@ textarea {
 .status-not_found, .status-not_detected, .status-removed { color: var(--notfound); background: color-mix(in srgb, var(--notfound) 15%, transparent); }
 .status-unknown, .status-unverified, .status-partial, .status-unsupported { color: var(--unknown); background: color-mix(in srgb, var(--unknown) 15%, transparent); }
 .experimental-tag { font-size: 0.75rem; color: var(--found); margin-left: 0.4rem; }
+
+/* Native tag-level field detail under a detected signal row. */
+.field-list {
+  list-style: none;
+  margin: -0.15rem 0 0.6rem;
+  padding: 0.45rem 0.8rem 0.45rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  border-left: 3px solid var(--border);
+}
+.field-list li { overflow-wrap: anywhere; }
+.field-category {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--found);
+  background: color-mix(in srgb, var(--found) 12%, transparent);
+  border-radius: 999px;
+  padding: 0.05rem 0.5rem;
+  margin-right: 0.25rem;
+}
+.field-preview { color: var(--text); }
 
 .summary { font-weight: 700; margin-top: 1rem; }
 .original-preserved { color: var(--notfound); font-size: 0.9rem; font-weight: 600; }
@@ -702,6 +810,30 @@ textarea {
 }
 .receipt-label { font-size: 0.85rem; color: var(--muted); font-weight: 600; }
 .receipt-downloads .btn.secondary { margin-top: 0; }
+
+/* Homepage Skill CTA -- a compact salmon-edged banner between the
+   cleaner and the info sections: badge, one-line pitch, one action. */
+.skill-cta {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  max-width: 720px;
+  margin: 0 auto 1.5rem;
+  padding: 1.1rem 1.4rem;
+  background: var(--surface);
+  border: 2px solid var(--text);
+  border-left: 6px solid var(--brand-salmon);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.skill-cta img { flex-shrink: 0; }
+.skill-cta-copy { flex-grow: 1; min-width: 0; }
+.skill-cta h2 { margin: 0 0 0.2rem; font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; }
+.skill-cta p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+.skill-cta .btn { flex-shrink: 0; margin-top: 0; white-space: nowrap; }
+@media (max-width: 640px) {
+  .skill-cta { flex-direction: column; text-align: center; }
+}
 
 .preview-grid {
   display: grid;

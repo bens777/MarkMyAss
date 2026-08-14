@@ -7,7 +7,7 @@ network calls, telemetry, or new mandatory dependencies.
 ## Development setup
 
 ```bash
-git clone https://github.com/bens777/ghostmark.git
+git clone https://github.com/bens777/MarkMyAss.git
 cd ghostmark
 python -m venv .venv
 

@@ -28,7 +28,7 @@ import json
 from typing import Any
 
 SITE_NAME = "MarkMyAss"
-GITHUB_URL = "https://github.com/bens777/ghostmark"
+GITHUB_URL = "https://github.com/bens777/MarkMyAss"
 MOSEISLEY_URL = "https://moseisley.sh"
 
 _APPLICATION_DESCRIPTION = (

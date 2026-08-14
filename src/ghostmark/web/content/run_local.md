@@ -386,9 +386,9 @@ support matter more to you than the lowest hourly rate.
 ## Is something outdated or inaccurate?
 
 This page covers a fast-moving ecosystem and we'd rather correct it than
-leave it stale. [Open an issue](https://github.com/bens777/ghostmark/issues)
+leave it stale. [Open an issue](https://github.com/bens777/MarkMyAss/issues)
 or submit a pull request against
-[`src/ghostmark/web/content/run_local.md`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/web/content/run_local.md)
+[`src/ghostmark/web/content/run_local.md`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/web/content/run_local.md)
 on GitHub.
 
 **Last reviewed:** 2026-08-13

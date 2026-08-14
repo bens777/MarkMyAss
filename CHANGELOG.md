@@ -2,6 +2,48 @@
 
 All notable changes to GhostMark are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Native tag-level metadata engine** (`ghostmark.native`): MarkMyAss
+  now reads *inside* the metadata containers it already detected and
+  removed -- EXIF/TIFF IFDs (bounded walker, big-endian + little-endian,
+  GPS reported presence-only), XMP packets (whitelisted provenance
+  properties incl. the standardized AI-generated marker
+  `Iptc4xmpExt:DigitalSourceType`; UTF-16 packets transcoded;
+  size-capped scanning, no XML parser attack surface), IPTC IIM
+  datasets (8BIM walker with extended-length + padding tolerances),
+  PNG text chunks (tEXt/zTXt/iTXt with bounded inflation; AI-generator
+  keys like `parameters` classified as provenance) and PDF DocInfo.
+  Every detection now carries normalized `details.fields` records
+  (container, raw tag, category, safe preview), surfaced in the web
+  results UI, the JSON/TXT/HTML receipts, and the API. Implemented from
+  public specifications with ExifTool studied as a behavioral reference
+  only -- see `docs/EXIFTOOL_RESEARCH_MAP.md` for the full research map
+  and per-module provenance.
+- **Differential test suites against ExifTool as oracle**
+  (`tests/integration/test_native_vs_exiftool*.py`): category-level
+  agreement on rich fixtures for all four file formats plus an edge
+  corpus (big-endian TIFF, UTF-16 XMP, multi-segment Extended XMP,
+  out-of-order/null-padded IPTC, vendor-cased UserComment,
+  wrapper-less XMP), asserted on inspect AND on clean-to-empty.
+- **Extended XMP handled in JPEG**: multi-segment Extended XMP overflow
+  segments are now detected as XMP and removed together with the main
+  packet (previously a cleaned file could retain overflow XMP data).
+- WebP demo fixture; `ghostmark demo` now exercises WebP (6/6 checks).
+
+### Changed
+
+- Verdict wording now distinguishes native from independent
+  verification everywhere: `unverified` renders as **NATIVE CLEAN --
+  NOT INDEPENDENTLY VERIFIED**, `verified_clean` as **INDEPENDENTLY
+  VERIFIED CLEAN**, `partial` as **PARTIAL -- VERIFIER DISAGREEMENT**
+  (web UI + receipts; JSON receipts additionally carry a
+  `verdict_label`). ExifTool's role is now: reference implementation,
+  differential-testing oracle, optional independent verifier -- never a
+  runtime requirement.
+
 ## [0.5.0] - 2026-08-13
 
 Technical SEO and public discoverability, built from current Google

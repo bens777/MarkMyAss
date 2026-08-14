@@ -27,6 +27,10 @@ _NO_PAYLOAD = {0x01, EOI, SOI} | set(range(0xD0, 0xD8))
 
 EXIF_PREFIX = b"Exif\x00\x00"
 XMP_PREFIX = b"http://ns.adobe.com/xap/1.0/\x00"
+# Multi-segment "Extended XMP" (XMP Spec Part 3): additional APP1
+# segments carrying overflow XMP data under their own namespace URI,
+# followed by a 32-byte GUID, 4-byte total length and 4-byte offset.
+EXTENDED_XMP_PREFIX = b"http://ns.adobe.com/xmp/extension/\x00"
 PHOTOSHOP_PREFIX = b"Photoshop 3.0\x00"
 ICC_PREFIX = b"ICC_PROFILE\x00"
 JUMBF_PREFIX = b"JP"  # ISO/IEC 19566-5 APP11 payload starts with a JPEG-XT box marker
@@ -44,7 +48,11 @@ class Segment:
     def kind(self) -> str:
         if self.marker == APP1 and self.payload.startswith(EXIF_PREFIX):
             return "exif"
-        if self.marker == APP1 and self.payload.startswith(XMP_PREFIX):
+        if self.marker == APP1 and (self.payload.startswith(XMP_PREFIX)
+                                    or self.payload.startswith(EXTENDED_XMP_PREFIX)):
+            # Extended XMP overflow segments are XMP too: they must be
+            # detected AND removed together with the main packet, or a
+            # "cleaned" file would still carry most of its XMP data.
             return "xmp"
         if self.marker == APP13 and self.payload.startswith(PHOTOSHOP_PREFIX):
             return "iptc"

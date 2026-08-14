@@ -202,6 +202,31 @@
       row.appendChild(label);
       row.appendChild(status);
       container.appendChild(row);
+
+      // Native tag-level detail: WHAT is inside the container (author,
+      // software, GPS, AI-provenance markers, ...), straight from
+      // MarkMyAss's own engine -- no external tool involved.
+      const fields = (d.details && d.details.fields) || [];
+      if (fields.length) {
+        const list = document.createElement("ul");
+        list.className = "field-list";
+        for (const f of fields) {
+          const item = document.createElement("li");
+          const cat = document.createElement("span");
+          cat.className = "field-category";
+          cat.textContent = f.category;
+          item.appendChild(cat);
+          item.appendChild(document.createTextNode(` ${f.tag}`));
+          if (f.preview) {
+            const val = document.createElement("span");
+            val.className = "field-preview";
+            val.textContent = ` — ${f.preview}`;
+            item.appendChild(val);
+          }
+          list.appendChild(item);
+        }
+        container.appendChild(list);
+      }
     }
   }
 
@@ -276,10 +301,14 @@
     exiftoolPanel.appendChild(body);
   }
 
+  // "unverified" semantics: MarkMyAss's own native engine confirmed the
+  // supported signals are gone, but no independent external verifier
+  // (ExifTool/c2patool) was available to corroborate -- so the badge
+  // says exactly that instead of a vague "UNVERIFIED".
   const VERDICT_TEXT = {
-    verified_clean: "VERIFIED CLEAN",
+    verified_clean: "INDEPENDENTLY VERIFIED CLEAN",
     partial: "PARTIAL",
-    unverified: "UNVERIFIED",
+    unverified: "NATIVE CLEAN — NOT INDEPENDENTLY VERIFIED",
     not_applicable: "NOT APPLICABLE",
     failed: "FAILED",
   };
@@ -304,7 +333,7 @@
     const lines = document.createElement("div");
     lines.style.marginTop = "0.75rem";
     lines.style.fontSize = "0.9rem";
-    const detailLines = [`MarkMyAss verification: ${summary.ghostmark_pass ? "PASS" : "FAIL"}`];
+    const detailLines = [`MarkMyAss native verification: ${summary.ghostmark_pass ? "PASS" : "FAIL"}`];
     for (const verifier of summary.external_verifiers || []) {
       if (verifier.passed === null || verifier.passed === undefined) {
         detailLines.push(`${verifier.label} verification: NOT AVAILABLE / NOT APPLICABLE`);

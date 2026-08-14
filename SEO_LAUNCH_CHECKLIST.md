@@ -13,7 +13,7 @@ backlinks, how competitors' pages evolve, etc.).
 
 This agent has no GitHub write access (no `gh` auth / API token in this
 environment), so this one is manual. On the repo page
-(`github.com/bens777/ghostmark`), click the gear icon next to **About**
+(`github.com/bens777/MarkMyAss`), click the gear icon next to **About**
 and set:
 
 - **Description**: "Open-source AI watermark & provenance cleaner.

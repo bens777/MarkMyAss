@@ -117,7 +117,7 @@ def test_benchmarks_page_has_no_unrendered_placeholders():
 def test_benchmarks_page_has_correction_cta():
     client = TestClient(create_app(_config()))
     text = client.get("/benchmarks").text
-    assert "github.com/bens777/ghostmark/issues" in text
+    assert "github.com/bens777/MarkMyAss/issues" in text
 
 
 def test_api_benchmarks_endpoint():

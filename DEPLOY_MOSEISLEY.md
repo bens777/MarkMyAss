@@ -47,7 +47,7 @@ distribution), then come back here.
 If you don't already have it there:
 
 ```bash
-git clone https://github.com/bens777/ghostmark.git
+git clone https://github.com/bens777/MarkMyAss.git
 cd ghostmark
 ```
 

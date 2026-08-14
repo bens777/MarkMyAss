@@ -301,6 +301,7 @@ def demo() -> None:
             "text": "Text watermark artifacts",
             "jpeg": "JPEG metadata",
             "png": "PNG metadata",
+            "webp": "WebP metadata",
             "pdf": "PDF metadata",
         }
 

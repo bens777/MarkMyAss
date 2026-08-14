@@ -45,7 +45,7 @@ MarkMyAss takes the first path but says so explicitly, and refuses the
 second path entirely. If a provider (Anthropic, Google, OpenAI) ever
 publishes a real, reproducible statistical-watermark detector, MarkMyAss
 has a defined plug-in interface
-([`src/ghostmark/detectors/statistical.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/detectors/statistical.py))
+([`src/ghostmark/detectors/statistical.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/detectors/statistical.py))
 ready for it — but implementing a fake one now to look more capable
 would defeat the entire point of the project.
 

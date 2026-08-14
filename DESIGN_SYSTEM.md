@@ -161,11 +161,16 @@ removes" heading badge, browser favicons, and the OG/social card (the
 approved hero scene with the badge overlaid top-left — the scene itself
 is never modified).
 
-The logo's salmon is available as the decorative-only token
-`--brand-salmon: #f87868` — a restrained brand signature (currently:
-the `::selection` highlight, navy-on-salmon 6.0:1). Never use it as a
-text color on cream, never repaint existing components with it, and
-never recolor the pirate/ghost artwork toward it.
+The logo's salmon is the token `--brand-salmon: #f87868`, and the
+site's color grammar is: **NAVY = structure, CREAM = content,
+TURQUOISE = ghosts/invisible traces, SALMON = MarkMyAss / actions /
+marks.** Salmon is used as a FILL with navy text on top (6.0:1 AA) —
+primary CTAs (`.btn.primary`), active tabs, the hero flow arrows, the
+hero brand wordmark (WCAG logotype exemption), the Skill CTA's edge,
+copy buttons, the cross-LLM "Works beyond Claude" band, and the
+`::selection` highlight. Never use salmon as small informational text
+on cream (2.5:1 — fails), and never recolor the pirate/ghost artwork
+toward it.
 
 ## Icons & illustration
 
@@ -291,6 +296,18 @@ imagery.
 - At most one decorative animation plays per state transition, never on a
   loop — the verdict badge "stamps" in once, the hero illustration
   settles in once on load.
+- The no-loop rule has NO exceptions. An animated brand flag was
+  prototyped (SVG SMIL displacement, then a video-generated animated
+  WebP) and ultimately rejected on visual grounds; the brand accent
+  beside the hero wordmark is now the STATIC self-theming
+  `static/art/pirate-hat.svg` (captain's tricorne + skull emblem).
+  Lessons kept for posterity, should looping decoration ever be
+  revisited: SVG-as-`<img>` doesn't reliably run animation in
+  Chromium/WebKit (must be inline); the CSP (`style-src 'self'`)
+  blocks inline `<style>` (motion must be SMIL / presentation
+  attributes); SMIL can't see media queries (reduced-motion needs a JS
+  guard); and animated raster images ignore `prefers-reduced-motion`
+  entirely.
 
 ## What this system explicitly avoids
 

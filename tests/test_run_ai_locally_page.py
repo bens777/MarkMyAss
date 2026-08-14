@@ -115,7 +115,7 @@ def test_gpu_rental_section_present_and_realistic(client):
 
 def test_update_correction_cta_present(client):
     html = client.get("/run-ai-locally").text
-    assert "github.com/bens777/ghostmark/issues" in html
+    assert "github.com/bens777/MarkMyAss/issues" in html
     assert "Last reviewed" in html
 
 

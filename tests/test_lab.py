@@ -123,7 +123,7 @@ def test_every_lab_page_has_correction_cta_and_last_reviewed():
     for slug in ["", *LAB_SLUGS]:
         path = "/lab" if slug == "" else f"/lab/{slug}"
         text = client.get(path).text
-        assert "github.com/bens777/ghostmark/issues" in text, f"{path} missing issues link"
+        assert "github.com/bens777/MarkMyAss/issues" in text, f"{path} missing issues link"
         assert "Last reviewed" in text, f"{path} missing Last reviewed date"
 
 

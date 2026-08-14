@@ -32,7 +32,7 @@ Files are processed temporarily on the server and deleted automatically
 For anyone who'd rather not upload anything anywhere:
 
 ```bash
-git clone https://github.com/bens777/ghostmark.git
+git clone https://github.com/bens777/MarkMyAss.git
 cd ghostmark
 pip install -e .
 
@@ -153,7 +153,7 @@ for the underlying methodology any of them link back to:
 - [`/hidden-unicode-remover`](https://ghostmark.moseisley.sh/hidden-unicode-remover)
 
 Content for these lives under
-[`src/ghostmark/web/content/`](https://github.com/bens777/ghostmark/tree/main/src/ghostmark/web/content)
+[`src/ghostmark/web/content/`](https://github.com/bens777/MarkMyAss/tree/main/src/ghostmark/web/content)
 as plain Markdown, same pattern as the Lab pages. `/robots.txt` and
 `/sitemap.xml` are generated from the same canonical list of indexable
 pages the test suite checks against (`INDEXABLE_PAGES` in

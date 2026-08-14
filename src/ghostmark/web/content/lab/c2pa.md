@@ -26,7 +26,7 @@ GhostMark's own detector scans for the JUMBF container structure itself
 of the container is a strong signal that a C2PA manifest exists; absence
 is a strong signal that it doesn't -- but this is a structural,
 byte-level scan, not a spec-conformant C2PA parse. Implementation:
-[`src/ghostmark/detectors/c2pa.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/detectors/c2pa.py).
+[`src/ghostmark/detectors/c2pa.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/detectors/c2pa.py).
 
 ## What GhostMark can remove
 
@@ -35,7 +35,7 @@ This reliably removes a C2PA manifest embedded via the standard
 container GhostMark scans for -- it is not an audited guarantee against
 every possible embedding technique a future or unusual C2PA
 implementation might use. Implementation:
-[`src/ghostmark/cleaners/c2pa.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/cleaners/c2pa.py).
+[`src/ghostmark/cleaners/c2pa.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/cleaners/c2pa.py).
 
 PDF: detection uses a raw byte-signature scan (looking for `c2pa`/`jumb`
 markers); cleaning is **not implemented** for PDF.
@@ -63,7 +63,7 @@ anything). GhostMark uses c2patool only to confirm presence/absence of a
 manifest, matching the scope of its own heuristic detector -- **this is
 explicitly not a claim that c2patool cryptographically validated
 anything**. Implementation:
-[`src/ghostmark/independent_verify.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/independent_verify.py)
+[`src/ghostmark/independent_verify.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/independent_verify.py)
 (`C2paToolVerifier`).
 
 c2patool is optional and licensed Apache-2.0/MIT; GhostMark never vendors
@@ -84,9 +84,9 @@ c2patool photo.ghostmark.jpg
 ```
 
 Covered by
-[`tests/test_images.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_images.py)
+[`tests/test_images.py`](https://github.com/bens777/MarkMyAss/blob/main/tests/test_images.py)
 (synthetic JUMBF-marker fixtures) and
-[`tests/test_independent_verify.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_independent_verify.py)
+[`tests/test_independent_verify.py`](https://github.com/bens777/MarkMyAss/blob/main/tests/test_independent_verify.py)
 (mocked c2patool behavior, including the "no manifest" and genuine-error
 paths).
 
@@ -106,8 +106,8 @@ paths).
 
 ## Something outdated or inaccurate?
 
-[Open an issue](https://github.com/bens777/ghostmark/issues) or submit a
+[Open an issue](https://github.com/bens777/MarkMyAss/issues) or submit a
 pull request against
-[`src/ghostmark/web/content/lab/c2pa.md`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/web/content/lab/c2pa.md).
+[`src/ghostmark/web/content/lab/c2pa.md`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/web/content/lab/c2pa.md).
 
 **Last reviewed:** 2026-08-13

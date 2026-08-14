@@ -75,6 +75,16 @@ from ghostmark.web.seo import jsonld_script_tag, software_application_jsonld, we
 STATIC_DIR = Path(__file__).parent / "static"
 TTL_SWEEP_INTERVAL_SECONDS = 60
 
+SKILL_PAGE_META = PageMeta(
+    title="MarkMyAss Skill — AI Watermark & Metadata Cleaner for Your AI Workflow",
+    description=(
+        "Install MarkMyAss in your AI workflow (Claude Code, claude.ai, Agent SDK) to inspect, "
+        "clean and verify supported AI watermark, metadata and provenance signals automatically."
+    ),
+    path="/skill",
+    breadcrumbs=(("Home", "/"), ("Skill", "/skill")),
+)
+
 RUN_LOCAL_PAGE_META = PageMeta(
     title="Run AI Models Locally — Avoid Provider-Side Provenance at the Source | MarkMyAss",
     description=(
@@ -223,6 +233,7 @@ SEO_PAGE_META: dict[str, PageMeta] = {
 # per-visitor, ephemeral, and already blanket-disallowed in robots.txt.
 INDEXABLE_PAGES: tuple[str, ...] = (
     "/",
+    SKILL_PAGE_META.path,
     *(meta.path for meta in SEO_PAGE_META.values()),
     *(meta.path for meta in LAB_PAGE_META.values()),
     BENCHMARKS_PAGE_META.path,
@@ -444,6 +455,18 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
     @app.get("/run-ai-locally", response_class=HTMLResponse)
     def run_ai_locally() -> HTMLResponse:
         return HTMLResponse(_run_local_html)
+
+    _skill_html = render_article_page(
+        meta=SKILL_PAGE_META,
+        body_html=render_markdown_to_html((CONTENT_DIR / "skill.md").read_text(encoding="utf-8")),
+        base_path=config.base_path,
+        public_url=config.public_url,
+        nav_html=_ARTICLE_NAV_HTML,
+    )
+
+    @app.get("/skill", response_class=HTMLResponse)
+    def skill_page() -> HTMLResponse:
+        return HTMLResponse(_skill_html)
 
     # /run-local is the old URL from before this page had its own SEO
     # landing-page route; permanently redirect rather than serving the

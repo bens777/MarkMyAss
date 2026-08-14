@@ -11,7 +11,7 @@ from ghostmark.models import Status
 
 def test_generate_all_creates_every_fixture(tmp_path: Path):
     fixtures = generate_all(tmp_path)
-    assert set(fixtures.keys()) == {"text", "jpeg", "png", "pdf"}
+    assert set(fixtures.keys()) == {"text", "jpeg", "png", "webp", "pdf"}
     for path in fixtures.values():
         assert path.exists()
         assert path.stat().st_size > 0

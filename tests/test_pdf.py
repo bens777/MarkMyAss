@@ -18,9 +18,18 @@ def test_pdf_fixture_detects_docinfo_and_xmp(tmp_path: Path):
     detections = {d.detector: d for d in inspect_pdf_metadata(path)}
     assert detections["pdf_info"].status is Status.FOUND
     assert detections["pdf_xmp"].status is Status.FOUND
-    assert "Title" in "".join(detections["pdf_info"].details["fields"].values()) or detections["pdf_info"].details[
-        "fields"
-    ]
+    # Native tag-level engine: normalized fields with raw tag names +
+    # categories, alongside the raw key->value mapping.
+    fields = detections["pdf_info"].details["fields"]
+    tags = {f["tag"] for f in fields}
+    assert "/Author" in tags and "/Title" in tags
+    by_tag = {f["tag"]: f for f in fields}
+    assert by_tag["/Author"]["category"] == "author"
+    assert by_tag["/Producer"]["category"] == "producer"
+    assert "/Title" in detections["pdf_info"].details["fields_raw"]
+    # XMP packet contents are surfaced too (dc:creator from the fixture).
+    xmp_tags = {f["tag"] for f in detections["pdf_xmp"].details.get("fields", [])}
+    assert "dc:creator" in xmp_tags
 
 
 def test_pdf_clean_removes_metadata(tmp_path: Path):

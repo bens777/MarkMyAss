@@ -24,6 +24,27 @@ from ghostmark.models import Status, VerifyResult
 
 _STATUS_WORD = {Status.FOUND: "FOUND", Status.NOT_FOUND: "NOT FOUND", Status.UNKNOWN: "N/A"}
 
+# Human wording for the headline verdict -- kept in lockstep with the web
+# UI's VERDICT_TEXT map (app.js): the strongest claim is only ever made
+# when an independent tool corroborated, and a native-only pass says so.
+_VERDICT_WORDS = {
+    "verified_clean": "INDEPENDENTLY VERIFIED CLEAN",
+    "partial": "PARTIAL — VERIFIER DISAGREEMENT",
+    "unverified": "NATIVE CLEAN — NOT INDEPENDENTLY VERIFIED",
+    "not_applicable": "NOT APPLICABLE",
+    "failed": "FAILED",
+}
+
+
+def _detection_fields(detections) -> list[tuple[str, dict]]:
+    """(detector label, field dict) pairs for every native tag-level field."""
+
+    out: list[tuple[str, dict]] = []
+    for d in detections:
+        for f in d.details.get("fields", []):
+            out.append((d.label, f))
+    return out
+
 STATISTICAL_WATERMARK_LABELS = (
     "Claude statistical watermark",
     "Gemini statistical watermark",
@@ -64,6 +85,7 @@ class VerificationReceipt:
                 "total_found": self.verify_result.supported_found_before,
             },
             "verdict": summary["verdict"] if summary else None,
+            "verdict_label": _VERDICT_WORDS.get(summary["verdict"], "") if summary else None,
             "c2pa_status": summary["c2pa_status"] if summary else "not_applicable",
             "statistical_watermark_status": dict.fromkeys(STATISTICAL_WATERMARK_LABELS, "unverified"),
             "summary": vr["summary"],
@@ -86,6 +108,12 @@ class VerificationReceipt:
         add("BEFORE")
         for d in self.verify_result.before.detections:
             add(f"{d.label:<26} {_STATUS_WORD[d.status]}")
+        before_fields = _detection_fields(self.verify_result.before.detections)
+        if before_fields:
+            add("")
+            add("DETECTED METADATA FIELDS (BEFORE CLEANING)")
+            for _label, f in before_fields:
+                add(f"  [{f['category']}] {f['container']} {f['tag']}: {f['preview']}")
         add("")
         add("AFTER")
         for d in self.verify_result.after.detections:
@@ -120,7 +148,9 @@ class VerificationReceipt:
         add(self.generated_at)
         add("")
         if summary is not None:
-            add(f"Overall verdict: {summary.verdict.value.replace('_', ' ').upper()}")
+            word = _VERDICT_WORDS.get(summary.verdict.value,
+                                      summary.verdict.value.replace("_", " ").upper())
+            add(f"Overall verdict: {word}")
 
         return "\n".join(lines) + "\n"
 
@@ -137,6 +167,20 @@ class VerificationReceipt:
         before_rows = "\n".join(status_row(d.label, d.status) for d in self.verify_result.before.detections)
         after_rows = "\n".join(status_row(d.label, d.status) for d in self.verify_result.after.detections)
 
+        before_fields = _detection_fields(self.verify_result.before.detections)
+        fields_section = ""
+        if before_fields:
+            field_rows = "\n".join(
+                f'<tr><td>{escape(f["container"])} · {escape(f["tag"])}'
+                f' <span class="na">[{escape(f["category"])}]</span></td>'
+                f"<td>{escape(f['preview'])}</td></tr>"
+                for _label, f in before_fields
+            )
+            fields_section = (
+                "<h2>Detected metadata fields (before cleaning)</h2>"
+                f"<table>{field_rows}</table>"
+            )
+
         verifier_rows = ""
         verdict_word = "UNVERIFIED"
         verdict_class = "na"
@@ -151,7 +195,8 @@ class VerificationReceipt:
                     word = "PASS" if v.passed else "FAIL"
                     rows.append(f'<tr><td>{label}</td><td class="{"clean" if v.passed else "found"}">{word}</td></tr>')
             verifier_rows = "\n".join(rows)
-            verdict_word = summary.verdict.value.replace("_", " ").upper()
+            verdict_word = _VERDICT_WORDS.get(summary.verdict.value,
+                                              summary.verdict.value.replace("_", " ").upper())
             verdict_class = {
                 "verified_clean": "clean",
                 "partial": "found",
@@ -193,6 +238,7 @@ class VerificationReceipt:
 
 <h2>Before</h2>
 <table>{before_rows}</table>
+{fields_section}
 
 <h2>After</h2>
 <table>{after_rows}</table>
@@ -215,7 +261,7 @@ class VerificationReceipt:
   GhostMark {escape(self.ghostmark_version)} &middot; generated {escape(self.generated_at)}<br>
   This receipt proves only what GhostMark and the independent tools listed above actually tested.
   It is not a certificate of authorship or a claim that no other signal could exist.
-  <a href="https://github.com/bens777/ghostmark">github.com/bens777/ghostmark</a>
+  <a href="https://github.com/bens777/MarkMyAss">github.com/bens777/MarkMyAss</a>
 </footer>
 </body>
 </html>

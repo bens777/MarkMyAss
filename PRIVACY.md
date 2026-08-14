@@ -47,7 +47,7 @@ If you use the hosted version instead of running GhostMark locally:
 If you would rather not upload anything anywhere, use local GhostMark
 instead -- see the README's "Run GhostMark locally" section. Both modes
 run the exact same open-source code
-(https://github.com/bens777/ghostmark); the only difference is where the
+(https://github.com/bens777/MarkMyAss); the only difference is where the
 processing happens.
 
 ## What GhostMark never does, in either mode

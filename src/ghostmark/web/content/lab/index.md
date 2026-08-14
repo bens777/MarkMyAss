@@ -82,11 +82,11 @@ Practical, action-oriented versions of the mechanisms above:
 ## Something outdated or inaccurate?
 
 This is a fast-moving space -- model capabilities, provenance standards,
-and available tooling all change. [Open an issue](https://github.com/bens777/ghostmark/issues)
+and available tooling all change. [Open an issue](https://github.com/bens777/MarkMyAss/issues)
 or submit a pull request against
-[`src/ghostmark/web/lab_data.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/web/lab_data.py)
+[`src/ghostmark/web/lab_data.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/web/lab_data.py)
 (for the matrix) or the relevant page under
-[`src/ghostmark/web/content/lab/`](https://github.com/bens777/ghostmark/tree/main/src/ghostmark/web/content/lab)
+[`src/ghostmark/web/content/lab/`](https://github.com/bens777/MarkMyAss/tree/main/src/ghostmark/web/content/lab)
 on GitHub.
 
 **Last reviewed:** 2026-08-13

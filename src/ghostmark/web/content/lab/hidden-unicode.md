@@ -24,11 +24,11 @@ model (if any) produced the text.
 
 - Detection: every character in the input is scanned and classified
   (see methodology below). Implementation:
-  [`src/ghostmark/detectors/unicode.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/detectors/unicode.py).
+  [`src/ghostmark/detectors/unicode.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/detectors/unicode.py).
 - Cleaning: characters classified `safe_to_remove` are deleted;
   `safe_to_normalize` characters (unusual whitespace) are collapsed to a
   normal space. Implementation:
-  [`src/ghostmark/cleaners/text.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/cleaners/text.py).
+  [`src/ghostmark/cleaners/text.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/cleaners/text.py).
 
 ## What GhostMark can remove
 
@@ -76,8 +76,8 @@ python3 -c "print('hello' + chr(0x200B) + 'world')" | xargs -0 -I{} ghostmark in
 ```
 
 This exact scenario is also covered by the automated regression suite:
-[`tests/test_unicode.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_unicode.py)
-and [`tests/test_corpus.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_corpus.py).
+[`tests/test_unicode.py`](https://github.com/bens777/MarkMyAss/blob/main/tests/test_unicode.py)
+and [`tests/test_corpus.py`](https://github.com/bens777/MarkMyAss/blob/main/tests/test_corpus.py).
 
 ## Related pages
 
@@ -91,8 +91,8 @@ and [`tests/test_corpus.py`](https://github.com/bens777/ghostmark/blob/main/test
 
 ## Something outdated or inaccurate?
 
-[Open an issue](https://github.com/bens777/ghostmark/issues) or submit a
+[Open an issue](https://github.com/bens777/MarkMyAss/issues) or submit a
 pull request against
-[`src/ghostmark/web/content/lab/hidden-unicode.md`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/web/content/lab/hidden-unicode.md).
+[`src/ghostmark/web/content/lab/hidden-unicode.md`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/web/content/lab/hidden-unicode.md).
 
 **Last reviewed:** 2026-08-13

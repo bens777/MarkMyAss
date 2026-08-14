@@ -25,7 +25,7 @@ visible content.
 Detection reads both containers directly from the PDF object graph via
 [pikepdf](https://github.com/pikepdf/pikepdf) (a Python binding to
 qpdf). Implementation:
-[`src/ghostmark/detectors/metadata.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/detectors/metadata.py).
+[`src/ghostmark/detectors/metadata.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/detectors/metadata.py).
 
 ## What GhostMark can remove
 
@@ -34,7 +34,7 @@ entirely from the PDF's object graph -- not blanked, removed. Pages,
 fonts, images, text, links, and page order are untouched; GhostMark edits
 the PDF's object graph directly rather than rasterizing or re-rendering
 it. Implementation:
-[`src/ghostmark/cleaners/pdf.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/cleaners/pdf.py).
+[`src/ghostmark/cleaners/pdf.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/cleaners/pdf.py).
 
 After cleaning, GhostMark reopens the produced PDF and confirms it's
 still structurally valid (parses, page count matches) before handing it
@@ -61,7 +61,7 @@ reports is categorized into `embedded_metadata` / `structural` /
 `filesystem` / `computed` so that, for example, `PDF:PageCount` (a
 structural fact needed for the file to make sense) is never confused
 with `PDF:Author` (metadata GhostMark actually targets). See
-[`src/ghostmark/independent_verify.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/independent_verify.py)
+[`src/ghostmark/independent_verify.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/independent_verify.py)
 for the exact categorization rules.
 
 A result only counts as independently verified clean when ExifTool finds
@@ -80,10 +80,10 @@ exiftool -j -G1 -a -s src/ghostmark/corpus/pdf/docinfo-xmp.ghostmark.pdf
 ```
 
 Covered by the automated regression suite:
-[`tests/test_pdf.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_pdf.py),
-[`tests/test_corpus.py`](https://github.com/bens777/ghostmark/blob/main/tests/test_corpus.py),
+[`tests/test_pdf.py`](https://github.com/bens777/MarkMyAss/blob/main/tests/test_pdf.py),
+[`tests/test_corpus.py`](https://github.com/bens777/MarkMyAss/blob/main/tests/test_corpus.py),
 and the real-ExifTool integration suite
-[`tests/integration/test_exiftool_real.py`](https://github.com/bens777/ghostmark/blob/main/tests/integration/test_exiftool_real.py).
+[`tests/integration/test_exiftool_real.py`](https://github.com/bens777/MarkMyAss/blob/main/tests/integration/test_exiftool_real.py).
 
 ## Related pages
 
@@ -99,8 +99,8 @@ and the real-ExifTool integration suite
 
 ## Something outdated or inaccurate?
 
-[Open an issue](https://github.com/bens777/ghostmark/issues) or submit a
+[Open an issue](https://github.com/bens777/MarkMyAss/issues) or submit a
 pull request against
-[`src/ghostmark/web/content/lab/pdf-metadata.md`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/web/content/lab/pdf-metadata.md).
+[`src/ghostmark/web/content/lab/pdf-metadata.md`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/web/content/lab/pdf-metadata.md).
 
 **Last reviewed:** 2026-08-13

@@ -94,7 +94,7 @@ formatting) and mislabeling it as "the watermark."
 as a distinct row: `Claude statistical watermark: UNKNOWN / NOT CURRENTLY
 VERIFIABLE`. Implementation and the plug-in interface a future real
 detector would use:
-[`src/ghostmark/detectors/statistical.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/detectors/statistical.py).
+[`src/ghostmark/detectors/statistical.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/detectors/statistical.py).
 
 ## What would change this page
 
@@ -137,8 +137,8 @@ ghostmark inspect-text "any text you like" --json
 ## Something outdated or inaccurate?
 
 If Anthropic (or anyone) publishes something that changes the facts on
-this page, please tell us: [open an issue](https://github.com/bens777/ghostmark/issues)
+this page, please tell us: [open an issue](https://github.com/bens777/MarkMyAss/issues)
 or submit a pull request against
-[`src/ghostmark/web/content/lab/claude-watermark.md`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/web/content/lab/claude-watermark.md).
+[`src/ghostmark/web/content/lab/claude-watermark.md`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/web/content/lab/claude-watermark.md).
 
 **Last reviewed:** 2026-08-13

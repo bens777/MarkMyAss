@@ -118,7 +118,7 @@ didn't verify — not a synthetic confidence score.
 
 **What if Anthropic publishes a detector later?**
 MarkMyAss already has a pluggable interface for this
-([`src/ghostmark/detectors/statistical.py`](https://github.com/bens777/ghostmark/blob/main/src/ghostmark/detectors/statistical.py))
+([`src/ghostmark/detectors/statistical.py`](https://github.com/bens777/MarkMyAss/blob/main/src/ghostmark/detectors/statistical.py))
 and would implement it the moment a reproducible methodology exists. The
 [Lab page](lab/claude-watermark) tracks this.
 
