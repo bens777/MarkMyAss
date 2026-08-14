@@ -982,6 +982,12 @@ textarea {
 
 footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 2rem; }
 footer a { color: var(--accent); }
+/* Secondary ecosystem line: quieter than the Moseisley attribution
+   above it -- smaller, muted link, plain text, never a button/CTA. */
+.footer-ecosystem { font-size: 0.78rem; margin: 0.15rem 0 0; }
+.footer-ecosystem a { color: var(--muted); text-decoration: underline; }
+.footer-ecosystem a:hover { color: var(--accent); }
+.footer-ecosystem a:focus-visible { outline: 2px solid var(--spectral); outline-offset: 2px; }
 .footer-sitemap {
   display: flex;
   flex-wrap: wrap;

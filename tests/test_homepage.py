@@ -87,6 +87,27 @@ def test_homepage_moseisley_links_point_to_moseisley_with_utm_attribution():
     assert {"navbar", "homepage", "product", "footer", "top"} <= media
 
 
+def test_magicconnect_is_a_single_discreet_footer_link_only():
+    """MagicConnect is a secondary ecosystem link: exactly one footer
+    occurrence, tracked URL, no button/CTA treatment, and Moseisley
+    stays the primary acquisition path (strictly more placements)."""
+
+    client = TestClient(create_app(_config()))
+    html = client.get("/").text
+    links = re.findall(r'href="(https://magicconnect\.ai/[^"]*)"', html)
+    assert links == [
+        "https://magicconnect.ai/?utm_source=markmyass&amp;utm_medium=footer&amp;utm_campaign=ecosystem"
+    ]
+    footer = html.split("<footer>", 1)[1]
+    assert "magicconnect.ai" in footer  # in the footer...
+    assert "magicconnect" not in html.split("<footer>", 1)[0].lower()  # ...and ONLY there
+    # No CTA styling: the link is a plain footer-ecosystem line, not a button.
+    assert re.search(r'class="btn[^"]*"[^>]*href="https://magicconnect', html) is None
+    assert 'class="footer-ecosystem"' in footer
+    moseisley_count = len(re.findall(r'href="https://moseisley\.sh/\?', html))
+    assert moseisley_count > len(links)
+
+
 def test_homepage_never_calls_moseisley_promo_a_popup_or_interstitial():
     """Sanity check the promo stays inline copy, not a modal/popup pattern."""
 

@@ -86,6 +86,9 @@ def render_article_page(
         '<a href="https://github.com/bens777/MarkMyAss" rel="noopener">Source on GitHub</a>.</p>'
         '<p>MarkMyAss is built by <a href="https://moseisley.sh/?utm_source=markmyass'
         '&amp;utm_medium=footer&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a>.</p>'
+        '<p class="footer-ecosystem"><a href="https://magicconnect.ai/?utm_source=markmyass'
+        '&amp;utm_medium=footer&amp;utm_campaign=ecosystem" rel="noopener">MagicConnect.ai</a>'
+        ' — AI customer conversations, automated.</p>'
     )
 
     return f"""<!doctype html>
