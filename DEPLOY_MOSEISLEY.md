@@ -1,17 +1,19 @@
-# Deploying GhostMark to ghostmark.moseisley.sh
+# Deploying MarkMyAss to markmyass.com
 
-This is a step-by-step guide for deploying GhostMark on your Moseisley
-VPS, written for someone who isn't a developer. It assumes your VPS
-already runs Caddy (if it runs something else, the general shape is the
-same but the exact reload command will differ).
+This is a step-by-step guide for deploying MarkMyAss (engine name:
+GhostMark) on your Moseisley VPS, written for someone who isn't a
+developer. It assumes your VPS already runs Caddy (if it runs something
+else, the general shape is the same but the exact reload command will
+differ).
 
-GhostMark gets its own subdomain, `ghostmark.moseisley.sh`, rather than
-living at a subpath of `moseisley.sh` -- this gives it a clean canonical
-identity for search engines and its own site chrome, while still being
-visibly "an open-source project by Moseisley" (see the homepage). Point
-a DNS `A`/`AAAA` (or `CNAME`) record for `ghostmark.moseisley.sh` at this
-VPS before starting -- Caddy's automatic HTTPS needs that to issue a
-certificate.
+MarkMyAss lives on its own apex domain, `https://markmyass.com` -- that
+is the one and only canonical host. `www.markmyass.com` is NOT a second
+site: Caddy permanently redirects it to the apex (see
+`deploy/Caddyfile.snippet`), and no canonical URL, sitemap entry or
+robots/llms line ever uses `www`. Point DNS `A`/`AAAA` records for BOTH
+`markmyass.com` and `www.markmyass.com` at this VPS before starting --
+Caddy's automatic HTTPS needs that to issue certificates for both
+names.
 
 ## What you're deploying
 
@@ -22,11 +24,11 @@ certificate.
   anything itself. Every push to `main` publishes a fresh image.
 - ExifTool and c2patool (for independent verification) installed inside
   that same image, automatically, when GitHub Actions builds it.
-- Caddy serves `https://ghostmark.moseisley.sh` as its own site and
+- Caddy serves `https://markmyass.com` as its own site and
   proxies every request to that container. GhostMark itself never
   touches the public internet directly.
 - (If you'd rather keep GhostMark at a subpath of an existing domain
-  instead of a subdomain -- e.g. `https://example.com/ghostmark` -- both
+  instead of its own domain -- e.g. `https://example.com/ghostmark` -- both
   `docker-compose.prod.yml` and `deploy/Caddyfile.snippet` document that
   as "Option B." Everything else in this guide is the same either way.)
 
@@ -123,10 +125,11 @@ Open your existing Caddyfile (commonly `/etc/caddy/Caddyfile`):
 sudo nano /etc/caddy/Caddyfile
 ```
 
-Copy **Option A** from this repo's `deploy/Caddyfile.snippet` file
-(the `ghostmark.moseisley.sh { ... }` block) and paste it as a new,
-separate site block anywhere in the file -- it does not need to live
-inside any other site's block, since it's its own subdomain.
+Copy BOTH blocks from this repo's `deploy/Caddyfile.snippet` file --
+the `www.markmyass.com { ... }` permanent redirect and the
+`markmyass.com { ... }` site block -- and paste them as new, separate
+site blocks anywhere in the file. They do not need to live inside any
+other site's block, since markmyass.com is its own domain.
 
 Save and exit (in `nano`: Ctrl+O, Enter, then Ctrl+X).
 
@@ -143,7 +146,7 @@ you run it directly.)
 **9. Visit it in a browser:**
 
 ```
-https://ghostmark.moseisley.sh
+https://markmyass.com
 ```
 
 You should see the GhostMark page. Try pasting some text or uploading a
@@ -187,7 +190,7 @@ docker compose -f docker-compose.prod.yml restart
 
 The local desktop version of GhostMark (`ghostmark ui` on your own
 computer) keeps files 100% on your machine. This hosted version at
-ghostmark.moseisley.sh is different: uploaded files are processed
+markmyass.com is different: uploaded files are processed
 temporarily on the VPS and automatically deleted within a few minutes
 (a session's cleaned file and its Verification Receipt aren't
 necessarily downloaded at the same moment, so deletion is on a timer

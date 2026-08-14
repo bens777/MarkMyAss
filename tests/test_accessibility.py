@@ -21,7 +21,7 @@ def _config(**overrides) -> WebConfig:
     base = dict(
         mode="local",
         base_path="/",
-        public_url="https://ghostmark.moseisley.sh",
+        public_url="https://markmyass.com",
         session_ttl_seconds=720,
         rate_limit_per_minute=1000,
         max_concurrent_jobs=4,

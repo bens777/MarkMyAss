@@ -1,13 +1,13 @@
-# Production deployment for https://ghostmark.moseisley.sh
+# Production deployment for https://markmyass.com
 #
 # GhostMark itself is NEVER exposed directly to the internet -- it only
 # listens on 127.0.0.1 on the host, and a reverse proxy (Caddy; see
 # deploy/Caddyfile.snippet) is the sole public entry point. See
 # DEPLOY_MOSEISLEY.md for the full, plain-language deployment steps.
 #
-# GHOSTMARK_BASE_PATH is "/" here because GhostMark now has its own
-# subdomain (ghostmark.moseisley.sh) rather than living at a subpath of
-# moseisley.sh. If you're instead reverse-proxying GhostMark under an
+# GHOSTMARK_BASE_PATH is "/" here because MarkMyAss lives on its own
+# apex domain (https://markmyass.com; www redirects there permanently,
+# see deploy/Caddyfile.snippet). If you're reverse-proxying under an
 # existing domain's subpath (e.g. https://example.com/ghostmark), set
 # GHOSTMARK_BASE_PATH to that subpath and GHOSTMARK_PUBLIC_URL to the
 # matching full URL -- both remain fully supported, see
@@ -24,7 +24,7 @@ services:
     environment:
       GHOSTMARK_MODE: "hosted"
       GHOSTMARK_BASE_PATH: "/"
-      GHOSTMARK_PUBLIC_URL: "https://ghostmark.moseisley.sh"
+      GHOSTMARK_PUBLIC_URL: "https://markmyass.com"
       # Public-web hardening -- see SECURITY.md for the full threat model.
       # Upload size and session TTL are deliberately tight: worst-case
       # temp-disk usage per abusive IP is bounded by

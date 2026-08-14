@@ -15,12 +15,12 @@ what actually changed, with evidence, not vibes. No fake "100%
 undetectable" scores: a signal is only ever reported `VERIFIED CLEAN`
 when an independent tool agrees, and every claim GhostMark makes about a
 watermark or provenance mechanism is documented, sourced, and dated at
-[**/lab**](https://ghostmark.moseisley.sh/lab), the AI Watermark Lab.
+[**/lab**](https://markmyass.com/lab), the AI Watermark Lab.
 
 ## Use GhostMark online
 
 ```text
-https://ghostmark.moseisley.sh
+https://markmyass.com
 ```
 
 No installation. Free, open source tool by [Moseisley.sh](https://moseisley.sh).
@@ -101,7 +101,7 @@ hardware/budget decision matrix, current recommended open-weight models
 llama.cpp, vLLM, LM Studio), and when renting a GPU beats buying one.
 
 ```text
-https://ghostmark.moseisley.sh/run-ai-locally
+https://markmyass.com/run-ai-locally
 ```
 
 Locally, the same page is available at `http://127.0.0.1:8765/run-ai-locally`
@@ -114,15 +114,15 @@ about, whether it can detect it, remove it, and independently verify the
 removal, its current status, and when it was last checked. Individual
 pages go deeper on specific mechanisms:
 
-- [`/lab/claude-watermark`](https://ghostmark.moseisley.sh/lab/claude-watermark)
+- [`/lab/claude-watermark`](https://markmyass.com/lab/claude-watermark)
   -- separates file/metadata provenance, hidden Unicode, and statistical
   model-level watermarking, three genuinely different things people mean
   by "Claude watermark."
-- [`/lab/c2pa`](https://ghostmark.moseisley.sh/lab/c2pa) -- what GhostMark's
+- [`/lab/c2pa`](https://markmyass.com/lab/c2pa) -- what GhostMark's
   heuristic JUMBF-container scan can and can't tell you, and why that's
   not the same as cryptographic C2PA manifest validation.
-- [`/lab/hidden-unicode`](https://ghostmark.moseisley.sh/lab/hidden-unicode)
-  and [`/lab/pdf-metadata`](https://ghostmark.moseisley.sh/lab/pdf-metadata).
+- [`/lab/hidden-unicode`](https://markmyass.com/lab/hidden-unicode)
+  and [`/lab/pdf-metadata`](https://markmyass.com/lab/pdf-metadata).
 
 Every Lab page ends with "Something outdated or inaccurate? Open an issue
 or submit a pull request" and a "Last reviewed" date -- see
@@ -130,7 +130,7 @@ or submit a pull request" and a "Last reviewed" date -- see
 data (`src/ghostmark/web/lab_data.py`). Machine-readable version:
 `GET /api/lab/status`.
 
-[`/benchmarks`](https://ghostmark.moseisley.sh/benchmarks) is generated
+[`/benchmarks`](https://markmyass.com/benchmarks) is generated
 from a reproducible, synthetic-only test corpus
 (`src/ghostmark/corpus/`) -- not hand-written. It runs GhostMark's real
 inspect → clean → inspect → independently-verify pipeline against every
@@ -141,16 +141,16 @@ failures (nothing is hidden). Machine-readable version:
 ## Task-specific pages
 
 Each of these targets a genuinely distinct question, not the same page
-with a keyword swapped in -- see [`/lab`](https://ghostmark.moseisley.sh/lab)
+with a keyword swapped in -- see [`/lab`](https://markmyass.com/lab)
 for the underlying methodology any of them link back to:
 
-- [`/claude-watermark-remover`](https://ghostmark.moseisley.sh/claude-watermark-remover)
-- [`/claude-watermark-detector`](https://ghostmark.moseisley.sh/claude-watermark-detector)
-- [`/ai-watermark-remover`](https://ghostmark.moseisley.sh/ai-watermark-remover)
-- [`/ai-metadata-cleaner`](https://ghostmark.moseisley.sh/ai-metadata-cleaner)
-- [`/c2pa-remover`](https://ghostmark.moseisley.sh/c2pa-remover)
-- [`/content-credentials-remover`](https://ghostmark.moseisley.sh/content-credentials-remover)
-- [`/hidden-unicode-remover`](https://ghostmark.moseisley.sh/hidden-unicode-remover)
+- [`/claude-watermark-remover`](https://markmyass.com/claude-watermark-remover)
+- [`/claude-watermark-detector`](https://markmyass.com/claude-watermark-detector)
+- [`/ai-watermark-remover`](https://markmyass.com/ai-watermark-remover)
+- [`/ai-metadata-cleaner`](https://markmyass.com/ai-metadata-cleaner)
+- [`/c2pa-remover`](https://markmyass.com/c2pa-remover)
+- [`/content-credentials-remover`](https://markmyass.com/content-credentials-remover)
+- [`/hidden-unicode-remover`](https://markmyass.com/hidden-unicode-remover)
 
 Content for these lives under
 [`src/ghostmark/web/content/`](https://github.com/bens777/MarkMyAss/tree/main/src/ghostmark/web/content)
@@ -217,7 +217,7 @@ available, applicable external verifier to agree. Disagreement is
 reported as **PARTIAL**; no verifier able to run at all is **UNVERIFIED**;
 nothing to check is **NOT APPLICABLE**; a failure in GhostMark's own
 cleaning is **FAILED** -- never inflated. See
-[`/lab`](https://ghostmark.moseisley.sh/lab) for what "independent
+[`/lab`](https://markmyass.com/lab) for what "independent
 verification" actually means per signal. Downloading the cleaned file
 serves it with `Content-Disposition: attachment` and a name like
 `document.ghostmark.pdf`; you can also download a Verification Receipt
@@ -287,7 +287,7 @@ file too large, demo failure), non-zero on usage errors.
 | Independent cross-check (ExifTool, images/PDF) |                    N/A | N/A | Yes, if ExifTool installed -- otherwise reported as unknown, never faked |
 | Independent cross-check (c2patool, JPEG/PNG/PDF) |                    N/A | N/A | Yes, if c2patool installed -- otherwise reported as unknown, never faked |
 
-See [`/lab`](https://ghostmark.moseisley.sh/lab) for the live, per-signal
+See [`/lab`](https://markmyass.com/lab) for the live, per-signal
 version of this table with "last tested" dates.
 
 "Partial" for C2PA means: GhostMark scans for the JUMBF container structure
@@ -367,7 +367,7 @@ GhostMark has two modes with different privacy guarantees -- see
 - Uploaded files live only in a randomized per-session temp directory and
   are deleted when the session ends or the process exits.
 
-**Hosted mode** (https://ghostmark.moseisley.sh): files ARE temporarily
+**Hosted mode** (https://markmyass.com): files ARE temporarily
 uploaded to and processed on the server, then deleted automatically
 within 10-15 minutes regardless of whether/when you download them. Never
 stored in a database, never included in logs. See `PRIVACY.md` for the

@@ -81,7 +81,7 @@ def load_config() -> WebConfig:
     return WebConfig(
         mode=mode,
         base_path=_normalize_base_path(_env_str("GHOSTMARK_BASE_PATH", "/")),
-        public_url=_env_str("GHOSTMARK_PUBLIC_URL", "https://ghostmark.moseisley.sh"),
+        public_url=_env_str("GHOSTMARK_PUBLIC_URL", "https://markmyass.com"),
         session_ttl_seconds=ttl_minutes * 60,
         rate_limit_per_minute=_env_int("GHOSTMARK_RATE_LIMIT_PER_MINUTE", default_rate_limit),
         max_concurrent_jobs=_env_int("GHOSTMARK_MAX_CONCURRENT", 4),

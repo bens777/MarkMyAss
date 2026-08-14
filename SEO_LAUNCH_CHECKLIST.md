@@ -1,7 +1,7 @@
 # SEO Launch Checklist
 
 Plain-language steps for Benoit to take in Google Search Console once
-`https://ghostmark.moseisley.sh` is live. None of this guarantees search
+`https://markmyass.com` is live. None of this guarantees search
 rankings -- Google decides what to rank based on its own evaluation of
 the content, competition, and relevance over time. This checklist just
 makes sure Google can actually find, crawl, and understand the site;
@@ -19,7 +19,7 @@ and set:
 - **Description**: "Open-source AI watermark & provenance cleaner.
   Inspect, clean and independently verify supported Claude, C2PA,
   metadata and hidden Unicode signals."
-- **Website**: `https://ghostmark.moseisley.sh`
+- **Website**: `https://markmyass.com`
 - **Topics**: `ai-watermark`, `watermark-remover`, `claude`, `c2pa`,
   `content-credentials`, `metadata`, `metadata-cleaner`, `privacy`,
   `exiftool`, `provenance`, `open-source`. Keep it to topics that
@@ -31,10 +31,10 @@ and set:
 
 1. Go to [Google Search Console](https://search.google.com/search-console).
 2. Click **Add property**.
-3. Choose **Domain** property if you can (covers `ghostmark.moseisley.sh`
+3. Choose **Domain** property if you can (covers `markmyass.com`
    and any subpaths/protocols together) -- this requires adding a DNS TXT
    record. If that's not convenient, use a **URL prefix** property for
-   `https://ghostmark.moseisley.sh` instead; it's less complete (HTTP vs
+   `https://markmyass.com` instead; it's less complete (HTTP vs
    HTTPS and www vs non-www are tracked separately) but faster to verify.
 
 ## 2. Verify ownership
@@ -63,12 +63,12 @@ property option and doesn't require a code change.
 2. Enter `sitemap.xml` (Search Console will resolve it against the
    verified property's domain).
 3. Submit. You can check it resolves correctly first by visiting
-   `https://ghostmark.moseisley.sh/sitemap.xml` directly in a browser.
+   `https://markmyass.com/sitemap.xml` directly in a browser.
 
 ## 4. Inspect the homepage
 
 1. Go to **URL Inspection** (top search bar in Search Console).
-2. Enter `https://ghostmark.moseisley.sh/`.
+2. Enter `https://markmyass.com/`.
 3. Confirm it shows as **not indexed yet** (expected for a new site) and
    that the "Coverage" details don't show a `noindex` or robots-blocked
    issue. If something looks wrong (blocked by robots.txt, canonical
@@ -87,14 +87,14 @@ particular ranking.
 Repeat the URL Inspection + Request Indexing steps (5-10 minutes total)
 for the pages most likely to matter for search traffic:
 
-- `https://ghostmark.moseisley.sh/claude-watermark-remover`
-- `https://ghostmark.moseisley.sh/claude-watermark-detector`
-- `https://ghostmark.moseisley.sh/ai-watermark-remover`
-- `https://ghostmark.moseisley.sh/ai-metadata-cleaner`
-- `https://ghostmark.moseisley.sh/c2pa-remover`
-- `https://ghostmark.moseisley.sh/content-credentials-remover`
-- `https://ghostmark.moseisley.sh/hidden-unicode-remover`
-- `https://ghostmark.moseisley.sh/lab`
+- `https://markmyass.com/claude-watermark-remover`
+- `https://markmyass.com/claude-watermark-detector`
+- `https://markmyass.com/ai-watermark-remover`
+- `https://markmyass.com/ai-metadata-cleaner`
+- `https://markmyass.com/c2pa-remover`
+- `https://markmyass.com/content-credentials-remover`
+- `https://markmyass.com/hidden-unicode-remover`
+- `https://markmyass.com/lab`
 
 Google typically won't want every single URL manually submitted this
 way (nor is that necessary once the sitemap and internal links are in

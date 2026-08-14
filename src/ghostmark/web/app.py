@@ -1,5 +1,5 @@
 """FastAPI application for GhostMark's web UI -- local desktop mode and the
-public ghostmark.moseisley.sh hosted deployment share this same app.
+public markmyass.com hosted deployment share this same app.
 
 Design constraints enforced here:
   - No route ever proxies or fetches anything over the network.

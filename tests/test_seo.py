@@ -20,7 +20,7 @@ from fastapi.testclient import TestClient
 from ghostmark.web.app import INDEXABLE_PAGES, create_app
 from ghostmark.web.config import WebConfig
 
-PUBLIC_URL = "https://ghostmark.moseisley.sh"
+PUBLIC_URL = "https://markmyass.com"
 
 
 def _config(**overrides) -> WebConfig:

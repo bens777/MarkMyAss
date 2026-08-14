@@ -35,6 +35,12 @@ All notable changes to GhostMark are documented in this file.
 
 ### Changed
 
+- **Production domain migrated to `https://markmyass.com`** (previously
+  `https://ghostmark.moseisley.sh`). The apex domain is the only
+  canonical host -- `www.markmyass.com` permanently redirects to it (see
+  `deploy/Caddyfile.snippet`). `GHOSTMARK_PUBLIC_URL` remains the
+  runtime source of truth; canonical URLs, sitemap.xml, robots.txt and
+  llms.txt all derive from it.
 - Verdict wording now distinguishes native from independent
   verification everywhere: `unverified` renders as **NATIVE CLEAN --
   NOT INDEPENDENTLY VERIFIED**, `verified_clean` as **INDEPENDENTLY
@@ -53,7 +59,8 @@ manual Search Console steps this enables.
 
 ### Added
 
-- **New canonical hostname**: `https://ghostmark.moseisley.sh`.
+- **New canonical hostname**: `https://ghostmark.moseisley.sh`
+  (historical -- superseded by `https://markmyass.com`, see Unreleased).
   `WebConfig`'s default `public_url` now points there (root base path);
   the existing subpath deployment style
   (`GHOSTMARK_BASE_PATH=/ghostmark/`) remains fully supported for anyone

@@ -19,14 +19,14 @@ guarantees. Read this before uploading anything you consider sensitive.
 This is the same guarantee GhostMark has always made, and it hasn't
 changed.
 
-## Hosted GhostMark (https://ghostmark.moseisley.sh)
+## Hosted GhostMark (https://markmyass.com)
 
 **This is different. Files ARE temporarily uploaded to a server.**
 
 If you use the hosted version instead of running GhostMark locally:
 
 - Uploaded files and pasted text are sent to, and temporarily processed
-  on, the GhostMark server running at ghostmark.moseisley.sh.
+  on, the GhostMark server running at markmyass.com.
 - Files are held only in a randomized, per-session temporary directory
   on that server -- never written to a database, never made
   permanent, and never included in application logs (server access

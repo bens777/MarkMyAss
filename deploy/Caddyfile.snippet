@@ -1,23 +1,44 @@
-# GhostMark -- Caddy reverse-proxy configuration.
+# MarkMyAss -- Caddy reverse-proxy configuration.
 #
 # Two supported layouts. Pick the one that matches your
 # GHOSTMARK_BASE_PATH / GHOSTMARK_PUBLIC_URL setting in
 # docker-compose.prod.yml (see that file's comments).
 
-# --- Option A (recommended): GhostMark on its own subdomain -----------------
-# GHOSTMARK_BASE_PATH="/", GHOSTMARK_PUBLIC_URL="https://ghostmark.moseisley.sh"
+# --- Option A (production): MarkMyAss on its own apex domain -----------------
+# GHOSTMARK_BASE_PATH="/", GHOSTMARK_PUBLIC_URL="https://markmyass.com"
 #
-# This is its own site block -- add it as a new, separate entry in your
-# Caddyfile (it does not need to live inside moseisley.sh's block).
-# `reverse_proxy 127.0.0.1:8765` forwards every request to the GhostMark
-# container, which is the ONLY way GhostMark is reachable -- it is never
-# bound to a public interface itself (see docker-compose.prod.yml).
+# Two separate site blocks -- add both as new, standalone entries in your
+# Caddyfile (they do not need to live inside any other site's block).
+#
+# The canonical host is the APEX domain, https://markmyass.com.
+# www.markmyass.com is never served as a site of its own: it permanently
+# redirects (HTTP 308) to the apex, preserving the request path, so
+# search engines and users only ever see one host. DNS must point BOTH
+# names at this VPS for Caddy's automatic HTTPS to issue certificates.
+#
+# `request_body max_size` is slightly above GHOSTMARK_MAX_UPLOAD_MB
+# (10MB, see docker-compose.prod.yml) to leave room for multipart
+# overhead -- the app still enforces its own exact limit server-side.
+#
+# `reverse_proxy 127.0.0.1:8765` forwards every request to the MarkMyAss
+# container, which is the ONLY way it is reachable -- it is never bound
+# to a public interface itself (see docker-compose.prod.yml).
 
-ghostmark.moseisley.sh {
+www.markmyass.com {
+    redir https://markmyass.com{uri} permanent
+}
+
+markmyass.com {
+    encode gzip
+
+    request_body {
+        max_size 12MB
+    }
+
     reverse_proxy 127.0.0.1:8765
 }
 
-# --- Option B: GhostMark under an existing domain's subpath ------------------
+# --- Option B: MarkMyAss under an existing domain's subpath ------------------
 # GHOSTMARK_BASE_PATH="/ghostmark/", GHOSTMARK_PUBLIC_URL="https://example.com/ghostmark"
 #
 # IMPORTANT: place this block ABOVE (before) your site's existing
