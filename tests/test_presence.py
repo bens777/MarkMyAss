@@ -229,9 +229,9 @@ def _app_js() -> str:
 
 def test_copy_singular_plural_and_zero_states():
     js = _app_js()
-    assert "1 pirate is hunting hidden AI traces right now" in js
-    assert "pirates are hunting hidden AI traces right now" in js
-    assert "}+ pirates are hunting hidden AI traces right now" in js  # capped "N+" state
+    assert "pirate is cleaning hidden AI traces right now" in js  # singular
+    assert "pirates are cleaning hidden AI traces right now" in js  # plural
+    assert 'capped ? "+"' in js  # capped "N+" state renders a plus, never a fake exact
     assert "be the first aboard" in js
     # The honesty rules: no fabricated floor, no fake randomness.
     assert "Math.random" not in js

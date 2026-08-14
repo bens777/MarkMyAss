@@ -412,31 +412,49 @@ img, svg { max-width: 100%; height: auto; }
 
 .privacy-note { margin: 0.9rem 0 0; font-size: 0.85rem; color: var(--muted); }
 
-/* Live "pirates aboard" line: subtle, text-sized, spectral-turquoise
-   live dot. The pulse plays a few times when the line appears and then
+/* Live "pirates aboard" counter: a compact navy pill so it reads at a
+   glance without competing with the CTAs. Fixed navy + cream (the logo's
+   own pairing) in BOTH color schemes for maximum contrast; the count is
+   salmon (6.0:1 on this navy -- AA) and the live dot stays spectral
+   turquoise. The pulse plays a few times when the pill appears and then
    rests -- this project deliberately bans infinite decorative animation
    (see tests/test_accessibility.py), and the global
    prefers-reduced-motion rules kill even these iterations. */
 .presence-line {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  margin: 0.9rem 0 0;
-  font-size: 0.85rem;
-  color: var(--muted);
-  font-weight: 600;
+  gap: 0.55rem;
+  margin: 1rem 0 0;
+  padding: 0.45rem 1rem 0.45rem 0.85rem;
+  border-radius: 999px;
+  background: #12213d;
+  border: 1.5px solid var(--brand-salmon);
+  box-shadow: 3px 3px 0 rgba(18, 33, 61, 0.25);
+  color: #fbf3e2;
+  font-size: 0.92rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.presence-count {
+  color: var(--brand-salmon);
+  font-weight: 800;
+  font-size: 1.15em;
+  font-variant-numeric: tabular-nums;
 }
 .presence-dot {
   flex-shrink: 0;
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--spectral);
   animation: presence-pulse 2.4s ease-in-out 3;
 }
 @keyframes presence-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(18, 184, 166, 0.45); }
-  50% { box-shadow: 0 0 0 5px rgba(18, 184, 166, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(18, 184, 166, 0.55); }
+  50% { box-shadow: 0 0 0 6px rgba(18, 184, 166, 0); }
+}
+@media (max-width: 720px) {
+  .presence-line { font-size: 0.88rem; padding: 0.4rem 0.9rem 0.4rem 0.75rem; }
 }
 
 /* ---- Hero illustration -- the mandatory brand scene: pirates

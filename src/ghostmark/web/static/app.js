@@ -523,12 +523,14 @@
   const PRESENCE_INTERVAL_MS = 45000;
 
   function presenceCopy(count, capped) {
-    // When the server-side registry is at its hard cap, more visitors may
-    // exist than it can admit -- say "N+" instead of a falsely exact number.
-    if (capped) return `${count}+ pirates are hunting hidden AI traces right now`;
-    if (count === 1) return "1 pirate is hunting hidden AI traces right now";
-    if (count > 1) return `${count} pirates are hunting hidden AI traces right now`;
-    return "No pirates hunting traces right now — be the first aboard.";
+    // `count` is verified to be a number by the caller, so interpolating
+    // it into markup is safe. When the server-side registry is at its
+    // hard cap, more visitors may exist than it can admit -- say "N+"
+    // instead of a falsely exact number.
+    const n = `<strong class="presence-count">${count}${capped ? "+" : ""}</strong>`;
+    if (count === 1 && !capped) return `${n} pirate is cleaning hidden AI traces right now`;
+    if (count >= 1) return `${n} pirates are cleaning hidden AI traces right now`;
+    return "No pirates cleaning hidden AI traces right now — be the first aboard.";
   }
 
   if (presenceLine && presenceText && window.crypto && crypto.getRandomValues) {
@@ -546,7 +548,7 @@
         if (!resp.ok) return;
         const data = await resp.json();
         if (typeof data.active !== "number") return;
-        presenceText.textContent = presenceCopy(data.active, data.capped === true);
+        presenceText.innerHTML = presenceCopy(data.active, data.capped === true);
         presenceLine.classList.remove("hidden");
       } catch {
         // Presence is decoration -- never surface an error for it.
