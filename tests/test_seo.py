@@ -167,12 +167,11 @@ def test_openapi_schema_and_docs_are_not_public(client):
 
 
 def test_homepage_social_image_is_absolute_and_fetchable(client):
-    """X/Facebook crawlers do not resolve relative og:image URLs -- both
-    social image tags must be absolute on the production host, exactly
-    once each, point at the versioned social image, and that image must
-    be served as a real 200 PNG."""
+    """The social card uses a JPEG (X compatibility). Both social image
+    tags must be absolute on the production host, exactly once each, point
+    ONLY at the v3 JPEG, and that image must be served as a real 200 JPEG."""
 
-    image_url = f"{PUBLIC_URL}/static/markmyass-social-v2.png"
+    image_url = f"{PUBLIC_URL}/static/markmyass-social-v3.jpg"
     html = client.get("/").text
     og = re.findall(r'property="og:image" content="([^"]*)"', html)
     tw = re.findall(r'name="twitter:image" content="([^"]*)"', html)
@@ -180,20 +179,41 @@ def test_homepage_social_image_is_absolute_and_fetchable(client):
     assert og == [image_url]
     assert tw == [image_url]
     assert card == ["summary_large_image"]
-    # X-recommended tags for a reliable large-image card.
+    # No stale v2 URL anywhere in the active social metadata.
+    assert "markmyass-social-v2" not in html
     assert re.search(rf'property="og:image:secure_url" content="{re.escape(image_url)}"', html)
-    assert re.search(r'property="og:image:type" content="image/png"', html)
+    assert re.search(r'property="og:image:type" content="image/jpeg"', html)
     assert re.search(r'property="og:image:width" content="1200"', html)
     assert re.search(r'property="og:image:height" content="630"', html)
     assert re.search(r'name="twitter:image:alt" content="[^"]+"', html)
     assert re.search(r'property="og:image:alt" content="[^"]+"', html)
-    # The versioned social image is served directly as a real PNG, 200,
-    # no redirect/auth/cookies.
-    resp = client.get("/static/markmyass-social-v2.png")
+    # The JPEG social image is served directly as a real 200 JPEG, no
+    # redirect/auth/cookies.
+    resp = client.get("/static/markmyass-social-v3.jpg")
     assert resp.status_code == 200
-    assert resp.headers["content-type"] == "image/png"
-    assert resp.content[:8] == b"\x89PNG\r\n\x1a\n"
+    assert resp.headers["content-type"] == "image/jpeg"
+    assert resp.content[:3] == b"\xff\xd8\xff"  # JPEG magic
     assert "set-cookie" not in {k.lower() for k in resp.headers}
+
+
+def test_social_image_v3_is_rgb_1200x630_no_alpha_no_palette():
+    import io
+    from pathlib import Path
+
+    from PIL import Image
+
+    path = (
+        Path(__file__).parent.parent
+        / "src" / "ghostmark" / "web" / "static" / "markmyass-social-v3.jpg"
+    )
+    assert path.exists()
+    im = Image.open(io.BytesIO(path.read_bytes()))
+    assert im.format == "JPEG"
+    assert im.mode == "RGB"
+    assert im.size == (1200, 630)
+    assert "A" not in im.getbands()   # no alpha
+    assert im.mode != "P"             # not palette-based
+    assert path.stat().st_size < 1024 * 1024  # under 1 MB
 
 
 # --- llms.txt ----------------------------------------------------------------------------
