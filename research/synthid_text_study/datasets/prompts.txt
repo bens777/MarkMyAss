@@ -1,0 +1,13 @@
+# One generation prompt per non-comment line. These seed watermarked
+# continuations for the study. Content is neutral and English-only; the goal
+# is enough generated length for a stable watermark statistic, not quality.
+The history of the coffee trade began when
+In the early days of the printing press, workshops across Europe
+A gardener who wants healthy tomatoes should remember that
+The engineer explained that the bridge would hold because
+When travelers first crossed the mountain range, they discovered
+The recipe had been passed down for generations, and it called for
+Scientists studying the deep ocean reported that
+On the morning of the festival, the whole village
+The old library kept records of every ship that
+To understand how batteries store energy, it helps to

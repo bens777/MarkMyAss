@@ -1,0 +1,19 @@
+# SynthID-Text behaviour study -- ISOLATED from MarkMyAss production deps.
+#
+# Install into a DEDICATED venv only. Do NOT add any of these to the root
+# pyproject.toml -- production (typer/fastapi/pillow/pikepdf) must stay lean
+# and must never depend on torch/transformers.
+#
+# Windows note: torch's nested license paths overflow MAX_PATH (260 chars)
+# under a deep repo path. Create the venv at a SHORT base path, e.g.:
+#
+#   py -3.12 -m venv C:\synthid_venv
+#   C:\synthid_venv\Scripts\python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   C:\synthid_venv\Scripts\python -m pip install -r requirements.txt
+#
+torch>=2.2            # CPU build is sufficient; no GPU required
+transformers>=4.46    # provides the official DeepMind SynthID-Text watermark + detector
+pandas>=2.0
+matplotlib>=3.7
+pyyaml>=6.0
+pytest>=8.0

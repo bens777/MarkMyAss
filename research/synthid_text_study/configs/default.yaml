@@ -1,0 +1,53 @@
+# Default configuration for the SynthID-Text behaviour study.
+# Everything here is deterministic and reproducible. The keys below are OUR
+# OWN LOCAL keys -- they are NOT Google's production watermark key and results
+# obtained with them say nothing about Google's production detector.
+
+model_name: distilgpt2        # small, ungated, CPU-friendly causal LM (vehicle only)
+hf_cache_dir: .hf_cache       # local model cache (gitignored)
+
+# --- SynthID-Text watermark parameters (our own key material) ---
+watermark:
+  keys: [654, 400, 836, 123, 340, 443, 597, 160, 57, 29]  # local, non-production
+  ngram_len: 5
+  sampling_table_size: 65536
+  sampling_table_seed: 0
+  context_history_size: 1024
+
+# --- Generation ---
+generation:
+  max_new_tokens: 128
+  temperature: 1.0
+  top_k: 40
+  top_p: 1.0
+  seed: 12345
+
+# --- Experiment grid ---
+prompts_file: datasets/prompts.txt
+n_prompts: 10                 # up to the number of lines in prompts_file
+replicates: 1                 # generations per prompt (increase for tighter CIs)
+
+mixture:
+  retained_fractions: [1.0, 0.9, 0.75, 0.5, 0.25, 0.1, 0.0]
+  geometries: [keep_prefix, keep_suffix, scattered]
+
+edits:
+  categories:
+    - spelling
+    - grammar
+    - punctuation
+    - light_copyedit
+    - word_substitution
+    - sentence_rewrite
+    - paragraph_rewrite
+    - restoration
+
+# --- Detection ---
+detector:
+  # The tuning-free Weighted-Mean detector needs a decision threshold. We
+  # calibrate it from un-watermarked control samples to a target false-positive
+  # rate, rather than hard-coding a magic number.
+  target_false_positive_rate: 0.01
+  n_calibration_samples: 24
+
+language: en

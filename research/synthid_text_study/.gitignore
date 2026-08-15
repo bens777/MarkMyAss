@@ -1,0 +1,11 @@
+# Never commit environments or model/hub caches
+.venv/
+.hf_cache/
+__pycache__/
+*.pyc
+
+# Bulky per-run artifacts. The small committed outputs live directly in
+# results/ (summary.csv, summary.json, report.md, *.png); raw per-condition
+# token/text dumps do not.
+results/raw/
+results/texts/
