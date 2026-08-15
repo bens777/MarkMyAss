@@ -13,6 +13,40 @@ studies already in `research/`. Nothing here touches MarkMyAss production.
 
 _Compiled 2026-08-15 from the sources in the last section._
 
+> **Update 2026-08-15 — current generation model (supersedes parts of §2–§3, §6–§7).**
+> Google has **deprecated the Imagen _generation_ endpoints** (`imagegeneration@002–006`,
+> `imagen-3.0-*`, `imagen-4.0-generate/fast/ultra`) and directs migration to
+> **`gemini-2.5-flash-image`** (Vertex AI deprecations page; migration deadline
+> ~2026-06-30). **[LIVE, our project]** as of this date the old Imagen generate ids
+> return **404** in `markmyass-synthid-lab`. The current image-generation path is the
+> **google-genai SDK** (`vertexai=True`) with `model="gemini-2.5-flash-image"`,
+> `location="global"`, `response_modalities=["TEXT","IMAGE"]` (uses `generate_content`,
+> **not** the Imagen `generate_images` path). **[OFFICIAL]** its images include a
+> built-in SynthID watermark (Vertex "Gemini 2.5 Flash Image" docs; Google Developers
+> blog, 2025-08-26).
+>
+> **[LIVE OBSERVATION 2026-08-15]** One smoke test: generation via
+> `gemini-2.5-flash-image` **succeeded** (1024×1024 PNG, 1290 image tokens). The legacy
+> verifier `imageverification@001` **`from_pretrained` resolves**, but a single
+> `verify_image` call returned **`403 PermissionDenied: The caller does not have
+> permission`** — a permission/access failure on the verification predict endpoint.
+> Therefore whether `imageverification@001` supports **Gemini-2.5-Flash-Image**-generated
+> SynthID (vs legacy Imagen) is **still unconfirmed**: the call failed on permission
+> before any content evaluation. This is the current open blocker on the verification
+> side (candidate causes: missing IAM predict permission for the verifier, or the legacy
+> verification path being gated alongside the Imagen deprecation — to resolve without
+> guessing).
+>
+> **Follow-up 2026-08-15:** after granting **`roles/aiplatform.user`** to the caller
+> (`sartrebenoit@gmail.com`), a second single `verify_image` call on the **same** image
+> **still returned `403 PermissionDenied`**. So the block is **not** a missing
+> Vertex-User role. Remaining candidates: IAM propagation delay, an org policy, or —
+> most likely given the Imagen-generation retirement — the **legacy
+> `imageverification@001` predict path being access-gated/retired**. Verification of
+> Gemini-2.5-Flash-Image SynthID via this legacy path is therefore **still unconfirmed**,
+> and a current alternative (e.g. the waitlist-only SynthID Detector portal) may be
+> required. No positive/negative label mapping was set — no live value was ever observed.
+
 ---
 
 ## 1. Product / model matrix — what uses SynthID today
@@ -224,7 +258,9 @@ production "clean the watermark" feature.
 - DeepMind — **Identifying AI-generated images with SynthID** (image architecture): https://deepmind.google/blog/identifying-ai-generated-images-with-synthid/ *(2023-08-29)*
 - Google — **SynthID Detector — a new portal** (portal, waitlist, modalities, 10B): https://blog.google/innovation-and-ai/products/google-synthid-ai-content-detector/ *(2025-05-20)*
 - Google Developers Blog — **Introducing Gemini 2.5 Flash Image** (all images SynthID): https://developers.googleblog.com/introducing-gemini-2-5-flash-image/ *(2025-08-26)*
-- Google Cloud — **A developer's guide to Imagen 3 on Vertex AI** (default watermark; verify via API): https://cloud.google.com/blog/products/ai-machine-learning/a-developers-guide-to-imagen-3-on-vertex-ai *(2024-08-30)*
+- Google Cloud — **A developer's guide to Imagen 3 on Vertex AI** (default watermark; verify via API): https://cloud.google.com/blog/products/ai-machine-learning/a-developers-guide-to-imagen-3-on-vertex-ai *(2024-08-30; Imagen 3 generation now deprecated — see Update above)*
+- Google Cloud — **Generative AI on Vertex AI deprecations** (Imagen generate endpoints deprecated → migrate to `gemini-2.5-flash-image`): https://docs.cloud.google.com/vertex-ai/generative-ai/docs/deprecations *(accessed 2026-08-15)*
+- Google Cloud — **Gemini 2.5 Flash Image** on Vertex AI (current generation model; built-in SynthID; global endpoint; TEXT+IMAGE): https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/gemini/2-5-flash-image *(accessed 2026-08-15)*
 - Google Cloud — Vertex AI **Imagen watermark verification** quickstart / `imagewatermarkdetector` Model Garden entry *(page moved/404 at fetch time 2026-08-15; API existence confirmed via the Imagen 3 developer guide above — reconfirm live before building)*
 - Google AI for Developers — **SynthID text tools** (open-source text watermark/detector): https://ai.google.dev/responsible/docs/safeguards/synthid
 - Nature — **SynthID-Text** (scalable text watermarking) *(2024-10)*
