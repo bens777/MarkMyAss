@@ -1,0 +1,10 @@
+# Google SynthID image benchmark -- ISOLATED from MarkMyAss production deps.
+pillow>=10.3
+numpy>=1.26
+pandas>=2.0
+pyyaml>=6.0
+pytest>=8.0
+
+# Optional -- ONLY needed to run the paid Vertex pilot (not for the harness/tests):
+#   google-cloud-aiplatform>=1.60
+# Install separately when GCP access is provisioned.

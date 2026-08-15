@@ -1,0 +1,9 @@
+{
+  "n_rows": 44,
+  "n_sources": 2,
+  "detector_provider": "mock",
+  "detector": "mock-vertex-imagen",
+  "price_per_call_usd": 0.0,
+  "estimated_total_cost_usd": 0.0,
+  "generated_at": "2026-08-15T19:16:27"
+}

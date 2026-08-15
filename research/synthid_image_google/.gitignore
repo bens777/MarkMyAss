@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Source images (real Imagen/Vertex outputs) are not committed
+datasets/sources/
+datasets/pilot_sources/
+
+# Bulky transformed outputs; committed results keep only summary/report
+results/**/transformed/

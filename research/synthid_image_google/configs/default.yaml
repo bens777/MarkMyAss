@@ -1,0 +1,18 @@
+# Google SynthID image benchmark config.
+# Offline by default (mock). The pilot uses the REAL Vertex verifier and only
+# makes paid calls when explicitly enabled with credentials.
+
+source_images_dir: datasets/sources          # offline `run` reads here (else synthetic)
+pilot_sources_dir: datasets/pilot_sources     # genuine Imagen/Vertex images for the pilot
+mock_synthetic_sources: 2                     # synthetic images when no sources exist
+max_pilot_images: 10                          # hard-capped at 10 in code
+
+detector:
+  mode: mock                                  # mock | vertex
+  vertex:
+    project: null                             # GCP project id (required for paid pilot)
+    location: us-central1
+    model: imagen-3.0-generate                # source model, for provenance labelling
+    # Set to the REAL Vertex watermark-verification price before the pilot.
+    # Left at 0.0 so nothing implies a confirmed price.
+    price_per_call_usd: 0.0
