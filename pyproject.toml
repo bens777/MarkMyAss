@@ -45,6 +45,10 @@ dependencies = [
   "pikepdf>=8.15",
   "python-multipart>=0.0.9",
   "markdown>=3.6",
+  # NumPy powers the pixel-difference metrics (SSIM/PSNR/pixel-change) for the
+  # Reprocess feature. Small, pure-C wheel -- NOT an ML/torch dependency; keeps
+  # the production image lightweight (no CUDA/diffusion).
+  "numpy>=1.26",
 ]
 
 [project.optional-dependencies]

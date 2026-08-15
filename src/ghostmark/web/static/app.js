@@ -14,6 +14,10 @@
     clean: (id) => `api/clean/${id}`,
     verify: (id) => `api/verify/${id}`,
     download: (id) => `api/download/${id}`,
+    reprocess: (id, profile, fmt) =>
+      `api/reprocess/${id}?profile=${encodeURIComponent(profile)}` +
+      (fmt ? `&out_format=${encodeURIComponent(fmt)}` : ""),
+    downloadReprocess: (id) => `api/download/${id}?variant=reprocess`,
     receiptDownload: (id, format) => `api/receipt/${id}/download?format=${format}`,
     publicStats: "api/public-stats",
   };
@@ -79,6 +83,18 @@
   const receiptTxt = el("receipt-txt");
   const labTeaser = el("lab-teaser");
   const moseisleyCta = el("moseisley-cta");
+  // Deep Reprocess (pixel-level) controls.
+  const btnReprocessOpen = el("btn-reprocess-open");
+  const reprocessSection = el("reprocess-section");
+  const arrowReprocess = el("arrow-reprocess");
+  const reprocessProfile = el("reprocess-profile");
+  const reprocessFormat = el("reprocess-format");
+  const btnReprocessRun = el("btn-reprocess-run");
+  const btnReprocessDownload = el("btn-reprocess-download");
+  const reprocessResults = el("reprocess-results");
+  const reprocessFileTable = el("reprocess-file-table");
+  const reprocessMetrics = el("reprocess-metrics");
+  const reprocessError = el("reprocess-error");
 
   async function loadConfig() {
     try {
@@ -111,6 +127,19 @@
       uploadLimitHint.textContent = `Images & PDFs: up to ${config.max_upload_mb} MB · Text files: up to ${config.max_text_upload_mb} MB.`;
     } else if (config.max_upload_mb) {
       uploadLimitHint.textContent = `Maximum file size: ${config.max_upload_mb} MB.`;
+    }
+
+    // Populate the Deep Reprocess intensity selector from the server's profile
+    // catalogue (single source of truth), so labels/descriptions never drift.
+    if (reprocessProfile && Array.isArray(config.reprocess_profiles)) {
+      reprocessProfile.innerHTML = "";
+      for (const p of config.reprocess_profiles) {
+        const opt = document.createElement("option");
+        opt.value = p.name;
+        opt.textContent = `${p.label} — ${p.description}`;
+        if (p.name === "medium") opt.selected = true;
+        reprocessProfile.appendChild(opt);
+      }
     }
   }
 
@@ -462,11 +491,87 @@
       }
       cleanSection.classList.remove("hidden");
       arrow2.classList.remove("hidden");
+      // Deep Reprocess is an image-only, pixel-level action offered alongside
+      // Verify once a file has been cleaned.
+      if (btnReprocessOpen) btnReprocessOpen.classList.toggle("hidden", state.mode !== "file");
     } catch (err) {
       showError(String(err));
     } finally {
       restoreClean();
     }
+  }
+
+  function renderMetricRows(container, metrics, extra) {
+    container.innerHTML = "";
+    const rows = [
+      ["Original dimensions", `${metrics.original_dimensions[0]} × ${metrics.original_dimensions[1]}`],
+      ["Output dimensions", `${metrics.output_dimensions[0]} × ${metrics.output_dimensions[1]}`],
+      ["Original size", `${metrics.original_size_bytes.toLocaleString("en-US")} bytes`],
+      ["Output size", `${metrics.output_size_bytes.toLocaleString("en-US")} bytes`],
+      ["SSIM", `${metrics.ssim}`],
+      ["PSNR", `${metrics.psnr} dB`],
+      ["Pixels changed", `${metrics.pixel_changed_pct}%`],
+    ];
+    if (extra) rows.push(...extra);
+    for (const [label, value] of rows) {
+      const row = document.createElement("div");
+      row.className = "signal-row";
+      const l = document.createElement("span");
+      l.className = "signal-label";
+      l.textContent = label;
+      const v = document.createElement("span");
+      v.className = "signal-status status-unverified";
+      v.textContent = value;
+      row.appendChild(l);
+      row.appendChild(v);
+      container.appendChild(row);
+    }
+  }
+
+  function openReprocess() {
+    if (!reprocessSection) return;
+    reprocessSection.classList.remove("hidden");
+    if (arrowReprocess) arrowReprocess.classList.remove("hidden");
+    reprocessSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function doReprocess() {
+    if (!state.sessionId) return;
+    if (reprocessError) reprocessError.classList.add("hidden");
+    const profile = reprocessProfile ? reprocessProfile.value || "medium" : "medium";
+    const fmt = reprocessFormat ? reprocessFormat.value : "";
+    const restore = withLoadingLabel(btnReprocessRun, "Recutting the timber…");
+    try {
+      const resp = await fetch(API.reprocess(state.sessionId, profile, fmt), { method: "POST" });
+      if (!resp.ok) {
+        const body = await safeJson(resp);
+        if (reprocessError) {
+          reprocessError.textContent = body.detail || `Reprocess failed (${resp.status}).`;
+          reprocessError.classList.remove("hidden");
+        }
+        return;
+      }
+      const data = await resp.json();
+      renderDetections(reprocessFileTable, data.file_level.detections);
+      const extra = [
+        ["Profile", `${data.profile} → ${data.output_format}`],
+        ["Operations", (data.operations || []).join(" → ")],
+        ["Est. compute cost", `${data.estimated_compute_cost}`],
+      ];
+      renderMetricRows(reprocessMetrics, data.metrics, extra);
+      reprocessResults.classList.remove("hidden");
+    } catch (err) {
+      if (reprocessError) {
+        reprocessError.textContent = String(err);
+        reprocessError.classList.remove("hidden");
+      }
+    } finally {
+      restore();
+    }
+  }
+
+  function doReprocessDownload() {
+    window.location.href = API.downloadReprocess(state.sessionId);
   }
 
   async function doVerify() {
@@ -510,6 +615,9 @@
   btnClean.addEventListener("click", doClean);
   btnVerify.addEventListener("click", doVerify);
   btnSave.addEventListener("click", doSave);
+  if (btnReprocessOpen) btnReprocessOpen.addEventListener("click", openReprocess);
+  if (btnReprocessRun) btnReprocessRun.addEventListener("click", doReprocess);
+  if (btnReprocessDownload) btnReprocessDownload.addEventListener("click", doReprocessDownload);
 
   loadConfig();
 

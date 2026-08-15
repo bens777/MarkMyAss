@@ -17,10 +17,13 @@ from ghostmark.fixtures.generate import generate_all
 from ghostmark.inspector import inspect_file, inspect_text
 from ghostmark.models import InspectionReport, Status, VerifyResult
 from ghostmark.receipt import build_receipt
+from ghostmark.reprocess import DEFAULT_PROFILE, PROFILES, reprocess_image_bytes
 from ghostmark.security import (
     FileTooLargeError,
     UnsupportedFileTypeError,
     check_size,
+    check_supported,
+    suffix_of,
 )
 from ghostmark.verifier import verify_file
 
@@ -183,6 +186,60 @@ def clean(
             typer.echo(f"{a.label}: {verb}{' - ' + a.note if a.note else ''}")
         typer.echo(f"\nOriginal file untouched: {result.source}")
         typer.echo(f"Cleaned copy written to: {result.output}")
+    raise typer.Exit(0)
+
+
+@app.command()
+def reprocess(
+    file: Path = typer.Argument(..., exists=True, readable=True, help="Image file to reprocess."),
+    profile: str = typer.Option(DEFAULT_PROFILE, "--profile", "-p", help="light | medium | strong."),
+    fmt: str | None = typer.Option(
+        None, "--format", "-f", help="Output format: png | jpeg | webp (default: keep source)."
+    ),
+    output: Path | None = typer.Option(None, "--output", "-o", help="Output path."),
+    json_output: bool = typer.Option(False, "--json", help="Emit machine-readable JSON instead of text."),
+) -> None:
+    """Create a NEW pixel representation of an image (decode + re-encode / resample).
+
+    Distinct from `clean`, which strips metadata without touching pixels. This
+    does NOT guarantee removal of statistical watermarks such as SynthID.
+    """
+    try:
+        check_size(file.stat().st_size)
+        check_supported(file.name)
+        if suffix_of(file.name) not in {".png", ".jpg", ".jpeg", ".webp"}:
+            raise UnsupportedFileTypeError("Reprocess supports images only (PNG, JPEG, WebP).")
+        if profile not in PROFILES:
+            raise typer.BadParameter(f"profile must be one of: {', '.join(PROFILES)}")
+        result = reprocess_image_bytes(file.read_bytes(), file.suffix, profile, out_format=fmt)
+    except (UnsupportedFileTypeError, FileTooLargeError, ValueError) as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    out_path = output or file.with_name(f"{file.stem}.reprocessed{result.output_suffix}")
+    out_path.write_bytes(result.output_bytes)
+
+    if json_output:
+        payload = result.to_dict()
+        payload["output"] = str(out_path)
+        typer.echo(json.dumps(payload, indent=2))
+    else:
+        m = result.to_dict()["metrics"]
+        typer.echo("GhostMark reprocess\n")
+        typer.echo(f"Source: {file}")
+        typer.echo(f"Output: {out_path}")
+        typer.echo(f"Profile: {result.profile} ({result.output_format})")
+        typer.echo("Operations: " + " -> ".join(result.operations))
+        typer.echo(
+            f"\nDimensions: {m['original_dimensions'][0]}x{m['original_dimensions'][1]} -> "
+            f"{m['output_dimensions'][0]}x{m['output_dimensions'][1]}"
+        )
+        typer.echo(f"Bytes: {m['original_size_bytes']} -> {m['output_size_bytes']}")
+        typer.echo(f"SSIM: {m['ssim']}  PSNR: {m['psnr']} dB  Pixels changed: {m['pixel_changed_pct']}%")
+        for w in result.warnings:
+            typer.echo(f"Note: {w}")
+        typer.echo("\nSSIM/PSNR describe pixel difference; they are not proof of visual identity.")
+        typer.echo("Reprocess does not guarantee removal of statistical watermarks such as SynthID.")
     raise typer.Exit(0)
 
 

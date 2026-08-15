@@ -49,6 +49,7 @@ from ghostmark.independent_verify import C2paToolVerifier, ExifToolVerifier
 from ghostmark.inspector import inspect_file, inspect_text
 from ghostmark.models import CleanResult, VerifyResult
 from ghostmark.receipt import VerificationReceipt, build_receipt
+from ghostmark.reprocess import PROFILES, profiles_dict, reprocess_image_bytes
 from ghostmark.security import (
     MAX_TEXT_UPLOAD_BYTES,
     MAX_TEXT_UPLOAD_MB,
@@ -260,6 +261,9 @@ class _Session:
         self.created_at = time.time()
         self.clean_result: CleanResult | None = None
         self.verify_result: VerifyResult | None = None
+        # Reprocess (pixel-level) output for this session, if produced.
+        self.reprocessed_path: Path | None = None
+        self.reprocess_result: Any = None
         # Guards the usage counter so a session is counted at most once, no
         # matter how many times /api/clean is called for it (re-clean,
         # reload) -- see _count_clean in create_app.
@@ -768,6 +772,7 @@ Proof, not promises.
             "c2patool_available": c2patool_verifier.available(),
             "c2patool_version": c2patool_verifier.version(),
             "ghostmark_version": __version__,
+            "reprocess_profiles": profiles_dict(),
         }
 
     # Public, aggregate-only social-proof numbers. No personal data, no
@@ -918,6 +923,60 @@ Proof, not promises.
         result.output = cleaned_name
         return result.to_dict()
 
+    _IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp"}
+
+    @app.post("/api/reprocess/{session_id}")
+    def reprocess_route(session_id: str, profile: str = "medium",
+                        out_format: str | None = None) -> dict[str, Any]:
+        """Create a new pixel representation of the session's image, then re-run
+        LOCAL inspection on the output. Reports three SEPARATE categories:
+        file-level signals, pixel-level change, and statistical (not verifiable)."""
+        session = store.get(session_id)
+        if session.kind != "file" or session.original_path is None:
+            raise HTTPException(status_code=400, detail="No image in this session.")
+        ext = session.original_path.suffix.lower()
+        if ext not in _IMAGE_SUFFIXES:
+            raise HTTPException(status_code=400, detail="Reprocess supports images only (PNG, JPEG, WebP).")
+        if profile not in PROFILES:
+            raise HTTPException(status_code=400, detail="Unknown reprocess profile.")
+
+        try:
+            result = runner.run(
+                reprocess_image_bytes, session.original_path.read_bytes(), ext, profile, out_format
+            )
+            out_path = session.workdir / f"reprocessed{result.output_suffix}"
+            out_path.write_bytes(result.output_bytes)
+            session.reprocessed_path = out_path
+            session.reprocess_result = result
+            file_report = runner.run(inspect_file, out_path)
+        except (ServerBusyError, ProcessingTimeoutError) as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except HTTPException:
+            raise
+        except Exception as exc:  # noqa: BLE001 - untrusted image must never crash the server
+            log.warning("reprocess failed for session: %s", exc.__class__.__name__)
+            raise HTTPException(status_code=400, detail="Could not reprocess this image.") from exc
+
+        stem = Path(session.original_name).stem
+        file_report.target = f"{stem}.reprocessed{result.output_suffix}"
+        payload = result.to_dict()
+        # Three deliberately-separate categories -- never mixed (see spec).
+        payload["file_level"] = file_report.to_dict()
+        payload["pixel_level"] = {
+            "pixels_changed": result.pixel_changed_pct > 0.0 or result.ssim < 1.0,
+            "metrics": payload["metrics"],
+        }
+        payload["statistical"] = {
+            "locally_verifiable": False,
+            "note": "Statistical / model-level watermarks such as SynthID are not currently "
+                    "locally verifiable. Reprocess does not guarantee their removal.",
+        }
+        payload["download_available"] = True
+        payload["output_name"] = f"{stem}.reprocessed{result.output_suffix}"
+        # output_bytes are already written to disk for download; don't ship raw bytes in JSON.
+        payload.pop("output_bytes", None)
+        return payload
+
     @app.post("/api/verify/{session_id}")
     def verify_route(session_id: str) -> dict[str, Any]:
         session = store.get(session_id)
@@ -942,11 +1001,21 @@ Proof, not promises.
             raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     @app.get("/api/download/{session_id}")
-    def download_route(session_id: str) -> FileResponse:
+    def download_route(session_id: str, variant: str = "clean") -> FileResponse:
         session = store.get(session_id)
+        stem = Path(session.original_name).stem
+        if variant == "reprocess":
+            if session.reprocessed_path is None or not session.reprocessed_path.exists():
+                raise HTTPException(status_code=400, detail="No reprocessed file available for this session.")
+            download_name = f"{stem}.reprocessed{session.reprocessed_path.suffix}"
+            return FileResponse(
+                session.reprocessed_path,
+                filename=download_name,
+                media_type="application/octet-stream",
+                headers={"Content-Disposition": f'attachment; filename="{download_name}"'},
+            )
         if session.kind != "file" or session.cleaned_path is None or not session.cleaned_path.exists():
             raise HTTPException(status_code=400, detail="No cleaned file available for this session.")
-        stem = Path(session.original_name).stem
         suffix = Path(session.original_name).suffix
         download_name = f"{stem}.ghostmark{suffix}"
 

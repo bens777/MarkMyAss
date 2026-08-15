@@ -98,10 +98,31 @@ def cmd_pilot(args):
     return 0
 
 
+def cmd_record_external(args):
+    from .manual_verify import ManualExternalRecord, append_record
+    rec = ManualExternalRecord(
+        source_image=args.source, transform_profile=args.profile,
+        external_verifier=args.verifier, result_text=args.result,
+        timestamp=args.timestamp or "", notes=args.notes or "")
+    path = append_record(pathlib.Path(args.results), rec)
+    print(f"recorded manual external verification -> {path}")
+    return 0
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(prog="synthid_image")
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("demo").set_defaults(func=cmd_demo)
+
+    prec = sub.add_parser("record-external", help="manually record an external (e.g. Gemini) verification result")
+    prec.add_argument("--source", required=True, help="image filename/id that was checked")
+    prec.add_argument("--profile", default="none", help="reprocess/transform profile applied (or 'none')")
+    prec.add_argument("--verifier", default="gemini-app", help="external verifier used")
+    prec.add_argument("--result", required=True, help="verbatim external result text")
+    prec.add_argument("--timestamp", default=None, help="ISO timestamp (default: now)")
+    prec.add_argument("--notes", default=None)
+    prec.add_argument("--results", default="results")
+    prec.set_defaults(func=cmd_record_external)
 
     pr = sub.add_parser("run")
     pr.add_argument("--config", default="configs/default.yaml")

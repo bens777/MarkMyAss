@@ -1193,3 +1193,10 @@ footer a { color: var(--accent); }
 .run-local-teaser a { color: var(--accent); font-weight: 600; }
 
 label { display: block; margin: 1rem 0 0.4rem; color: var(--muted); font-size: 0.9rem; font-weight: 600; }
+
+/* Deep Reprocess (pixel-level) controls */
+.clean-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.reprocess-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; margin: 0.5rem 0 1rem; }
+.reprocess-controls label { margin: 0; }
+.reprocess-controls select { padding: 0.5rem; border-radius: 8px; max-width: 100%; }
+.reprocess-disclaimer { max-width: 60ch; }

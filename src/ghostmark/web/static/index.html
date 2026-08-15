@@ -191,6 +191,7 @@
       <p class="section-flavor">Spot the ghosts — scanning the cargo for hidden signals.</p>
       <div id="results-table" class="signal-table"></div>
       <p id="results-count" class="summary"></p>
+      <p id="results-scope-note" class="hint">Checks supported file-level signals (EXIF · XMP · PNG text · C2PA). Statistical / model-level watermarks such as SynthID are not currently locally verifiable — their absence is never claimed.</p>
 
       <div id="explain-panel" class="explain-panel hidden">
         <h3>What this means</h3>
@@ -211,7 +212,10 @@
         <textarea id="cleaned-text-output" rows="8" readonly></textarea>
       </div>
       <p class="original-preserved">Original file <strong>PRESERVED</strong> — MarkMyAss never modifies your original.</p>
-      <button id="btn-verify" class="btn primary" type="button">Verify Independently</button>
+      <div class="clean-actions">
+        <button id="btn-verify" class="btn primary" type="button">Verify Independently</button>
+        <button id="btn-reprocess-open" class="btn secondary hidden" type="button">Deep Reprocess →</button>
+      </div>
     </section>
 
     <div class="flow-arrow hidden" id="arrow-3">↓</div>
@@ -264,6 +268,46 @@
         <h3>Want the whole crew?</h3>
         <p>MarkMyAss is one tool. Moseisley gives you your own team of AI agents and assistants.</p>
         <a class="btn primary" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=product&amp;utm_campaign=clean_success" rel="noopener">Start free on Moseisley →</a>
+      </div>
+    </section>
+
+    <div class="flow-arrow hidden" id="arrow-reprocess">↓</div>
+
+    <section id="reprocess-section" class="card hidden">
+      <h2 class="stage-heading"><img src="static/art/ghost-mark.svg" alt="" width="26" height="26" class="stage-icon" /> DEEP REPROCESS</h2>
+      <p class="section-flavor">Recut the timber — build a brand-new pixel representation of your image.</p>
+      <p class="hint reprocess-disclaimer">Creates a new pixel representation of your image. This may affect embedded pixel-level signals, but MarkMyAss does <strong>not</strong> guarantee removal of statistical watermarks such as SynthID.</p>
+
+      <div class="reprocess-controls">
+        <label>Intensity
+          <select id="reprocess-profile"></select>
+        </label>
+        <label>Output format
+          <select id="reprocess-format">
+            <option value="">Keep source</option>
+            <option value="png">PNG</option>
+            <option value="jpeg">JPEG</option>
+            <option value="webp">WebP</option>
+          </select>
+        </label>
+        <button id="btn-reprocess-run" class="btn primary" type="button">Reprocess Image</button>
+      </div>
+      <p id="reprocess-error" class="error hidden"></p>
+
+      <div id="reprocess-results" class="hidden">
+        <h3>File-level signals (re-checked after reprocess)</h3>
+        <div id="reprocess-file-table" class="signal-table"></div>
+
+        <h3>Pixel-level change</h3>
+        <div id="reprocess-metrics" class="signal-table"></div>
+        <p class="hint">SSIM/PSNR describe how much the pixels changed — they are not proof of visual identity.</p>
+
+        <p class="watermark-note">
+          Statistical model-level watermark (SynthID / Claude / GPT): <strong>NOT LOCALLY VERIFIABLE</strong>
+          &middot; reprocess does not guarantee removal.
+        </p>
+
+        <button id="btn-reprocess-download" class="btn primary" type="button">Download Reprocessed Image</button>
       </div>
     </section>
     </div>
