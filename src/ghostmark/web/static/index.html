@@ -382,7 +382,8 @@
 
       <div class="explain-panel">
         <h3>A real check we ran</h3>
-        <p>We generated an image with Google's Gemini image model and ran it through MarkMyAss. It found Google's <strong>file-level</strong> provenance — XMP, PNG text and a C2PA manifest — and <em>Clean</em> removed those supported signals, so re-inspection showed <strong>0 supported file-level signals</strong>. SynthID, though, lives in the pixels: by Google's own description it survives metadata removal. Cleaning metadata is not the same as removing SynthID — so we don't pretend it is.</p>
+        <p>We generated an image with Google's Gemini image model and ran it through MarkMyAss. It found Google's <strong>file-level</strong> provenance — XMP, PNG text and a C2PA manifest — and <em>Clean</em> removed those supported signals, so a second inspection showed <strong>0 supported file-level signals</strong>. We then uploaded that same cleaned image to Gemini, which replied: <em>“Based on the digital watermarking analysis, all or part of this image was created or edited using Google AI.”</em></p>
+        <p>After MarkMyAss removed the supported file-level provenance and a second inspection showed 0 supported file-level signals, Gemini still identified the image as created or edited using Google AI based on digital watermarking analysis. This is consistent with a remaining <strong>content-level</strong> watermark such as SynthID, which is separate from metadata — though it does not prove SynthID alone was responsible. Cleaning metadata is not the same as removing SynthID — so we don't pretend it is.</p>
       </div>
 
       <div class="explain-panel">
