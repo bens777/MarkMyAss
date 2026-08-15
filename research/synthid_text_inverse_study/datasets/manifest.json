@@ -1,0 +1,222 @@
+[
+  {
+    "sample_id": "1342_0",
+    "work_id": 1342,
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": 1813,
+    "source_url": "https://www.gutenberg.org/cache/epub/1342/pg1342.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 209,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "1342_1",
+    "work_id": 1342,
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": 1813,
+    "source_url": "https://www.gutenberg.org/cache/epub/1342/pg1342.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 227,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "1342_2",
+    "work_id": 1342,
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": 1813,
+    "source_url": "https://www.gutenberg.org/cache/epub/1342/pg1342.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 217,
+    "n_paragraphs": 1
+  },
+  {
+    "sample_id": "1342_3",
+    "work_id": 1342,
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": 1813,
+    "source_url": "https://www.gutenberg.org/cache/epub/1342/pg1342.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 223,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "1661_0",
+    "work_id": 1661,
+    "title": "The Adventures of Sherlock Holmes",
+    "author": "Arthur Conan Doyle",
+    "year": 1892,
+    "source_url": "https://www.gutenberg.org/cache/epub/1661/pg1661.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 214,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "1661_1",
+    "work_id": 1661,
+    "title": "The Adventures of Sherlock Holmes",
+    "author": "Arthur Conan Doyle",
+    "year": 1892,
+    "source_url": "https://www.gutenberg.org/cache/epub/1661/pg1661.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 225,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "1661_2",
+    "work_id": 1661,
+    "title": "The Adventures of Sherlock Holmes",
+    "author": "Arthur Conan Doyle",
+    "year": 1892,
+    "source_url": "https://www.gutenberg.org/cache/epub/1661/pg1661.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 212,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "1661_3",
+    "work_id": 1661,
+    "title": "The Adventures of Sherlock Holmes",
+    "author": "Arthur Conan Doyle",
+    "year": 1892,
+    "source_url": "https://www.gutenberg.org/cache/epub/1661/pg1661.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 228,
+    "n_paragraphs": 3
+  },
+  {
+    "sample_id": "84_0",
+    "work_id": 84,
+    "title": "Frankenstein",
+    "author": "Mary Wollstonecraft Shelley",
+    "year": 1818,
+    "source_url": "https://www.gutenberg.org/cache/epub/84/pg84.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 204,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "84_1",
+    "work_id": 84,
+    "title": "Frankenstein",
+    "author": "Mary Wollstonecraft Shelley",
+    "year": 1818,
+    "source_url": "https://www.gutenberg.org/cache/epub/84/pg84.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 201,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "84_2",
+    "work_id": 84,
+    "title": "Frankenstein",
+    "author": "Mary Wollstonecraft Shelley",
+    "year": 1818,
+    "source_url": "https://www.gutenberg.org/cache/epub/84/pg84.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 229,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "84_3",
+    "work_id": 84,
+    "title": "Frankenstein",
+    "author": "Mary Wollstonecraft Shelley",
+    "year": 1818,
+    "source_url": "https://www.gutenberg.org/cache/epub/84/pg84.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 213,
+    "n_paragraphs": 3
+  },
+  {
+    "sample_id": "345_0",
+    "work_id": 345,
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "year": 1897,
+    "source_url": "https://www.gutenberg.org/cache/epub/345/pg345.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 203,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "345_1",
+    "work_id": 345,
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "year": 1897,
+    "source_url": "https://www.gutenberg.org/cache/epub/345/pg345.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 214,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "345_2",
+    "work_id": 345,
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "year": 1897,
+    "source_url": "https://www.gutenberg.org/cache/epub/345/pg345.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 227,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "345_3",
+    "work_id": 345,
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "year": 1897,
+    "source_url": "https://www.gutenberg.org/cache/epub/345/pg345.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 214,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "98_0",
+    "work_id": 98,
+    "title": "A Tale of Two Cities",
+    "author": "Charles Dickens",
+    "year": 1859,
+    "source_url": "https://www.gutenberg.org/cache/epub/98/pg98.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 181,
+    "n_paragraphs": 1
+  },
+  {
+    "sample_id": "98_1",
+    "work_id": 98,
+    "title": "A Tale of Two Cities",
+    "author": "Charles Dickens",
+    "year": 1859,
+    "source_url": "https://www.gutenberg.org/cache/epub/98/pg98.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 187,
+    "n_paragraphs": 2
+  },
+  {
+    "sample_id": "98_2",
+    "work_id": 98,
+    "title": "A Tale of Two Cities",
+    "author": "Charles Dickens",
+    "year": 1859,
+    "source_url": "https://www.gutenberg.org/cache/epub/98/pg98.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 218,
+    "n_paragraphs": 3
+  },
+  {
+    "sample_id": "98_3",
+    "work_id": 98,
+    "title": "A Tale of Two Cities",
+    "author": "Charles Dickens",
+    "year": 1859,
+    "source_url": "https://www.gutenberg.org/cache/epub/98/pg98.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_words": 193,
+    "n_paragraphs": 3
+  }
+]

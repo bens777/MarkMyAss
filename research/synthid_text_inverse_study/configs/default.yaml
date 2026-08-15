@@ -1,0 +1,34 @@
+# Inverse study config. Watermark key + generation params are IDENTICAL to
+# Study 1 so the two studies are directly comparable and share the same
+# detector/threshold methodology. These are OUR OWN LOCAL keys, not Google's.
+
+model_name: distilgpt2
+hf_cache_dir: ../synthid_text_study/.hf_cache   # reuse Study 1's cached model (no re-download)
+
+watermark:
+  keys: [654, 400, 836, 123, 340, 443, 597, 160, 57, 29]  # same as Study 1
+  ngram_len: 5
+  sampling_table_size: 65536
+  sampling_table_seed: 0
+  context_history_size: 1024
+
+generation:
+  max_new_tokens: 128        # only used for detector-threshold calibration controls
+  temperature: 1.0
+  top_k: 40
+  top_p: 1.0
+  seed: 12345
+
+corpus_dir: datasets
+n_samples: 20
+max_human_tokens: 256        # cap per human sample (bounds runtime)
+k_scatter: 5
+
+fractions: [0.0, 0.02, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.50, 0.75, 1.0]
+geometries: [contiguous, scattered, sentence, paragraph]
+
+detector:
+  target_false_positive_rate: 0.01
+  n_calibration_samples: 24
+
+language: en

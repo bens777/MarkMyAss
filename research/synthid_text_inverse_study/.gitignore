@@ -1,0 +1,12 @@
+# Environments / caches
+.venv/
+.hf_cache/
+__pycache__/
+*.pyc
+
+# Raw Gutenberg downloads (large). Derived samples + manifest ARE committed.
+datasets/raw/
+
+# Bulky per-run dumps; committed outputs live directly in results/
+results/raw/
+results/texts/
