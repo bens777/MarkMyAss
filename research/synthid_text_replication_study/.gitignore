@@ -1,0 +1,6 @@
+.venv/
+.hf_cache/
+__pycache__/
+*.pyc
+datasets/raw/
+results/raw/

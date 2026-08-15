@@ -1,0 +1,6 @@
+"""Make `replication` (and, via its bootstrap, Studies 1-2 packages) importable."""
+
+import pathlib
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).parent))

@@ -1,0 +1,44 @@
+# Replication / robustness config. Same detector methodology as Studies 1-2
+# (tuning-free Weighted-Mean, per-key 1% FPR threshold) -- NOT tuned to results.
+# All keys are OUR OWN LOCAL keys, not Google's production key.
+
+model_name: distilgpt2
+hf_cache_dir: ../synthid_text_study/.hf_cache   # reuse the cached model
+
+# 5 independent local keys. Key 0 is the Study 1/2 anchor key.
+keys:
+  - [654, 400, 836, 123, 340, 443, 597, 160, 57, 29]
+  - [11, 929, 215, 703, 88, 451, 660, 17, 540, 382]
+  - [777, 3, 512, 199, 64, 830, 921, 45, 270, 608]
+  - [412, 88, 733, 150, 999, 26, 371, 584, 105, 462]
+  - [230, 741, 19, 506, 877, 313, 648, 92, 405, 134]
+
+watermark:
+  ngram_len: 5
+  sampling_table_size: 65536
+  sampling_table_seed: 0
+  context_history_size: 1024
+
+generation:
+  max_new_tokens: 128   # engine default (calibration); per-condition length is set by the sample
+  temperature: 1.0
+  top_k: 40
+  top_p: 1.0
+  base_seed: 20000
+
+corpus_dir: datasets
+n_seeds: 5             # generation seeds per (sample, key)
+k_scatter: 5
+
+# AI fractions concentrated around the transition
+fractions: [0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.40, 0.50]
+geometries: [contiguous, scattered]   # valid geometries only (no degenerate paragraph)
+
+detector:
+  target_false_positive_rate: 0.01
+  # A 1% FPR threshold cannot be estimated from a handful of samples (with n=16
+  # the "99th percentile" is just the max, giving high key-to-key variance). Use
+  # enough clean controls to estimate the tail properly. This is correct
+  # estimation of the SAME threshold definition -- NOT tuning to the result.
+  n_calibration_samples: 100
+  calib_len: 160

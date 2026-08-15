@@ -1,0 +1,68 @@
+[
+  {
+    "sample_id": "250_0",
+    "length_bucket": 250,
+    "work_id": 1342,
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": 1813,
+    "source_url": "https://www.gutenberg.org/cache/epub/1342/pg1342.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_tokens": 250
+  },
+  {
+    "sample_id": "250_1",
+    "length_bucket": 250,
+    "work_id": 1661,
+    "title": "The Adventures of Sherlock Holmes",
+    "author": "Arthur Conan Doyle",
+    "year": 1892,
+    "source_url": "https://www.gutenberg.org/cache/epub/1661/pg1661.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_tokens": 229
+  },
+  {
+    "sample_id": "500_0",
+    "length_bucket": 500,
+    "work_id": 84,
+    "title": "Frankenstein",
+    "author": "Mary Wollstonecraft Shelley",
+    "year": 1818,
+    "source_url": "https://www.gutenberg.org/cache/epub/84/pg84.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_tokens": 493
+  },
+  {
+    "sample_id": "500_1",
+    "length_bucket": 500,
+    "work_id": 345,
+    "title": "Dracula",
+    "author": "Bram Stoker",
+    "year": 1897,
+    "source_url": "https://www.gutenberg.org/cache/epub/345/pg345.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_tokens": 497
+  },
+  {
+    "sample_id": "900_0",
+    "length_bucket": 900,
+    "work_id": 98,
+    "title": "A Tale of Two Cities",
+    "author": "Charles Dickens",
+    "year": 1859,
+    "source_url": "https://www.gutenberg.org/cache/epub/98/pg98.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_tokens": 855
+  },
+  {
+    "sample_id": "900_1",
+    "length_bucket": 900,
+    "work_id": 1342,
+    "title": "Pride and Prejudice",
+    "author": "Jane Austen",
+    "year": 1813,
+    "source_url": "https://www.gutenberg.org/cache/epub/1342/pg1342.txt",
+    "license": "Public domain (Project Gutenberg; first published pre-1929)",
+    "n_tokens": 891
+  }
+]
