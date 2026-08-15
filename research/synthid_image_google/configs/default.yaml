@@ -13,6 +13,13 @@ detector:
     project: null                             # GCP project id (required for paid pilot)
     location: us-central1
     model: imagen-3.0-generate                # source model, for provenance labelling
+    verifier_model: "imageverification@001"   # OFFICIAL documented WatermarkVerificationModel id
     # Set to the REAL Vertex watermark-verification price before the pilot.
     # Left at 0.0 so nothing implies a confirmed price.
     price_per_call_usd: 0.0
+    # The exact `watermark_verification_result` (prediction `decision`) strings are
+    # NOT in the official SDK docs. Leave empty -> any decision maps to UNCERTAIN
+    # (raw string still logged). After ONE live call, fill these with the observed
+    # strings (e.g. the accept/reject values) to enable boolean detection.
+    positive_labels: []                       # decision strings meaning "watermark present"
+    negative_labels: []                       # decision strings meaning "no watermark"

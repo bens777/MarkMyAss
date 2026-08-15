@@ -12,6 +12,7 @@ CRITICAL SAFETY CONTRACT
 
 from __future__ import annotations
 
+import json
 import time
 from dataclasses import dataclass, field
 from enum import StrEnum
@@ -81,20 +82,45 @@ class MockVertexDetector(DetectorAdapter):
 class VertexImagenDetector(DetectorAdapter):
     """Real Google Vertex AI Imagen watermark verifier.
 
-    Makes a PAID API call ONLY when ``enable_paid=True`` AND the Vertex SDK and
-    credentials are available. Otherwise returns DETECTOR_UNAVAILABLE. It never
-    returns a detection without a genuine API response.
+    Implements the official current SDK contract
+    (``vertexai.preview.vision_models.WatermarkVerificationModel``):
+
+        vertexai.init(project=..., location=...)
+        model = WatermarkVerificationModel.from_pretrained("imageverification@001")
+        image = Image.load_from_file(path)
+        response = model.verify_image(image)     # -> WatermarkVerificationResponse
+        response.watermark_verification_result   # <- documented field (a string)
+
+    Documented (implemented here): model id ``imageverification@001`` (configurable),
+    the call flow, and the ``watermark_verification_result`` field.
+
+    NOT documented (the one live-confirmable unknown): the *string values* that
+    ``watermark_verification_result`` (the prediction ``decision`` key) can take.
+    We therefore carry the raw decision string through as ``confidence`` and only
+    map it to a boolean ``detected`` when it matches an explicitly-configured
+    ``positive_labels`` / ``negative_labels`` set. An unrecognised decision maps
+    to ``UNCERTAIN`` (never fabricated). Populate the label sets after one live
+    call confirms the exact strings.
+
+    Makes a PAID call ONLY when ``enable_paid=True`` AND the SDK + credentials are
+    present; otherwise returns DETECTOR_UNAVAILABLE.
     """
 
     provider = "google-vertex"
     detector = "imagen-watermark-verification"
 
     def __init__(self, project: str | None = None, location: str = "us-central1",
-                 enable_paid: bool = False, price_per_call_usd: float = 0.0):
+                 enable_paid: bool = False, price_per_call_usd: float = 0.0,
+                 verifier_model: str = "imageverification@001",
+                 positive_labels: list[str] | None = None,
+                 negative_labels: list[str] | None = None):
         self.project = project
         self.location = location
         self.enable_paid = enable_paid
         self.price_per_call_usd = price_per_call_usd
+        self.verifier_model = verifier_model  # documented default; configurable
+        self.positive_labels = {s.strip().upper() for s in (positive_labels or [])}
+        self.negative_labels = {s.strip().upper() for s in (negative_labels or [])}
 
     def _unavailable(self, reason: str) -> DetectorResult:
         return DetectorResult(
@@ -110,24 +136,55 @@ class VertexImagenDetector(DetectorAdapter):
             return self._unavailable("no GCP project configured")
         # Lazy import so the harness/tests never require the SDK to be installed.
         try:
-            from google.cloud import aiplatform  # noqa: F401
+            import vertexai  # noqa: F401
         except Exception as e:  # ImportError or partial install
             return self._unavailable(f"vertex sdk unavailable: {e.__class__.__name__}")
         try:
-            return self._verify_live(image_path)
+            response = self._run_sdk(image_path)
         except Exception as e:  # auth error, quota, network -- never fabricate
             return self._unavailable(f"live verification failed: {e.__class__.__name__}: {e}")
+        return self._build_result(response)
 
-    def _verify_live(self, image_path: str) -> DetectorResult:  # pragma: no cover - needs GCP
-        """Call the real Vertex watermark verifier.
+    def _run_sdk(self, image_path: str):  # pragma: no cover - needs GCP + network
+        """The only part that touches the live SDK/network (not covered offline)."""
+        import vertexai
+        from vertexai.preview.vision_models import WatermarkVerificationModel
+        try:
+            from vertexai.preview.vision_models import Image as VertexImage
+        except ImportError:
+            from vertexai.vision_models import Image as VertexImage
+        vertexai.init(project=self.project, location=self.location)
+        model = WatermarkVerificationModel.from_pretrained(self.verifier_model)
+        image = VertexImage.load_from_file(image_path)
+        return model.verify_image(image)
 
-        NOTE: this is the integration point to finalise against the live API
-        (endpoint/model name + response schema) once GCP access exists. It is
-        never exercised without credentials + enable_paid, so it is not covered
-        by offline tests. It must map the API response to a real DETECTED/
-        NOT_DETECTED/UNCERTAIN status and confidence -- and must raise (caught
-        above) rather than guess if the response is unexpected.
-        """
-        raise NotImplementedError(
-            "finalise Vertex watermark-verification request/response against the "
-            "live API before running the paid pilot")
+    def _map_decision(self, decision: Any) -> tuple[Status, bool | None]:
+        """Map the (undocumented-valued) decision string to our schema. Safe: an
+        unrecognised value is UNCERTAIN, never a fabricated True/False."""
+        if decision is None:
+            return Status.UNCERTAIN, None
+        norm = str(decision).strip().upper()
+        if norm in self.positive_labels:
+            return Status.DETECTED, True
+        if norm in self.negative_labels:
+            return Status.NOT_DETECTED, False
+        return Status.UNCERTAIN, None
+
+    def _build_result(self, response: Any) -> DetectorResult:
+        """Parse a WatermarkVerificationResponse into a DetectorResult, preserving
+        the raw response for research logging."""
+        decision = getattr(response, "watermark_verification_result", None)
+        raw: dict[str, Any] = {"watermark_verification_result": decision}
+        pr = getattr(response, "_prediction_response", None)
+        if pr is not None:
+            try:
+                json.dumps(pr)
+                raw["prediction_response"] = pr
+            except (TypeError, ValueError):
+                raw["prediction_response"] = repr(pr)  # keep it, even if not JSON-safe
+        status, detected = self._map_decision(decision)
+        return DetectorResult(
+            provider=self.provider, detector=self.detector, status=status,
+            detected=detected,
+            confidence=(str(decision) if decision is not None else None),
+            raw_result=raw, estimated_cost_usd=self.price_per_call_usd)

@@ -84,8 +84,12 @@ def cmd_pilot(args):
     if not args.enable_paid:
         print("NOTE: --enable-paid NOT set -> no paid calls; rows will be DETECTOR_UNAVAILABLE.")
 
-    detector = VertexImagenDetector(project=args.project, location=vcfg.get("location", "us-central1"),
-                                    enable_paid=args.enable_paid, price_per_call_usd=price)
+    detector = VertexImagenDetector(
+        project=args.project, location=vcfg.get("location", "us-central1"),
+        enable_paid=args.enable_paid, price_per_call_usd=price,
+        verifier_model=vcfg.get("verifier_model", "imageverification@001"),
+        positive_labels=vcfg.get("positive_labels", []),
+        negative_labels=vcfg.get("negative_labels", []))
     out = pathlib.Path(args.results or "results/pilot")
     csv = run(sources, detector, out, price_per_call_usd=price,
               provider="google-imagen", model=vcfg.get("model", "imagen"))
