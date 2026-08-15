@@ -359,6 +359,97 @@
       </div>
     </section>
 
+    <section class="card info-section" id="what-is-synthid">
+      <h2 class="stage-heading"><img src="static/art/spyglass.svg" alt="" width="30" height="30" class="stage-icon" /> What is SynthID? Metadata vs the watermark inside the image</h2>
+      <p class="section-flavor">An AI image can carry two very different kinds of “AI mark.” MarkMyAss is honest about which one it can actually touch.</p>
+
+      <div class="provenance-columns">
+        <div class="provenance-card">
+          <span class="provenance-tag provenance-tag--file">FILE-LEVEL</span>
+          <h3>Metadata &amp; Content Credentials</h3>
+          <p>EXIF · XMP · PNG text · C2PA / Content Credentials — information stored <em>alongside</em> the picture.</p>
+          <p class="provenance-verdict good">MarkMyAss can inspect &amp; clean supported signals.</p>
+        </div>
+        <div class="provenance-card">
+          <span class="provenance-tag provenance-tag--content">CONTENT-LEVEL</span>
+          <h3>SynthID</h3>
+          <p>An invisible watermark Google embeds <em>into the image's own pixels</em> to indicate the content was generated or edited by AI — a separate technology from ordinary metadata.</p>
+          <p class="provenance-verdict limit">Removing metadata does not necessarily remove SynthID — and MarkMyAss does not claim to remove it.</p>
+        </div>
+      </div>
+
+      <p>Google designed image <a href="https://deepmind.google/models/synthid/" rel="noopener">SynthID</a> to stay detectable after common changes such as <strong>resizing, recolouring, cropping, filtering and lossy compression</strong>, and says it remains detectable even when a file's metadata is stripped. Its published purpose is <strong>content provenance</strong> — answering “was this content generated or edited by AI?” <strong>Google describes SynthID as a content-provenance watermark, not as a personal tracking identifier</strong>; its documentation does not describe SynthID as containing your name, Google account, IP address or prompt history.</p>
+
+      <div class="explain-panel">
+        <h3>A real check we ran</h3>
+        <p>We generated an image with Google's Gemini image model and ran it through MarkMyAss. It found Google's <strong>file-level</strong> provenance — XMP, PNG text and a C2PA manifest — and <em>Clean</em> removed those supported signals, so re-inspection showed <strong>0 supported file-level signals</strong>. SynthID, though, lives in the pixels: by Google's own description it survives metadata removal. Cleaning metadata is not the same as removing SynthID — so we don't pretend it is.</p>
+      </div>
+
+      <div class="explain-panel">
+        <h3>Why this exists — the EU AI Act (plain English)</h3>
+        <p>From <strong>2 August 2026</strong>, EU AI Act <a href="https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50" rel="noopener">Article 50</a> asks providers of generative AI to ensure synthetic audio, image, video or text outputs are “<em>marked in a machine-readable format and detectable as artificially generated or manipulated</em>.” It targets the <strong>outcome</strong> (detectability) and <strong>does not mandate SynthID</strong> — SynthID is Google's own technical approach, not an EU standard. Article&nbsp;50(2) also carves out an exception where the AI performs “<em>an assistive function for standard editing</em>” or does not substantially alter the content or its meaning. This is background, not legal advice.</p>
+      </div>
+    </section>
+
+    <section class="card info-section" id="keep-your-writing-yours">
+      <h2 class="stage-heading"><img src="static/art/ghost-mark.svg" alt="" width="30" height="30" class="stage-icon" /> Keep your writing yours after AI-assisted editing</h2>
+      <p class="section-flavor">You wrote it. AI only helped edit it. See exactly what changed.</p>
+
+      <div class="writing-split">
+        <div class="provenance-card">
+          <span class="provenance-tag provenance-tag--human">HUMAN WRITING</span>
+          <h3>Your original words</h3>
+          <p>The ideas, structure and phrasing you actually wrote.</p>
+        </div>
+        <div class="writing-plus" aria-hidden="true">+</div>
+        <div class="provenance-card">
+          <span class="provenance-tag provenance-tag--content">AI EDITING</span>
+          <h3>Corrections &amp; rewrites</h3>
+          <p>Proofreading, spelling, grammar, punctuation and light copy-editing — or larger rewrites.</p>
+        </div>
+      </div>
+
+      <p>Using AI only to <strong>proofread, fix spelling/grammar/punctuation or lightly copy-edit</strong> is fundamentally different from having AI <strong>generate or substantially rewrite</strong> your document — a distinction the AI Act's Article&nbsp;50(2) “standard editing” exception recognises too.</p>
+      <p>Google's <a href="https://ai.google.dev/responsible/docs/safeguards/synthid" rel="noopener">SynthID-Text</a> is a statistical watermark created <em>during token generation</em> by slightly adjusting the model's token-selection probabilities. It is <strong>not</strong> ordinary metadata attached to your file — it lives in the pattern of the generated words themselves, and depends on how much of the text the model actually generated.</p>
+
+      <div class="explain-panel">
+        <h3>What MarkMyAss helps writers do</h3>
+        <p>Compare your <strong>original draft</strong> with the <strong>AI-edited version</strong> and see which wording stayed yours, which were mechanical corrections, and which were substantial AI rewrites — so you can preserve or restore your own voice. <strong>MarkMyAss does not remove Google's SynthID-Text</strong>; it helps you distinguish human-authored wording from substantial AI rewriting. Built for authors, journalists, students, editors, copywriters and researchers.</p>
+        <div class="example-ui" aria-label="Illustrative example only, not measured values">
+          <span class="example-ui-badge">EXAMPLE ONLY — illustrative layout</span>
+          <div class="example-ui-row"><span>Original author wording</span><span>92%</span></div>
+          <div class="example-ui-row"><span>Mechanical corrections</span><span>5%</span></div>
+          <div class="example-ui-row"><span>Substantial AI rewriting</span><span>3%</span></div>
+        </div>
+        <p class="hint">These figures are an example layout only — never shown as real unless computed from your actual document.</p>
+      </div>
+
+      <div class="explain-panel">
+        <h3>Our local research: how much AI-generated text does the watermark need?</h3>
+        <p class="research-caveat"><strong>These are MarkMyAss local research results using our own SynthID keys and reference setup. They are NOT measurements of Google's private production detector, and do not apply directly to Gemini.</strong></p>
+        <p>Replication across <strong>5 independent SynthID keys × 5 generation seeds × ~250 / 500 / 900-token documents</strong>, using a local reference implementation (distilgpt2 as the generation vehicle) and the tuning-free Weighted-Mean detector. Contiguous AI-generated fraction → local detection rate:</p>
+        <ul class="research-list">
+          <li><span>5% AI</span><span>1%</span></li>
+          <li><span>10%</span><span>9%</span></li>
+          <li><span>15%</span><span>19%</span></li>
+          <li><span>20%</span><span>43%</span></li>
+          <li><span>25%</span><span>67%</span></li>
+          <li><span>30%</span><span>83%</span></li>
+          <li><span>40%</span><span>93%</span></li>
+          <li><span>50%</span><span>95%</span></li>
+        </ul>
+        <ul class="capability-list">
+          <li><strong>≤10% AI-generated content:</strong> mostly undetected in our local setup</li>
+          <li><strong>~15–30%:</strong> transition zone</li>
+          <li><strong>≥40–50%:</strong> commonly / strongly detected</li>
+        </ul>
+        <p>Our measured 50% detection crossing was about <strong>21% AI</strong> for one contiguous span and <strong>27%</strong> for scattered blocks. Full method &amp; data:
+          <a href="https://github.com/bens777/MarkMyAss/tree/main/research/synthid_text_study" rel="noopener">study 1</a>,
+          <a href="https://github.com/bens777/MarkMyAss/tree/main/research/synthid_text_inverse_study" rel="noopener">inverse study</a>,
+          <a href="https://github.com/bens777/MarkMyAss/tree/main/research/synthid_text_replication_study" rel="noopener">replication</a>.</p>
+      </div>
+    </section>
+
     <section class="card info-section">
       <h2>Best use cases</h2>
       <p class="section-flavor">Where MarkMyAss is genuinely reliable — not a universal AI-detection eraser, but strong at what it actually does.</p>
