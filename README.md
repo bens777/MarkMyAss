@@ -7,11 +7,79 @@ provenance cleaner.
 
 <br clear="left" />
 
+[![Docker image on GHCR](https://img.shields.io/badge/docker-ghcr.io%2Fbens777%2Fmarkmyass-2496ED?logo=docker&logoColor=white)](https://github.com/bens777/MarkMyAss/pkgs/container/markmyass)
+
 Website: **https://markmyass.com**
 · Repository: **https://github.com/bens777/MarkMyAss**
 
 Inspect → Clean → Verify → Download your cleaned file → Download a
 Verification Receipt
+
+## Quick start with Docker
+
+**Docker → one command → http://127.0.0.1:8765**
+
+The easiest way to run MarkMyAss locally -- no Python setup required, and
+the independent verifiers ([ExifTool](https://exiftool.org/) and
+[c2patool](https://github.com/contentauth/c2pa-rs)) come preinstalled in
+the image.
+
+### Run MarkMyAss
+
+```bash
+docker run -d --name markmyass \
+  -p 127.0.0.1:8765:8765 \
+  ghcr.io/bens777/markmyass:latest
+```
+
+Then open **http://127.0.0.1:8765**. The port is bound to `127.0.0.1`
+only, so the UI is reachable from your own machine, never from your
+network -- and nothing is uploaded anywhere.
+
+### Stop MarkMyAss
+
+```bash
+docker stop markmyass
+```
+
+### Start it again
+
+```bash
+docker start markmyass
+```
+
+### Remove it
+
+```bash
+docker rm -f markmyass
+```
+
+### Update to the latest version
+
+```bash
+docker rm -f markmyass
+docker pull ghcr.io/bens777/markmyass:latest
+docker run -d --name markmyass -p 127.0.0.1:8765:8765 ghcr.io/bens777/markmyass:latest
+```
+
+### Build the Docker image from source
+
+Prefer to build the image yourself instead of pulling from GHCR?
+
+```bash
+git clone https://github.com/bens777/MarkMyAss.git
+cd MarkMyAss
+docker build -t markmyass:local .
+docker run -d --name markmyass -p 127.0.0.1:8765:8765 markmyass:local
+```
+
+(The first build takes a few minutes: c2patool is compiled from source in
+a throwaway build stage. See "Docker: building the image yourself" below
+for the `docker compose` variant.)
+
+Don't want Docker? See "Run MarkMyAss locally" below for the from-source
+and double-click options, or use the hosted version at
+https://markmyass.com with zero installation.
 
 MarkMyAss inspects files and text for hidden Unicode characters, embedded
 metadata, and provenance signals, removes the ones it can safely remove,
@@ -41,7 +109,8 @@ Files are processed temporarily on the server and deleted automatically
 
 ## Run MarkMyAss locally
 
-For anyone who'd rather not upload anything anywhere:
+The Docker quick start above is the recommended local setup. If you'd
+rather not use Docker (or want to hack on the code), run from source:
 
 ```bash
 git clone https://github.com/bens777/MarkMyAss.git
@@ -432,11 +501,11 @@ installed, MarkMyAss says so honestly, reports the relevant checks as
 unverified, and continues to work without them. The production Docker
 image installs both automatically (see below).
 
-## Docker
+## Docker: building the image yourself
 
-For local use, Docker is optional -- prefer the launch scripts or `pip
-install -e .` above. If you'd like to run the local web UI in a container
-anyway:
+The quick start at the top runs the prebuilt image from GHCR
+(`ghcr.io/bens777/markmyass:latest`, published by GitHub Actions on every
+push to `main`). To build and run it yourself from a checkout instead:
 
 ```bash
 docker compose up
@@ -448,9 +517,8 @@ installs ExifTool and c2patool automatically during build (c2patool is
 compiled from source in a throwaway build stage, so the first build takes
 a few minutes longer than a pure-Python image would).
 
-The production/hosted deployment pulls a prebuilt image from GHCR
-(`ghcr.io/bens777/markmyass:latest`, published by GitHub Actions on every
-push to `main`) -- see [`DEPLOY_MOSEISLEY.md`](DEPLOY_MOSEISLEY.md) and
+The production/hosted deployment uses the same prebuilt GHCR image -- see
+[`DEPLOY_MOSEISLEY.md`](DEPLOY_MOSEISLEY.md) and
 `docker-compose.prod.yml`.
 
 ## Development
