@@ -10,10 +10,14 @@
 # never ships in the image MarkMyAss actually runs.
 # Base images are pinned to specific minor tags (not "latest"/floating major)
 # for reproducibility. For a fully immutable build, replace each tag with its
-# sha256 digest, e.g. `FROM python:3.12.8-slim@sha256:<digest>` -- resolve the
-# current digest with `docker buildx imagetools inspect <image:tag>` and bump
-# it deliberately (see constraints.txt for the same policy on Python deps).
-FROM rust:1.83-slim-bookworm AS c2patool-builder
+# sha256 digest, e.g. `FROM python:3.12.14-slim@sha256:<digest>` -- resolve
+# the current digest with `docker buildx imagetools inspect <image:tag>` and
+# bump it deliberately (see constraints.txt for the same policy on Python
+# deps). Rust must stay new enough for whatever c2patool currently requires
+# from Cargo (it started requiring the `edition2024` feature, stabilized in
+# Rust 1.85 -- an older pin here fails the build with "feature `edition2024`
+# is required"); re-check this when bumping C2PATOOL_VERSION.
+FROM rust:1.97-slim-bookworm AS c2patool-builder
 # c2patool depends on openssl-sys with the "vendored" feature, which always
 # compiles its own OpenSSL from source (system libssl-dev is not enough).
 # That vendored build's Configure script needs Perl core modules (e.g.
@@ -30,7 +34,7 @@ RUN apt-get update \
 ARG C2PATOOL_VERSION=""
 RUN cargo install c2patool --locked ${C2PATOOL_VERSION:+--version} ${C2PATOOL_VERSION}
 
-FROM python:3.12.8-slim
+FROM python:3.12.14-slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libimage-exiftool-perl \
