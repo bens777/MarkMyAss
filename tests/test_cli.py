@@ -149,3 +149,41 @@ def test_demo_command_passes():
     assert result.exit_code == 0
     assert "GhostMark is working." in result.stdout
     assert "6/6 tests successful." in result.stdout
+
+
+def _make_png(path: Path) -> None:
+    import io
+
+    from PIL import Image
+
+    buf = io.BytesIO()
+    Image.new("RGB", (48, 48), (200, 90, 40)).save(buf, format="PNG")
+    path.write_bytes(buf.getvalue())
+
+
+def test_reprocess_writes_output_and_preserves_original(tmp_path: Path):
+    src = tmp_path / "pic.png"
+    _make_png(src)
+    before = src.read_bytes()
+    result = runner.invoke(app, ["reprocess", str(src), "--profile", "medium"])
+    assert result.exit_code == 0
+    out = tmp_path / "pic.reprocessed.png"
+    assert out.exists()
+    assert src.read_bytes() == before  # original untouched
+
+
+def test_reprocess_rejects_non_image(tmp_path: Path):
+    bad = tmp_path / "notes.txt"
+    bad.write_text("plain text")
+    result = runner.invoke(app, ["reprocess", str(bad)])
+    assert result.exit_code == 1
+
+
+def test_reprocess_report_json_is_observational(tmp_path: Path):
+    src = tmp_path / "pic.png"
+    _make_png(src)
+    result = runner.invoke(app, ["reprocess", str(src), "--report", "--json"])
+    assert result.exit_code == 0
+    payload = json.loads(result.stdout)
+    assert payload["robustness"]["observational"] is True
+    assert payload["robustness"]["statistical_watermark"]["locally_verifiable"] is False

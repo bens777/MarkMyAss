@@ -174,6 +174,45 @@ class MetadataOrigin(StrEnum):
     UNKNOWN = "unknown"
 
 
+class VerifierStatus(StrEnum):
+    """Explicit outcome of a single independent verifier run.
+
+    The whole point of this enum is that ``UNAVAILABLE``/``UNSUPPORTED``/
+    ``ERROR`` are never collapsed into ``NOT_DETECTED``. "The detector could
+    not run" and "the detector ran and found nothing" are different facts,
+    and conflating them would let a missing tool masquerade as a clean pass.
+
+    Framed from the perspective of the *signal being looked for* (embedded
+    metadata, a C2PA manifest): ``DETECTED`` means the signal is still
+    present in the checked file; ``NOT_DETECTED`` means the verifier ran and
+    confirmed it is gone.
+    """
+
+    DETECTED = "detected"           # verifier ran; the signal is still present
+    NOT_DETECTED = "not_detected"   # verifier ran; the signal is gone
+    UNAVAILABLE = "unavailable"     # the verifier binary/tool is not installed
+    UNSUPPORTED = "unsupported"     # verifier installed but not applicable to this input
+    ERROR = "error"                 # verifier tried to run but crashed/timed out/unparseable
+
+
+def _derive_verifier_status(available: bool, applicable: bool, passed: bool | None) -> VerifierStatus:
+    """Map a verifier's (available, applicable, passed) triple to an explicit status.
+
+    ``passed`` is only ever a concrete bool when the verifier actually ran to
+    completion (see ``ExternalVerificationResult.ran_successfully``); an
+    available+applicable verifier with ``passed is None`` therefore means it
+    tried but could not produce a result -> ``ERROR``, never ``NOT_DETECTED``.
+    """
+
+    if not available:
+        return VerifierStatus.UNAVAILABLE
+    if not applicable:
+        return VerifierStatus.UNSUPPORTED
+    if passed is None:
+        return VerifierStatus.ERROR
+    return VerifierStatus.NOT_DETECTED if passed else VerifierStatus.DETECTED
+
+
 class VerificationVerdict(StrEnum):
     """The headline result of a clean, in order of strength.
 
@@ -297,9 +336,19 @@ class ExternalVerifierOutcome:
     label: str
     available: bool
     applicable: bool
-    passed: bool | None  # None = not available/applicable
+    passed: bool | None  # None = not available/applicable/errored
     version: str | None = None
     note: str = ""
+    # Both currently-shipped verifiers (ExifTool, c2patool) run as local
+    # subprocesses; the field exists so a future remote/API verifier can be
+    # distinguished in the receipt without a schema change.
+    is_remote: bool = False
+    provider: str | None = None
+
+    @property
+    def status(self) -> VerifierStatus:
+        """Explicit, never-collapsed outcome (see :class:`VerifierStatus`)."""
+        return _derive_verifier_status(self.available, self.applicable, self.passed)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -308,7 +357,10 @@ class ExternalVerifierOutcome:
             "available": self.available,
             "applicable": self.applicable,
             "passed": self.passed,
+            "status": self.status.value,
             "version": self.version,
+            "provider": self.provider,
+            "is_remote": self.is_remote,
             "note": self.note,
         }
 

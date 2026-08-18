@@ -197,6 +197,9 @@ def reprocess(
         None, "--format", "-f", help="Output format: png | jpeg | webp (default: keep source)."
     ),
     output: Path | None = typer.Option(None, "--output", "-o", help="Output path."),
+    report: bool = typer.Option(
+        False, "--report", help="Also emit an observational before/after provenance comparison."
+    ),
     json_output: bool = typer.Option(False, "--json", help="Emit machine-readable JSON instead of text."),
 ) -> None:
     """Create a NEW pixel representation of an image (decode + re-encode / resample).
@@ -219,9 +222,21 @@ def reprocess(
     out_path = output or file.with_name(f"{file.stem}.reprocessed{result.output_suffix}")
     out_path.write_bytes(result.output_bytes)
 
+    robustness = None
+    if report:
+        from ghostmark.robustness import build_robustness_report
+
+        robustness = build_robustness_report(
+            input_report=inspect_file(file),
+            output_report=inspect_file(out_path),
+            reprocess_result=result,
+        )
+
     if json_output:
         payload = result.to_dict()
         payload["output"] = str(out_path)
+        if robustness is not None:
+            payload["robustness"] = robustness
         typer.echo(json.dumps(payload, indent=2))
     else:
         m = result.to_dict()["metrics"]
@@ -238,6 +253,13 @@ def reprocess(
         typer.echo(f"SSIM: {m['ssim']}  PSNR: {m['psnr']} dB  Pixels changed: {m['pixel_changed_pct']}%")
         for w in result.warnings:
             typer.echo(f"Note: {w}")
+        if robustness is not None:
+            typer.echo("\nObservational before/after provenance comparison:")
+            typer.echo(f"  Input  C2PA: {robustness['input']['c2pa_status']}  "
+                       f"metadata signals: {robustness['input']['metadata_signals'] or 'none'}")
+            typer.echo(f"  Output C2PA: {robustness['output']['c2pa_status']}  "
+                       f"metadata signals: {robustness['output']['metadata_signals'] or 'none'}")
+            typer.echo("  (Observation only -- reprocess never retries based on any detector result.)")
         typer.echo("\nSSIM/PSNR describe pixel difference; they are not proof of visual identity.")
         typer.echo("Reprocess does not guarantee removal of statistical watermarks such as SynthID.")
     raise typer.Exit(0)

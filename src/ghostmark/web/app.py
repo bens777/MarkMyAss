@@ -50,6 +50,7 @@ from ghostmark.inspector import inspect_file, inspect_text
 from ghostmark.models import CleanResult, VerifyResult
 from ghostmark.receipt import VerificationReceipt, build_receipt
 from ghostmark.reprocess import PROFILES, profiles_dict, reprocess_image_bytes
+from ghostmark.robustness import build_robustness_report
 from ghostmark.security import (
     MAX_TEXT_UPLOAD_BYTES,
     MAX_TEXT_UPLOAD_MB,
@@ -948,6 +949,7 @@ Proof, not promises.
             out_path.write_bytes(result.output_bytes)
             session.reprocessed_path = out_path
             session.reprocess_result = result
+            input_report = runner.run(inspect_file, session.original_path)
             file_report = runner.run(inspect_file, out_path)
         except (ServerBusyError, ProcessingTimeoutError) as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
@@ -971,6 +973,11 @@ Proof, not promises.
             "note": "Statistical / model-level watermarks such as SynthID are not currently "
                     "locally verifiable. Reprocess does not guarantee their removal.",
         }
+        # Observational before/after provenance comparison (read-only; never
+        # drives a retry -- see ghostmark.robustness for the boundary).
+        payload["robustness"] = build_robustness_report(
+            input_report=input_report, output_report=file_report, reprocess_result=result
+        )
         payload["download_available"] = True
         payload["output_name"] = f"{stem}.reprocessed{result.output_suffix}"
         # output_bytes are already written to disk for download; don't ship raw bytes in JSON.

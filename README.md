@@ -309,6 +309,7 @@ deployment, both are cleaned up automatically within 10-15 minutes.
 ```bash
 ghostmark inspect FILE [--json]
 ghostmark clean FILE [--output PATH] [--json]
+ghostmark reprocess FILE [--profile light|medium|strong] [--format png|jpeg|webp] [--output PATH] [--report] [--json]
 ghostmark verify FILE [--original PATH] [--json] [--receipt PATH]
 ghostmark inspect-text "TEXT" [--json]
 ghostmark clean-text "TEXT" [--json]
@@ -393,6 +394,75 @@ for the interface a future real detector would plug into.
 
 `.docx` is on the roadmap but not in this release -- rather than delay a
 working V0, it was left out.
+
+## Three separate verbs: Clean, Reprocess, Verify
+
+MarkMyAss keeps three operations deliberately distinct. They are never
+chained into a "transform until a detector goes quiet" loop -- that is an
+explicit non-goal (see the note under Reprocess).
+
+### Clean — metadata / provenance removal, pixels untouched
+
+Strips EXIF / XMP / IPTC / comment / PNG-text / PDF-DocInfo metadata and
+the C2PA JUMBF container **at the byte/segment level**. Pixel data and ICC
+color profiles are never touched, so the visible image is byte-identical.
+
+- **Does:** remove supported embedded metadata and container structures.
+- **Does not:** re-encode pixels, resize, or alter appearance.
+- **Cannot guarantee:** removal of statistical/model-level watermarks
+  (they aren't in metadata), or that a format has no other embedding
+  technique it didn't scan for.
+
+### Reprocess — a new pixel representation
+
+`ghostmark reprocess` decodes the image and re-encodes a **new** pixel
+representation, optionally with a mild down-then-up resample and sRGB
+colour-space normalisation. Pure Pillow -- no ML/diffusion. Three profiles:
+
+| Profile | Resample | Colour space | Re-encode quality |
+| --- | --- | --- | --- |
+| `light`  | none      | source colour space preserved (ICC carried through) | JPEG/WebP q95, PNG lossless |
+| `medium` | 0.9×→1×   | normalised to sRGB (ICC resolved, then dropped)     | JPEG/WebP q90, PNG lossless |
+| `strong` | 0.75×→1×  | normalised to sRGB (ICC resolved, then dropped)     | JPEG/WebP q85, PNG lossless |
+
+`normalize_colorspace` is a real, tested behaviour: when on, an embedded
+ICC profile is resolved with an ICC-aware transform to sRGB and the output
+carries no profile; when off, the source ICC profile is preserved so a
+colour-managed viewer renders identical colours. Reprocess reports SSIM,
+PSNR, pixel-change %, dimensions, format and file size. It applies EXIF
+orientation, handles RGB/RGBA/grayscale/palette/CMYK inputs, preserves
+alpha, and rejects decompression-bomb-sized images.
+
+- **Does:** produce a re-encoded image plus honest pixel-difference metrics
+  and an optional observational before/after provenance comparison
+  (`--report`).
+- **Does not / cannot guarantee:** removal of any statistical or
+  pixel-embedded watermark (e.g. SynthID). SSIM/PSNR describe pixel
+  difference, not visual identity.
+- **Explicit non-goal:** MarkMyAss never runs `transform → test detector →
+  transform again` to chase "undetectable". The before/after report is an
+  observation, never an optimisation target.
+
+### Verify — independent second opinion
+
+Re-inspects a cleaned file with MarkMyAss's own detectors **and**, when
+installed, cross-checks it with ExifTool and c2patool. Each independent
+verifier reports an explicit status that is never collapsed into a false
+pass:
+
+- `detected` — the verifier ran and the signal is still present.
+- `not_detected` — the verifier ran and confirmed the signal is gone.
+- `unavailable` — the verifier tool isn't installed (**never** treated as
+  a clean pass).
+- `unsupported` — installed, but not applicable to this file type.
+- `error` — it tried to run but timed out / crashed / returned garbage
+  (again, **never** a pass).
+
+`VERIFIED CLEAN` is only ever awarded when a supported signal was found
+before cleaning, MarkMyAss's own re-inspection agrees it's gone, **and**
+every independent verifier that could run agrees. Anything else is
+`PARTIAL`, `UNVERIFIED` (no verifier available/applicable), `NOT
+APPLICABLE`, or `FAILED`.
 
 ## How cleaning works (and why it's honest about pixels)
 

@@ -24,18 +24,29 @@ decode → mode normalize (alpha-safe) → optional down-then-up LANCZOS resampl
 (dimensions preserved) → re-encode (PNG lossless / JPEG q / WebP q) → metrics
 (`ghostmark/imaging_metrics.py`, NumPy). Profiles:
 
-| profile | resample | quality | est. compute cost | latency |
-|---|---|---|---|---|
-| Light | none | JPEG 95 / WebP 95 / PNG lossless | 1.0 | fast |
-| Medium | 0.9× round-trip | JPEG 90 / WebP 90 | 2.0 | moderate |
-| Strong | 0.75× round-trip + colour normalise | JPEG 85 / WebP 85 | 3.0 | heavy |
+| profile | resample | colour space | quality | est. compute cost | latency |
+|---|---|---|---|---|---|
+| Light | none | source ICC preserved | JPEG 95 / WebP 95 / PNG lossless | 1.0 | fast |
+| Medium | 0.9× round-trip | normalised to sRGB (ICC resolved, then dropped) | JPEG 90 / WebP 90 | 2.0 | moderate |
+| Strong | 0.75× round-trip | normalised to sRGB (ICC resolved, then dropped) | JPEG 85 / WebP 85 | 3.0 | heavy |
+
+The pixel path additionally applies EXIF orientation, normalises image mode
+(handling RGB/RGBA/grayscale/palette/CMYK, preserving alpha, flattening
+transparency onto white for JPEG), and rejects decompression-bomb-sized
+inputs (`MAX_DECODE_PIXELS`) before decoding. `normalize_colorspace` is a
+real per-profile behaviour (`ghostmark/reprocess.py::_apply_colorspace`),
+not a no-op flag.
 
 Parameters are chosen for **visual quality**, never to defeat a detector, and no
 loop optimises against any external "detected/not-detected" signal.
 
-Surfaces: CLI `ghostmark reprocess FILE --profile --format`; web
+Surfaces: CLI `ghostmark reprocess FILE --profile --format [--report]`; web
 `POST /api/reprocess/{session_id}?profile&out_format` + `GET
-/api/download/{session_id}?variant=reprocess`.
+/api/download/{session_id}?variant=reprocess`. The optional `--report`
+(CLI) and the `robustness` block (web response) add an **observational,
+read-only** before/after provenance comparison (`ghostmark/robustness.py`):
+it never feeds back into reprocessing and makes no claim about statistical
+watermarks (e.g. SynthID).
 
 ## Future billing hook (not integrated)
 
