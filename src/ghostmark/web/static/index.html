@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -36,16 +36,18 @@
   <link rel="icon" type="image/png" href="static/art/markmyass-logo-64.png" sizes="64x64" />
   <link rel="apple-touch-icon" href="static/art/markmyass-logo-180.png" />
 
-  <!-- Theme must be applied before the stylesheet paints (no light->dark
-       flash); this tiny script is synchronous and CSP-safe. -->
+  <!-- Theme + language are applied before the stylesheet paints (no
+       light->dark flash, no English->French flash); these tiny scripts are
+       synchronous and CSP-safe. -->
   <script src="static/theme-init.js"></script>
+  <script src="static/i18n.js"></script>
   <link rel="stylesheet" href="static/style.css" />
   {{JSONLD}}
 </head>
 <body>
-  <a href="#main-content" class="skip-link">Skip to main content</a>
+  <a href="#main-content" class="skip-link" data-i18n="a11y.skip">Skip to main content</a>
   <main class="wrap" id="main-content">
-    <p class="promo-top hosted-only hidden">
+    <p class="promo-top hosted-only hidden" data-i18n="promo.top">
       An open-source project by <a href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=top&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a>
     </p>
 
@@ -59,14 +61,19 @@
            CTA and the theme toggle deliberately live OUTSIDE this group
            so they stay visible at every width. -->
       <div id="nav-links" class="nav-links">
-        <a href="#input-section">Cleaner</a>
+        <a href="#input-section" data-i18n="nav.cleaner">Cleaner</a>
         <a href="skill">Skill</a>
-        <a href="lab">AI Watermark Lab</a>
+        <a href="lab" data-i18n="nav.lab">AI Watermark Lab</a>
         <a href="benchmarks">Benchmarks</a>
-        <a href="run-ai-locally">Run Models Locally</a>
+        <a href="run-ai-locally" data-i18n="nav.runlocal">Run Models Locally</a>
         <a href="https://github.com/bens777/MarkMyAss" rel="noopener">GitHub</a>
       </div>
-      <a class="nav-cta" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=navbar&amp;utm_campaign=acquisition" rel="noopener" aria-label="Get your AI crew"><span class="nav-cta-full">Get your AI crew →</span><span class="nav-cta-short" aria-hidden="true">AI crew →</span></a>
+      <div class="lang-switch" role="group" aria-label="Language" data-i18n-attr="aria-label:lang.switch.aria">
+        <button type="button" class="lang-option" data-lang-set="fr-FR" lang="fr">FR</button>
+        <span class="lang-sep" aria-hidden="true">|</span>
+        <button type="button" class="lang-option" data-lang-set="en-US" lang="en">EN</button>
+      </div>
+      <a class="nav-cta" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=navbar&amp;utm_campaign=acquisition" rel="noopener" aria-label="Get your AI crew" data-i18n-attr="aria-label:nav.crew.aria"><span class="nav-cta-full" data-i18n="nav.crew.full">Get your AI crew →</span><span class="nav-cta-short" aria-hidden="true" data-i18n="nav.crew.short">AI crew →</span></a>
       <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light mode">
         <svg class="theme-icon-sun" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <circle cx="12" cy="12" r="4.5" />
@@ -90,7 +97,7 @@
           <img src="static/art/markmyass-logo-180.png" alt="" width="42" height="42" />
           <span class="brand-word">MarkMyAss</span>
         </p>
-        <h1>Claude Watermark Remover &amp; AI Provenance Cleaner</h1>
+        <h1 data-i18n="hero.h1">Claude Watermark Remover &amp; AI Provenance Cleaner</h1>
 
         <!-- Real social proof from /api/public-stats (durable aggregate
              counts, never fabricated). Placed high, directly under the
@@ -100,43 +107,43 @@
              shows nothing rather than "0"); the 24h line is hidden when
              its real value is below the threshold. -->
         <div id="social-proof" class="social-proof hidden" aria-live="polite">
-          <p class="social-proof-total"><strong id="social-proof-count" class="social-proof-count"></strong> <span id="social-proof-label" class="social-proof-label">files cleaned with MarkMyAss</span></p>
+          <p class="social-proof-total"><strong id="social-proof-count" class="social-proof-count"></strong> <span id="social-proof-label" class="social-proof-label" data-i18n="hero.socialproof">files cleaned with MarkMyAss</span></p>
         </div>
 
         <p class="hero-flow">
-          <span class="flow-step">Inspect</span>
+          <span class="flow-step" data-i18n="hero.flow.inspect">Inspect</span>
           <span class="flow-sep" aria-hidden="true">→</span>
-          <span class="flow-step">Clean</span>
+          <span class="flow-step" data-i18n="hero.flow.clean">Clean</span>
           <span class="flow-sep" aria-hidden="true">→</span>
-          <span class="flow-step">Verify</span>
+          <span class="flow-step" data-i18n="hero.flow.verify">Verify</span>
         </p>
 
-        <p class="subheadline">MarkMyAss shows exactly what it removed — and what it cannot verify.</p>
-        <p class="tagline">Proof, not promises.</p>
+        <p class="subheadline" data-i18n="hero.subheadline">MarkMyAss shows exactly what it removed — and what it cannot verify.</p>
+        <p class="tagline" data-i18n="hero.tagline">Proof, not promises.</p>
 
         <div class="hero-cta-row">
-          <a href="#input-section" class="btn primary btn-lg">Inspect a File</a>
-          <a href="lab" class="btn secondary btn-lg">Explore the Lab</a>
+          <a href="#input-section" class="btn primary btn-lg" data-i18n="hero.cta.inspect">Inspect a File</a>
+          <a href="lab" class="btn secondary btn-lg" data-i18n="hero.cta.lab">Explore the Lab</a>
         </div>
 
         <ul class="trust-bar">
-          <li>Free</li>
-          <li>Open source</li>
-          <li>No account</li>
-          <li>Independent verification</li>
-          <li>Download your cleaned file</li>
+          <li data-i18n="hero.trust.free">Free</li>
+          <li data-i18n="hero.trust.oss">Open source</li>
+          <li data-i18n="hero.trust.noaccount">No account</li>
+          <li data-i18n="hero.trust.independent">Independent verification</li>
+          <li data-i18n="hero.trust.download">Download your cleaned file</li>
         </ul>
         <p id="privacy-note" class="privacy-note"></p>
-        <p class="honesty-note">No fake "100% undetectable" scores.</p>
+        <p class="honesty-note" data-i18n="hero.honesty">No fake "100% undetectable" scores.</p>
       </div>
 
       <figure class="hero-scene">
-        <img src="static/art/hero-scene.webp" alt="Illustration of a pirate crew aboard their ship: the captain locks a glowing spyglass scan-beam onto a startled ghost, a crewmate nets a fleeing ghost, another finds a ghost hiding in a treasure chest while laughing and pointing at a skull stamp mark on the net-thrower's trousers" width="1376" height="768" />
+        <img src="static/art/hero-scene.webp" alt="Illustration of a pirate crew aboard their ship: the captain locks a glowing spyglass scan-beam onto a startled ghost, a crewmate nets a fleeing ghost, another finds a ghost hiding in a treasure chest while laughing and pointing at a skull stamp mark on the net-thrower's trousers" width="1376" height="768" data-i18n-attr="alt:hero.scene.alt" />
       </figure>
     </section>
 
     <section class="llm-band">
-      <h2>Works beyond Claude</h2>
+      <h2 data-i18n="llm.h2">Works beyond Claude</h2>
       <ul class="llm-band-logos">
         <li>Claude</li>
         <li>ChatGPT</li>
@@ -145,8 +152,8 @@
         <li>Llama</li>
         <li>DeepSeek</li>
       </ul>
-      <p class="llm-band-lead">Remove supported AI watermarks, metadata and hidden file traces from your AI images, text, PDFs and documents — before you publish.</p>
-      <p class="llm-band-fine">Whichever AI made it, MarkMyAss inspects, cleans and verifies the supported signals inside the file. Model-level statistical watermarks stay honestly marked UNKNOWN — never claimed removed.</p>
+      <p class="llm-band-lead" data-i18n="llm.lead">Remove supported AI watermarks, metadata and hidden file traces from your AI images, text, PDFs and documents — before you publish.</p>
+      <p class="llm-band-fine" data-i18n="llm.fine">Whichever AI made it, MarkMyAss inspects, cleans and verifies the supported signals inside the file. Model-level statistical watermarks stay honestly marked UNKNOWN — never claimed removed.</p>
     </section>
 
     <div class="tool-flow">
@@ -154,83 +161,83 @@
       <img src="static/art/ghost-mark.svg" alt="" class="card-peek" width="42" height="42" />
       <p class="section-flavor with-icon">
         <img src="static/art/spyglass.svg" alt="" width="26" height="26" class="stage-icon" />
-        Let's see what is hiding inside.
+        <span data-i18n="tool.flavor.input">Let's see what is hiding inside.</span>
       </p>
       <div class="tabs">
-        <button id="tab-text" class="tab active" type="button">Paste Text</button>
-        <button id="tab-file" class="tab" type="button">Upload File</button>
+        <button id="tab-text" class="tab active" type="button" data-i18n="tool.tab.text">Paste Text</button>
+        <button id="tab-file" class="tab" type="button" data-i18n="tool.tab.file">Upload File</button>
       </div>
       <!-- Kept in lockstep with ghostmark.security.SUPPORTED_EXTENSIONS
            (and this file input's accept attribute below). -->
-      <p class="hint formats-hint">Supported: TXT · MD · JSON · CSV · JPG · JPEG · PNG · WEBP · PDF</p>
+      <p class="hint formats-hint" data-i18n="tool.formats">Supported: TXT · MD · JSON · CSV · JPG · JPEG · PNG · WEBP · PDF</p>
 
       <div id="panel-text" class="panel">
-        <textarea id="text-input" rows="8" placeholder="Paste text to inspect..."></textarea>
+        <textarea id="text-input" rows="8" placeholder="Paste text to inspect..." data-i18n-attr="placeholder:tool.placeholder"></textarea>
       </div>
 
       <div id="panel-file" class="panel hidden">
         <label id="dropzone" for="file-input" class="dropzone">
-          <span>Drag a file here</span>
-          <span class="dropzone-or">or</span>
-          <span class="btn secondary" id="choose-file-label">Choose File</span>
+          <span data-i18n="tool.dropzone.drag">Drag a file here</span>
+          <span class="dropzone-or" data-i18n="tool.dropzone.or">or</span>
+          <span class="btn secondary" id="choose-file-label" data-i18n="tool.dropzone.choose">Choose File</span>
         </label>
         <input id="file-input" type="file" accept=".txt,.md,.json,.csv,.pdf,.png,.jpg,.jpeg,.webp" class="visually-hidden" />
         <p id="chosen-file-name" class="hint hidden"></p>
-        <p class="hint">Images (JPG, JPEG, PNG, WebP), PDFs and text files (TXT, MD, JSON, CSV).</p>
+        <p class="hint" data-i18n="tool.file.hint">Images (JPG, JPEG, PNG, WebP), PDFs and text files (TXT, MD, JSON, CSV).</p>
         <p id="upload-limit-hint" class="hint"></p>
       </div>
 
-      <button id="btn-inspect" class="btn primary" type="button">Inspect</button>
+      <button id="btn-inspect" class="btn primary" type="button" data-i18n="tool.btn.inspect">Inspect</button>
       <p id="input-error" class="error hidden"></p>
     </section>
 
     <div class="flow-arrow hidden" id="arrow-1">↓</div>
 
     <section id="results-section" class="card hidden">
-      <h2 class="stage-heading"><img src="static/art/spyglass.svg" alt="" width="26" height="26" class="stage-icon" /> STEP 1 — INSPECTION</h2>
-      <p class="section-flavor">Spot the ghosts — scanning the cargo for hidden signals.</p>
+      <h2 class="stage-heading"><img src="static/art/spyglass.svg" alt="" width="26" height="26" class="stage-icon" /> <span data-i18n="tool.step1">STEP 1 — INSPECTION</span></h2>
+      <p class="section-flavor" data-i18n="tool.flavor.inspect">Spot the ghosts — scanning the cargo for hidden signals.</p>
       <div id="results-table" class="signal-table"></div>
       <p id="results-count" class="summary"></p>
-      <p id="results-scope-note" class="hint">Checks supported file-level signals (EXIF · XMP · PNG text · C2PA). Statistical / model-level watermarks such as SynthID are not currently locally verifiable — their absence is never claimed.</p>
+      <p id="results-scope-note" class="hint" data-i18n="tool.scopenote">Checks supported file-level signals (EXIF · XMP · PNG text · C2PA). Statistical / model-level watermarks such as SynthID are not currently locally verifiable — their absence is never claimed.</p>
 
       <div id="explain-panel" class="explain-panel hidden">
-        <h3>What this means</h3>
+        <h3 data-i18n="tool.explain.title">What this means</h3>
         <ul id="explain-list"></ul>
       </div>
 
-      <button id="btn-clean" class="btn primary" type="button">Clean File</button>
+      <button id="btn-clean" class="btn primary" type="button" data-i18n="tool.btn.clean">Clean File</button>
     </section>
 
     <div class="flow-arrow hidden" id="arrow-2">↓</div>
 
     <section id="clean-section" class="card hidden">
-      <h2 class="stage-heading"><img src="static/art/ghost-mark.svg" alt="" width="26" height="26" class="stage-icon" /> STEP 2 — CLEANING</h2>
-      <p class="section-flavor">Clear the deck — removing supported traces.</p>
+      <h2 class="stage-heading"><img src="static/art/ghost-mark.svg" alt="" width="26" height="26" class="stage-icon" /> <span data-i18n="tool.step2">STEP 2 — CLEANING</span></h2>
+      <p class="section-flavor" data-i18n="tool.flavor.clean">Clear the deck — removing supported traces.</p>
       <div id="clean-table" class="signal-table"></div>
       <div id="cleaned-text-wrap" class="hidden">
-        <label for="cleaned-text-output">Cleaned text</label>
+        <label for="cleaned-text-output" data-i18n="tool.cleanedtext">Cleaned text</label>
         <textarea id="cleaned-text-output" rows="8" readonly></textarea>
       </div>
-      <p class="original-preserved">Original file <strong>PRESERVED</strong> — MarkMyAss never modifies your original.</p>
+      <p class="original-preserved" data-i18n="tool.preserved">Original file <strong>PRESERVED</strong> — MarkMyAss never modifies your original.</p>
       <div class="clean-actions">
-        <button id="btn-verify" class="btn primary" type="button">Verify Independently</button>
-        <button id="btn-reprocess-open" class="btn secondary hidden" type="button">Deep Reprocess →</button>
+        <button id="btn-verify" class="btn primary" type="button" data-i18n="tool.btn.verify">Verify Independently</button>
+        <button id="btn-reprocess-open" class="btn secondary hidden" type="button" data-i18n="tool.btn.reprocessopen">Deep Reprocess →</button>
       </div>
     </section>
 
     <div class="flow-arrow hidden" id="arrow-3">↓</div>
 
     <section id="verify-section" class="card hidden">
-      <h2 class="stage-heading"><img src="static/art/verify-seal.svg" alt="" width="26" height="26" class="stage-icon" /> STEP 3 — INDEPENDENT VERIFICATION</h2>
-      <p class="section-flavor">A second observer checks the work.</p>
+      <h2 class="stage-heading"><img src="static/art/verify-seal.svg" alt="" width="26" height="26" class="stage-icon" /> <span data-i18n="tool.step3">STEP 3 — INDEPENDENT VERIFICATION</span></h2>
+      <p class="section-flavor" data-i18n="tool.flavor.verify">A second observer checks the work.</p>
 
       <div id="verify-before-after">
         <div class="verify-column">
-          <h3>Before</h3>
+          <h3 data-i18n="tool.before">Before</h3>
           <div id="verify-before-table" class="signal-table"></div>
         </div>
         <div class="verify-column">
-          <h3>After</h3>
+          <h3 data-i18n="tool.after">After</h3>
           <div id="verify-after-table" class="signal-table"></div>
         </div>
       </div>
@@ -239,24 +246,24 @@
 
       <div id="verdict-panel" class="verdict-panel"></div>
 
-      <p class="watermark-note">
+      <p class="watermark-note" data-i18n="tool.verify.watermarknote">
         Metadata / file provenance: <strong>supported</strong> &middot;
         Statistical model-level watermark (Claude / Gemini / GPT): <strong>NOT CURRENTLY VERIFIABLE</strong>
         &middot; <a href="lab/claude-watermark">why? →</a>
       </p>
 
-      <p class="section-flavor">Cargo cleared. Your cleaned cargo is ready.</p>
+      <p class="section-flavor" data-i18n="tool.flavor.cargo">Cargo cleared. Your cleaned cargo is ready.</p>
       <div class="download-row">
-        <button id="btn-save" class="btn primary hidden" type="button">Download Clean File</button>
+        <button id="btn-save" class="btn primary hidden" type="button" data-i18n="tool.btn.save">Download Clean File</button>
         <div id="receipt-downloads" class="receipt-downloads hidden">
-          <span class="receipt-label">Verification Receipt:</span>
+          <span class="receipt-label" data-i18n="tool.receipt.label">Verification Receipt:</span>
           <a id="receipt-json" class="btn secondary" href="#" download>JSON</a>
           <a id="receipt-html" class="btn secondary" href="#" download>HTML</a>
           <a id="receipt-txt" class="btn secondary" href="#" download>TXT</a>
         </div>
       </div>
 
-      <p id="lab-teaser" class="lab-teaser hidden">
+      <p id="lab-teaser" class="lab-teaser hidden" data-i18n="tool.labteaser">
         Curious what MarkMyAss can and can't verify? <a href="lab">Explore the AI Watermark Lab →</a>
       </p>
 
@@ -264,50 +271,50 @@
            their verified result + download + receipts (value first).
            Never gates any MarkMyAss functionality. -->
       <div id="moseisley-cta" class="moseisley-cta hidden">
-        <p class="moseisley-cta-kicker">Your file is clean.</p>
-        <h3>Want the whole crew?</h3>
-        <p>MarkMyAss is one tool. Moseisley gives you your own team of AI agents and assistants.</p>
-        <a class="btn primary" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=product&amp;utm_campaign=clean_success" rel="noopener">Start free on Moseisley →</a>
+        <p class="moseisley-cta-kicker" data-i18n="tool.moseisley.kicker">Your file is clean.</p>
+        <h3 data-i18n="tool.moseisley.h3">Want the whole crew?</h3>
+        <p data-i18n="tool.moseisley.p">MarkMyAss is one tool. Moseisley gives you your own team of AI agents and assistants.</p>
+        <a class="btn primary" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=product&amp;utm_campaign=clean_success" rel="noopener" data-i18n="tool.moseisley.btn">Start free on Moseisley →</a>
       </div>
     </section>
 
     <div class="flow-arrow hidden" id="arrow-reprocess">↓</div>
 
     <section id="reprocess-section" class="card hidden">
-      <h2 class="stage-heading"><img src="static/art/ghost-mark.svg" alt="" width="26" height="26" class="stage-icon" /> DEEP REPROCESS</h2>
-      <p class="section-flavor">Recut the timber — build a brand-new pixel representation of your image.</p>
-      <p class="hint reprocess-disclaimer">Creates a new pixel representation of your image. This may affect embedded pixel-level signals, but MarkMyAss does <strong>not</strong> guarantee removal of statistical watermarks such as SynthID.</p>
+      <h2 class="stage-heading"><img src="static/art/ghost-mark.svg" alt="" width="26" height="26" class="stage-icon" /> <span data-i18n="tool.reprocess.h2">DEEP REPROCESS</span></h2>
+      <p class="section-flavor" data-i18n="tool.flavor.reprocess">Recut the timber — build a brand-new pixel representation of your image.</p>
+      <p class="hint reprocess-disclaimer" data-i18n="tool.reprocess.disclaimer">Creates a new pixel representation of your image. This may affect embedded pixel-level signals, but MarkMyAss does <strong>not</strong> guarantee removal of statistical watermarks such as SynthID.</p>
 
       <div class="reprocess-controls">
-        <label>Intensity
+        <label><span data-i18n="tool.reprocess.intensity">Intensity</span>
           <select id="reprocess-profile"></select>
         </label>
-        <label>Output format
+        <label><span data-i18n="tool.reprocess.outformat">Output format</span>
           <select id="reprocess-format">
-            <option value="">Keep source</option>
+            <option value="" data-i18n="tool.reprocess.keepsource">Keep source</option>
             <option value="png">PNG</option>
             <option value="jpeg">JPEG</option>
             <option value="webp">WebP</option>
           </select>
         </label>
-        <button id="btn-reprocess-run" class="btn primary" type="button">Reprocess Image</button>
+        <button id="btn-reprocess-run" class="btn primary" type="button" data-i18n="tool.reprocess.run">Reprocess Image</button>
       </div>
       <p id="reprocess-error" class="error hidden"></p>
 
       <div id="reprocess-results" class="hidden">
-        <h3>File-level signals (re-checked after reprocess)</h3>
+        <h3 data-i18n="tool.reprocess.fileh3">File-level signals (re-checked after reprocess)</h3>
         <div id="reprocess-file-table" class="signal-table"></div>
 
-        <h3>Pixel-level change</h3>
+        <h3 data-i18n="tool.reprocess.pixelh3">Pixel-level change</h3>
         <div id="reprocess-metrics" class="signal-table"></div>
-        <p class="hint">SSIM/PSNR describe how much the pixels changed — they are not proof of visual identity.</p>
+        <p class="hint" data-i18n="tool.reprocess.ssimhint">SSIM/PSNR describe how much the pixels changed — they are not proof of visual identity.</p>
 
-        <p class="watermark-note">
+        <p class="watermark-note" data-i18n="tool.reprocess.watermarknote">
           Statistical model-level watermark (SynthID / Claude / GPT): <strong>NOT LOCALLY VERIFIABLE</strong>
           &middot; reprocess does not guarantee removal.
         </p>
 
-        <button id="btn-reprocess-download" class="btn primary" type="button">Download Reprocessed Image</button>
+        <button id="btn-reprocess-download" class="btn primary" type="button" data-i18n="tool.reprocess.download">Download Reprocessed Image</button>
       </div>
     </section>
     </div>
@@ -315,122 +322,122 @@
     <section class="skill-cta">
       <img src="static/art/markmyass-logo-64.png" alt="" width="44" height="44" />
       <div class="skill-cta-copy">
-        <h2>Use MarkMyAss automatically</h2>
-        <p>Install MarkMyAss in your AI workflow and let the crew inspect, clean and verify supported traces as you create.</p>
+        <h2 data-i18n="skill.h2">Use MarkMyAss automatically</h2>
+        <p data-i18n="skill.p">Install MarkMyAss in your AI workflow and let the crew inspect, clean and verify supported traces as you create.</p>
       </div>
-      <a href="skill" class="btn primary">Install the Skill →</a>
+      <a href="skill" class="btn primary" data-i18n="skill.btn">Install the Skill →</a>
     </section>
 
     <section class="card info-section">
       <img src="static/art/page-metadata-cleaner.webp" alt="" class="section-spot" width="230" height="154" loading="lazy" />
-      <h2 class="stage-heading"><img src="static/art/markmyass-logo-64.png" alt="" width="30" height="30" class="stage-icon" /> What MarkMyAss actually removes</h2>
-      <p class="section-flavor">Signal-based, not provider-magic — support depends on the signal type, not just which AI made the file.</p>
+      <h2 class="stage-heading"><img src="static/art/markmyass-logo-64.png" alt="" width="30" height="30" class="stage-icon" /> <span data-i18n="removes.h2">What MarkMyAss actually removes</span></h2>
+      <p class="section-flavor" data-i18n="removes.flavor">Signal-based, not provider-magic — support depends on the signal type, not just which AI made the file.</p>
 
       <div class="capability-columns">
         <div>
-          <h3>Reliably supported</h3>
+          <h3 data-i18n="removes.good.h3">Reliably supported</h3>
           <ul class="capability-list capability-list--good">
-            <li>Hidden Unicode and invisible text characters</li>
-            <li>EXIF / XMP / IPTC metadata (JPEG, PNG, WebP)</li>
-            <li>PDF document metadata (DocInfo + XMP)</li>
-            <li>PNG metadata</li>
-            <li>Supported file-level provenance signals</li>
-            <li>Independent metadata verification with ExifTool</li>
+            <li data-i18n="removes.good.li1">Hidden Unicode and invisible text characters</li>
+            <li data-i18n="removes.good.li2">EXIF / XMP / IPTC metadata (JPEG, PNG, WebP)</li>
+            <li data-i18n="removes.good.li3">PDF document metadata (DocInfo + XMP)</li>
+            <li data-i18n="removes.good.li4">PNG metadata</li>
+            <li data-i18n="removes.good.li5">Supported file-level provenance signals</li>
+            <li data-i18n="removes.good.li6">Independent metadata verification with ExifTool</li>
           </ul>
         </div>
         <div>
-          <h3>Current limits</h3>
+          <h3 data-i18n="removes.limit.h3">Current limits</h3>
           <ul class="capability-list capability-list--limit">
-            <li>C2PA / Content Credentials support is partial</li>
-            <li>Claude, Gemini, and GPT statistical model-level watermarks are currently <strong>UNKNOWN</strong> — no public verifier exists to confirm removal</li>
-            <li>MarkMyAss never claims "100% AI-undetectable"</li>
+            <li data-i18n="removes.limit.li1">C2PA / Content Credentials support is partial</li>
+            <li data-i18n="removes.limit.li2">Claude, Gemini, and GPT statistical model-level watermarks are currently <strong>UNKNOWN</strong> — no public verifier exists to confirm removal</li>
+            <li data-i18n="removes.limit.li3">MarkMyAss never claims "100% AI-undetectable"</li>
           </ul>
         </div>
       </div>
 
       <div class="explain-panel">
-        <h3>What "VERIFIED CLEAN" means</h3>
-        <p>MarkMyAss shows <strong>VERIFIED CLEAN</strong> only when a supported signal was actually found before cleaning, its own re-inspection confirms it's gone, and every independent verifier that could run (ExifTool, and c2patool where applicable) agrees too. It is not a claim that the file contains no possible identifying signal whatsoever — only that the specific, supported metadata categories MarkMyAss targets are independently confirmed gone. See the <a href="lab">AI Watermark Lab</a> for the full, honestly-scored capability matrix.</p>
+        <h3 data-i18n="removes.vc.h3">What "VERIFIED CLEAN" means</h3>
+        <p data-i18n="removes.vc.p">MarkMyAss shows <strong>VERIFIED CLEAN</strong> only when a supported signal was actually found before cleaning, its own re-inspection confirms it's gone, and every independent verifier that could run (ExifTool, and c2patool where applicable) agrees too. It is not a claim that the file contains no possible identifying signal whatsoever — only that the specific, supported metadata categories MarkMyAss targets are independently confirmed gone. See the <a href="lab">AI Watermark Lab</a> for the full, honestly-scored capability matrix.</p>
       </div>
 
       <div class="explain-panel">
-        <h3>Is MarkMyAss only for Claude?</h3>
-        <p>No. MarkMyAss is not limited to Claude. It works across supported watermark and provenance signal types, including hidden Unicode and common file metadata. Its support depends on the signal type, not just the AI provider.</p>
+        <h3 data-i18n="removes.onlyclaude.h3">Is MarkMyAss only for Claude?</h3>
+        <p data-i18n="removes.onlyclaude.p">No. MarkMyAss is not limited to Claude. It works across supported watermark and provenance signal types, including hidden Unicode and common file metadata. Its support depends on the signal type, not just the AI provider.</p>
       </div>
     </section>
 
     <section class="card info-section" id="what-is-synthid">
-      <h2 class="stage-heading"><img src="static/art/spyglass.svg" alt="" width="30" height="30" class="stage-icon" /> What is SynthID? Metadata vs the watermark inside the image</h2>
-      <p class="section-flavor">An AI image can carry two very different kinds of “AI mark.” MarkMyAss is honest about which one it can actually touch.</p>
+      <h2 class="stage-heading"><img src="static/art/spyglass.svg" alt="" width="30" height="30" class="stage-icon" /> <span data-i18n="synthid.h2">What is SynthID? Metadata vs the watermark inside the image</span></h2>
+      <p class="section-flavor" data-i18n="synthid.flavor">An AI image can carry two very different kinds of “AI mark.” MarkMyAss is honest about which one it can actually touch.</p>
 
       <div class="provenance-columns">
         <div class="provenance-card">
-          <span class="provenance-tag provenance-tag--file">FILE-LEVEL</span>
-          <h3>Metadata &amp; Content Credentials</h3>
-          <p>EXIF · XMP · PNG text · C2PA / Content Credentials — information stored <em>alongside</em> the picture.</p>
-          <p class="provenance-verdict good">MarkMyAss can inspect &amp; clean supported signals.</p>
+          <span class="provenance-tag provenance-tag--file" data-i18n="synthid.file.tag">FILE-LEVEL</span>
+          <h3 data-i18n="synthid.file.h3">Metadata &amp; Content Credentials</h3>
+          <p data-i18n="synthid.file.p">EXIF · XMP · PNG text · C2PA / Content Credentials — information stored <em>alongside</em> the picture.</p>
+          <p class="provenance-verdict good" data-i18n="synthid.file.verdict">MarkMyAss can inspect &amp; clean supported signals.</p>
         </div>
         <div class="provenance-card">
-          <span class="provenance-tag provenance-tag--content">CONTENT-LEVEL</span>
+          <span class="provenance-tag provenance-tag--content" data-i18n="synthid.content.tag">CONTENT-LEVEL</span>
           <h3>SynthID</h3>
-          <p>An invisible watermark Google embeds <em>into the image's own pixels</em> to indicate the content was generated or edited by AI — a separate technology from ordinary metadata.</p>
-          <p class="provenance-verdict limit">Removing metadata does not necessarily remove SynthID — and MarkMyAss does not claim to remove it.</p>
+          <p data-i18n="synthid.content.p">An invisible watermark Google embeds <em>into the image's own pixels</em> to indicate the content was generated or edited by AI — a separate technology from ordinary metadata.</p>
+          <p class="provenance-verdict limit" data-i18n="synthid.content.verdict">Removing metadata does not necessarily remove SynthID — and MarkMyAss does not claim to remove it.</p>
         </div>
       </div>
 
-      <p>Google designed image <a href="https://deepmind.google/models/synthid/" rel="noopener">SynthID</a> to stay detectable after common changes such as <strong>resizing, recolouring, cropping, filtering and lossy compression</strong>, and says it remains detectable even when a file's metadata is stripped. Its published purpose is <strong>content provenance</strong> — answering “was this content generated or edited by AI?” <strong>Google describes SynthID as a content-provenance watermark, not as a personal tracking identifier</strong>; its documentation does not describe SynthID as containing your name, Google account, IP address or prompt history.</p>
+      <p data-i18n="synthid.p1">Google designed image <a href="https://deepmind.google/models/synthid/" rel="noopener">SynthID</a> to stay detectable after common changes such as <strong>resizing, recolouring, cropping, filtering and lossy compression</strong>, and says it remains detectable even when a file's metadata is stripped. Its published purpose is <strong>content provenance</strong> — answering “was this content generated or edited by AI?” <strong>Google describes SynthID as a content-provenance watermark, not as a personal tracking identifier</strong>; its documentation does not describe SynthID as containing your name, Google account, IP address or prompt history.</p>
 
       <div class="explain-panel">
-        <h3>A real check we ran</h3>
-        <p>We generated an image with Google's Gemini image model and ran it through MarkMyAss. It found Google's <strong>file-level</strong> provenance — XMP, PNG text and a C2PA manifest — and <em>Clean</em> removed those supported signals, so a second inspection showed <strong>0 supported file-level signals</strong>. We then uploaded that same cleaned image to Gemini, which replied: <em>“Based on the digital watermarking analysis, all or part of this image was created or edited using Google AI.”</em></p>
-        <p>After MarkMyAss removed the supported file-level provenance and a second inspection showed 0 supported file-level signals, Gemini still identified the image as created or edited using Google AI based on digital watermarking analysis. This is consistent with a remaining <strong>content-level</strong> watermark such as SynthID, which is separate from metadata — though it does not prove SynthID alone was responsible. Cleaning metadata is not the same as removing SynthID — so we don't pretend it is.</p>
+        <h3 data-i18n="synthid.realcheck.h3">A real check we ran</h3>
+        <p data-i18n="synthid.realcheck.p1">We generated an image with Google's Gemini image model and ran it through MarkMyAss. It found Google's <strong>file-level</strong> provenance — XMP, PNG text and a C2PA manifest — and <em>Clean</em> removed those supported signals, so a second inspection showed <strong>0 supported file-level signals</strong>. We then uploaded that same cleaned image to Gemini, which replied: <em>“Based on the digital watermarking analysis, all or part of this image was created or edited using Google AI.”</em></p>
+        <p data-i18n="synthid.realcheck.p2">After MarkMyAss removed the supported file-level provenance and a second inspection showed 0 supported file-level signals, Gemini still identified the image as created or edited using Google AI based on digital watermarking analysis. This is consistent with a remaining <strong>content-level</strong> watermark such as SynthID, which is separate from metadata — though it does not prove SynthID alone was responsible. Cleaning metadata is not the same as removing SynthID — so we don't pretend it is.</p>
       </div>
 
       <div class="explain-panel">
-        <h3>Why this exists — the EU AI Act (plain English)</h3>
-        <p>From <strong>2 August 2026</strong>, EU AI Act <a href="https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50" rel="noopener">Article 50</a> asks providers of generative AI to ensure synthetic audio, image, video or text outputs are “<em>marked in a machine-readable format and detectable as artificially generated or manipulated</em>.” It targets the <strong>outcome</strong> (detectability) and <strong>does not mandate SynthID</strong> — SynthID is Google's own technical approach, not an EU standard. Article&nbsp;50(2) also carves out an exception where the AI performs “<em>an assistive function for standard editing</em>” or does not substantially alter the content or its meaning. This is background, not legal advice.</p>
+        <h3 data-i18n="synthid.euact.h3">Why this exists — the EU AI Act (plain English)</h3>
+        <p data-i18n="synthid.euact.p">From <strong>2 August 2026</strong>, EU AI Act <a href="https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-50" rel="noopener">Article 50</a> asks providers of generative AI to ensure synthetic audio, image, video or text outputs are “<em>marked in a machine-readable format and detectable as artificially generated or manipulated</em>.” It targets the <strong>outcome</strong> (detectability) and <strong>does not mandate SynthID</strong> — SynthID is Google's own technical approach, not an EU standard. Article&nbsp;50(2) also carves out an exception where the AI performs “<em>an assistive function for standard editing</em>” or does not substantially alter the content or its meaning. This is background, not legal advice.</p>
       </div>
     </section>
 
     <section class="card info-section" id="keep-your-writing-yours">
-      <h2 class="stage-heading"><img src="static/art/ghost-mark.svg" alt="" width="30" height="30" class="stage-icon" /> Keep your writing yours after AI-assisted editing</h2>
-      <p class="section-flavor">You wrote it. AI only helped edit it. See exactly what changed.</p>
+      <h2 class="stage-heading"><img src="static/art/ghost-mark.svg" alt="" width="30" height="30" class="stage-icon" /> <span data-i18n="writing.h2">Keep your writing yours after AI-assisted editing</span></h2>
+      <p class="section-flavor" data-i18n="writing.flavor">You wrote it. AI only helped edit it. See exactly what changed.</p>
 
       <div class="writing-split">
         <div class="provenance-card">
-          <span class="provenance-tag provenance-tag--human">HUMAN WRITING</span>
-          <h3>Your original words</h3>
-          <p>The ideas, structure and phrasing you actually wrote.</p>
+          <span class="provenance-tag provenance-tag--human" data-i18n="writing.human.tag">HUMAN WRITING</span>
+          <h3 data-i18n="writing.human.h3">Your original words</h3>
+          <p data-i18n="writing.human.p">The ideas, structure and phrasing you actually wrote.</p>
         </div>
         <div class="writing-plus" aria-hidden="true">+</div>
         <div class="provenance-card">
-          <span class="provenance-tag provenance-tag--content">AI EDITING</span>
-          <h3>Corrections &amp; rewrites</h3>
-          <p>Proofreading, spelling, grammar, punctuation and light copy-editing — or larger rewrites.</p>
+          <span class="provenance-tag provenance-tag--content" data-i18n="writing.ai.tag">AI EDITING</span>
+          <h3 data-i18n="writing.ai.h3">Corrections &amp; rewrites</h3>
+          <p data-i18n="writing.ai.p">Proofreading, spelling, grammar, punctuation and light copy-editing — or larger rewrites.</p>
         </div>
       </div>
 
-      <p>Using AI only to <strong>proofread, fix spelling/grammar/punctuation or lightly copy-edit</strong> is fundamentally different from having AI <strong>generate or substantially rewrite</strong> your document — a distinction the AI Act's Article&nbsp;50(2) “standard editing” exception recognises too.</p>
-      <p>Google's <a href="https://ai.google.dev/responsible/docs/safeguards/synthid" rel="noopener">SynthID-Text</a> is a statistical watermark created <em>during token generation</em> by slightly adjusting the model's token-selection probabilities. It is <strong>not</strong> ordinary metadata attached to your file — it lives in the pattern of the generated words themselves, and depends on how much of the text the model actually generated.</p>
+      <p data-i18n="writing.p1">Using AI only to <strong>proofread, fix spelling/grammar/punctuation or lightly copy-edit</strong> is fundamentally different from having AI <strong>generate or substantially rewrite</strong> your document — a distinction the AI Act's Article&nbsp;50(2) “standard editing” exception recognises too.</p>
+      <p data-i18n="writing.p2">Google's <a href="https://ai.google.dev/responsible/docs/safeguards/synthid" rel="noopener">SynthID-Text</a> is a statistical watermark created <em>during token generation</em> by slightly adjusting the model's token-selection probabilities. It is <strong>not</strong> ordinary metadata attached to your file — it lives in the pattern of the generated words themselves, and depends on how much of the text the model actually generated.</p>
 
       <div class="explain-panel">
-        <h3>What MarkMyAss helps writers do</h3>
-        <p>Compare your <strong>original draft</strong> with the <strong>AI-edited version</strong> and see which wording stayed yours, which were mechanical corrections, and which were substantial AI rewrites — so you can preserve or restore your own voice. <strong>MarkMyAss does not remove Google's SynthID-Text</strong>; it helps you distinguish human-authored wording from substantial AI rewriting. Built for authors, journalists, students, editors, copywriters and researchers.</p>
-        <div class="example-ui" aria-label="Illustrative example only, not measured values">
-          <span class="example-ui-badge">EXAMPLE ONLY — illustrative layout</span>
-          <div class="example-ui-row"><span>Original author wording</span><span>92%</span></div>
-          <div class="example-ui-row"><span>Mechanical corrections</span><span>5%</span></div>
-          <div class="example-ui-row"><span>Substantial AI rewriting</span><span>3%</span></div>
+        <h3 data-i18n="writing.helps.h3">What MarkMyAss helps writers do</h3>
+        <p data-i18n="writing.helps.p">Compare your <strong>original draft</strong> with the <strong>AI-edited version</strong> and see which wording stayed yours, which were mechanical corrections, and which were substantial AI rewrites — so you can preserve or restore your own voice. <strong>MarkMyAss does not remove Google's SynthID-Text</strong>; it helps you distinguish human-authored wording from substantial AI rewriting. Built for authors, journalists, students, editors, copywriters and researchers.</p>
+        <div class="example-ui" aria-label="Illustrative example only, not measured values" data-i18n-attr="aria-label:writing.example.aria">
+          <span class="example-ui-badge" data-i18n="writing.example.badge">EXAMPLE ONLY — illustrative layout</span>
+          <div class="example-ui-row"><span data-i18n="writing.example.row1">Original author wording</span><span>92%</span></div>
+          <div class="example-ui-row"><span data-i18n="writing.example.row2">Mechanical corrections</span><span>5%</span></div>
+          <div class="example-ui-row"><span data-i18n="writing.example.row3">Substantial AI rewriting</span><span>3%</span></div>
         </div>
-        <p class="hint">These figures are an example layout only — never shown as real unless computed from your actual document.</p>
+        <p class="hint" data-i18n="writing.example.hint">These figures are an example layout only — never shown as real unless computed from your actual document.</p>
       </div>
 
       <div class="explain-panel">
-        <h3>Our local research: how much AI-generated text does the watermark need?</h3>
-        <p class="research-caveat"><strong>These are MarkMyAss local research results using our own SynthID keys and reference setup. They are NOT measurements of Google's private production detector, and do not apply directly to Gemini.</strong></p>
-        <p>Replication across <strong>5 independent SynthID keys × 5 generation seeds × ~250 / 500 / 900-token documents</strong>, using a local reference implementation (distilgpt2 as the generation vehicle) and the tuning-free Weighted-Mean detector. Contiguous AI-generated fraction → local detection rate:</p>
+        <h3 data-i18n="writing.research.h3">Our local research: how much AI-generated text does the watermark need?</h3>
+        <p class="research-caveat" data-i18n="writing.research.caveat"><strong>These are MarkMyAss local research results using our own SynthID keys and reference setup. They are NOT measurements of Google's private production detector, and do not apply directly to Gemini.</strong></p>
+        <p data-i18n="writing.research.p1">Replication across <strong>5 independent SynthID keys × 5 generation seeds × ~250 / 500 / 900-token documents</strong>, using a local reference implementation (distilgpt2 as the generation vehicle) and the tuning-free Weighted-Mean detector. Contiguous AI-generated fraction → local detection rate:</p>
         <ul class="research-list">
-          <li><span>5% AI</span><span>1%</span></li>
+          <li><span data-i18n="writing.research.f5">5% AI</span><span>1%</span></li>
           <li><span>10%</span><span>9%</span></li>
           <li><span>15%</span><span>19%</span></li>
           <li><span>20%</span><span>43%</span></li>
@@ -440,11 +447,11 @@
           <li><span>50%</span><span>95%</span></li>
         </ul>
         <ul class="capability-list">
-          <li><strong>≤10% AI-generated content:</strong> mostly undetected in our local setup</li>
-          <li><strong>~15–30%:</strong> transition zone</li>
-          <li><strong>≥40–50%:</strong> commonly / strongly detected</li>
+          <li data-i18n="writing.research.sum1"><strong>≤10% AI-generated content:</strong> mostly undetected in our local setup</li>
+          <li data-i18n="writing.research.sum2"><strong>~15–30%:</strong> transition zone</li>
+          <li data-i18n="writing.research.sum3"><strong>≥40–50%:</strong> commonly / strongly detected</li>
         </ul>
-        <p>Our measured 50% detection crossing was about <strong>21% AI</strong> for one contiguous span and <strong>27%</strong> for scattered blocks. Full method &amp; data:
+        <p data-i18n="writing.research.p2">Our measured 50% detection crossing was about <strong>21% AI</strong> for one contiguous span and <strong>27%</strong> for scattered blocks. Full method &amp; data:
           <a href="https://github.com/bens777/MarkMyAss/tree/main/research/synthid_text_study" rel="noopener">study 1</a>,
           <a href="https://github.com/bens777/MarkMyAss/tree/main/research/synthid_text_inverse_study" rel="noopener">inverse study</a>,
           <a href="https://github.com/bens777/MarkMyAss/tree/main/research/synthid_text_replication_study" rel="noopener">replication</a>.</p>
@@ -452,67 +459,67 @@
     </section>
 
     <section class="card info-section">
-      <h2>Best use cases</h2>
-      <p class="section-flavor">Where MarkMyAss is genuinely reliable — not a universal AI-detection eraser, but strong at what it actually does.</p>
+      <h2 data-i18n="usecases.h2">Best use cases</h2>
+      <p class="section-flavor" data-i18n="usecases.flavor">Where MarkMyAss is genuinely reliable — not a universal AI-detection eraser, but strong at what it actually does.</p>
       <ul class="capability-list capability-list--good">
-        <li>Cleaning metadata before publishing PDFs or images</li>
-        <li>Removing author, creator, GPS, and related metadata fields</li>
-        <li>Cleaning hidden Unicode from copied AI-generated text</li>
-        <li>Checking files for supported provenance metadata before you rely on them</li>
-        <li>Independently verifying that supported traces were actually removed — not just trusting a single tool's word for it</li>
+        <li data-i18n="usecases.li1">Cleaning metadata before publishing PDFs or images</li>
+        <li data-i18n="usecases.li2">Removing author, creator, GPS, and related metadata fields</li>
+        <li data-i18n="usecases.li3">Cleaning hidden Unicode from copied AI-generated text</li>
+        <li data-i18n="usecases.li4">Checking files for supported provenance metadata before you rely on them</li>
+        <li data-i18n="usecases.li5">Independently verifying that supported traces were actually removed — not just trusting a single tool's word for it</li>
       </ul>
     </section>
 
-    <section class="preview-grid" aria-label="Explore MarkMyAss">
+    <section class="preview-grid" aria-label="Explore MarkMyAss" data-i18n-attr="aria-label:preview.aria">
       <a class="preview-card" href="lab">
         <img class="preview-thumb" src="static/art/page-lab.webp" alt="" width="880" height="491" loading="lazy" />
-        <h3>AI Watermark Lab</h3>
-        <p>Chart the waters of AI provenance — the full capability matrix, honestly scored: verified, partial, or unknown.</p>
-        <span class="preview-link">Explore the Lab →</span>
+        <h3 data-i18n="preview.lab.h3">AI Watermark Lab</h3>
+        <p data-i18n="preview.lab.p">Chart the waters of AI provenance — the full capability matrix, honestly scored: verified, partial, or unknown.</p>
+        <span class="preview-link" data-i18n="preview.lab.link">Explore the Lab →</span>
       </a>
       <a class="preview-card" href="benchmarks">
         <img class="preview-thumb" src="static/art/page-benchmarks.webp" alt="" width="880" height="590" loading="lazy" />
-        <h3>Benchmarks</h3>
-        <p>Captain's Log — every supported test, every failure, generated fresh from the real pipeline. Nothing hidden.</p>
-        <span class="preview-link">Read the Log →</span>
+        <h3 data-i18n="preview.bench.h3">Benchmarks</h3>
+        <p data-i18n="preview.bench.p">Captain's Log — every supported test, every failure, generated fresh from the real pipeline. Nothing hidden.</p>
+        <span class="preview-link" data-i18n="preview.bench.link">Read the Log →</span>
       </a>
       <a class="preview-card" href="run-ai-locally">
         <img class="preview-thumb" src="static/art/page-run-local.webp" alt="" width="880" height="590" loading="lazy" />
-        <h3>Run Models Locally</h3>
-        <p>Sail your own stack — run open-weight AI models yourself and skip provider-side provenance at the source.</p>
-        <span class="preview-link">Sail your own stack →</span>
+        <h3 data-i18n="preview.runlocal.h3">Run Models Locally</h3>
+        <p data-i18n="preview.runlocal.p">Sail your own stack — run open-weight AI models yourself and skip provider-side provenance at the source.</p>
+        <span class="preview-link" data-i18n="preview.runlocal.link">Sail your own stack →</span>
       </a>
     </section>
 
     <section class="crew-section">
       <img src="static/art/page-lab.webp" alt="" width="300" height="167" class="crew-section-art" loading="lazy" />
       <div class="crew-section-copy">
-        <h2>From one tool to a whole crew</h2>
-        <p>MarkMyAss cleans the hidden traces in your AI content. <a href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=homepage&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a> gives you a personal crew of AI agents and assistants to help you work, research, plan and automate.</p>
-        <p class="crew-tagline">MarkMyAss cleans your AI files. Moseisley gives you the whole crew.</p>
-        <a class="btn primary" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=homepage&amp;utm_campaign=acquisition" rel="noopener">Build your AI crew — free →</a>
+        <h2 data-i18n="crew.h2">From one tool to a whole crew</h2>
+        <p data-i18n="crew.p">MarkMyAss cleans the hidden traces in your AI content. <a href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=homepage&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a> gives you a personal crew of AI agents and assistants to help you work, research, plan and automate.</p>
+        <p class="crew-tagline" data-i18n="crew.tagline">MarkMyAss cleans your AI files. Moseisley gives you the whole crew.</p>
+        <a class="btn primary" href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=homepage&amp;utm_campaign=acquisition" rel="noopener" data-i18n="crew.btn">Build your AI crew — free →</a>
       </div>
     </section>
 
     <footer>
-      <p>MarkMyAss is open source (MIT), powered by the GhostMark engine. <a href="https://github.com/bens777/MarkMyAss" rel="noopener">Source on GitHub</a>.</p>
-      <p>MarkMyAss is built by <a href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=footer&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a>.</p>
+      <p data-i18n="footer.p1">MarkMyAss is open source (MIT), powered by the GhostMark engine. <a href="https://github.com/bens777/MarkMyAss" rel="noopener">Source on GitHub</a>.</p>
+      <p data-i18n="footer.p2">MarkMyAss is built by <a href="https://moseisley.sh/?utm_source=markmyass&amp;utm_medium=footer&amp;utm_campaign=acquisition" rel="noopener">Moseisley</a>.</p>
       <!-- Secondary ecosystem link only -- deliberately quieter than the
            Moseisley attribution above (muted color, smaller text, no
            button/CTA treatment). MagicConnect appears NOWHERE else. -->
-      <p class="footer-ecosystem"><a href="https://magicconnect.ai/?utm_source=markmyass&amp;utm_medium=footer&amp;utm_campaign=ecosystem" rel="noopener">MagicConnect.ai</a> — AI customer conversations, automated.</p>
-      <nav class="footer-sitemap" aria-label="More MarkMyAss pages">
+      <p class="footer-ecosystem" data-i18n="footer.ecosystem"><a href="https://magicconnect.ai/?utm_source=markmyass&amp;utm_medium=footer&amp;utm_campaign=ecosystem" rel="noopener">MagicConnect.ai</a> — AI customer conversations, automated.</p>
+      <nav class="footer-sitemap" aria-label="More MarkMyAss pages" data-i18n-attr="aria-label:footer.sitemap.aria">
         <a href="skill">Skill</a>
-        <a href="lab">AI Watermark Lab</a>
+        <a href="lab" data-i18n="nav.lab">AI Watermark Lab</a>
         <a href="benchmarks">Benchmarks</a>
-        <a href="run-ai-locally">Run Models Locally</a>
-        <a href="claude-watermark-remover">Claude Watermark Remover</a>
-        <a href="claude-watermark-detector">Claude Watermark Detector</a>
-        <a href="ai-watermark-remover">AI Watermark Remover</a>
-        <a href="ai-metadata-cleaner">AI Metadata Cleaner</a>
-        <a href="c2pa-remover">C2PA Remover</a>
-        <a href="content-credentials-remover">Content Credentials Remover</a>
-        <a href="hidden-unicode-remover">Hidden Unicode Remover</a>
+        <a href="run-ai-locally" data-i18n="nav.runlocal">Run Models Locally</a>
+        <a href="claude-watermark-remover" data-i18n="footer.link.clauderemover">Claude Watermark Remover</a>
+        <a href="claude-watermark-detector" data-i18n="footer.link.claudedetector">Claude Watermark Detector</a>
+        <a href="ai-watermark-remover" data-i18n="footer.link.airemover">AI Watermark Remover</a>
+        <a href="ai-metadata-cleaner" data-i18n="footer.link.metadata">AI Metadata Cleaner</a>
+        <a href="c2pa-remover" data-i18n="footer.link.c2pa">C2PA Remover</a>
+        <a href="content-credentials-remover" data-i18n="footer.link.contentcred">Content Credentials Remover</a>
+        <a href="hidden-unicode-remover" data-i18n="footer.link.unicode">Hidden Unicode Remover</a>
       </nav>
       <p id="footer-privacy"></p>
       <!-- Discord community CTA: reuses the existing on-brand spyglass
@@ -520,14 +527,16 @@
            block -- image + caption -- is one clickable link. Final
            element of the footer. -->
       <div class="discord-footer-cta">
-        <a class="discord-footer-link" href="https://discord.gg/PnQGFKWMA" target="_blank" rel="noopener noreferrer" aria-label="Join the MarkMyAss Discord community">
-          <img class="discord-footer-pirate" src="static/art/page-claude-detector.webp" alt="Pirate looking through a spyglass" width="880" height="590" loading="lazy" />
-          <span class="discord-footer-label">Join the crew →</span>
+        <a class="discord-footer-link" href="https://discord.gg/PnQGFKWMA" target="_blank" rel="noopener noreferrer" aria-label="Join the MarkMyAss Discord community" data-i18n-attr="aria-label:footer.discord.aria">
+          <img class="discord-footer-pirate" src="static/art/page-claude-detector.webp" alt="Pirate looking through a spyglass" width="880" height="590" loading="lazy" data-i18n-attr="alt:footer.discord.alt" />
+          <span class="discord-footer-label" data-i18n="footer.discord.label">Join the crew →</span>
         </a>
       </div>
     </footer>
   </main>
 
+  <script src="static/i18n-fr.js"></script>
+  <script src="static/i18n-apply.js"></script>
   <script src="static/app.js"></script>
 </body>
 </html>

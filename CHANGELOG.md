@@ -6,6 +6,17 @@ All notable changes to MarkMyAss (engine name: GhostMark) are documented in this
 
 ### Added
 
+- **French (fr-FR) localization of the web homepage**: the homepage and all
+  interactive/runtime UI are fully translated into natural French, with a
+  small `FR | EN` switcher in the nav. Two locales only (`en-US`, `fr-FR`):
+  any browser language starting with `fr` resolves to fr-FR, everything else
+  to en-US; a manual choice persists in `localStorage["markmyass-language"]`
+  and overrides browser detection. `<html lang>` is set to the active
+  locale before first paint, and the body is held hidden until French is
+  applied so there is never a mixed-language flash (English is the source
+  language and needs no swap). The separate Markdown/SEO/article pages
+  remain English for now. Engine: `static/i18n.js` (pure, unit-tested
+  resolver) + `static/i18n-fr.js` (translation set) + `static/i18n-apply.js`.
 - **Native tag-level metadata engine** (`ghostmark.native`): MarkMyAss
   now reads *inside* the metadata containers it already detected and
   removed -- EXIF/TIFF IFDs (bounded walker, big-endian + little-endian,

@@ -1,6 +1,17 @@
 (() => {
   "use strict";
 
+  // Locale helpers. i18n.js (loaded in <head>) resolved the active locale
+  // before this runs; a language switch reloads the page, so the locale is
+  // fixed for this page view. t(en, fr) returns the French variant when the
+  // active locale is fr-FR, else the English source. num() formats numbers
+  // in the active locale.
+  const MMA = window.MarkMyAss || {};
+  const isFr = MMA.locale === "fr-FR";
+  const t = (en, fr) => (isFr && typeof fr === "string" ? fr : en);
+  const NUM_LOCALE = isFr ? "fr-FR" : "en-US";
+  const num = (n) => n.toLocaleString(NUM_LOCALE);
+
   // Every request path here is RELATIVE (no leading slash) so it resolves
   // against the page's <base href>, which the server injects from
   // GHOSTMARK_BASE_PATH. That is what makes this page work whether it's
@@ -26,15 +37,42 @@
   // is what separates "here's a table of jargon" from actually telling a
   // non-technical user what was found.
   const EXPLANATIONS = {
-    unicode: "Hidden or invisible characters were found in the text. These can be used to hide instructions or track where text came from.",
-    exif: "Camera/device or export-tool metadata (EXIF) was found embedded in this image.",
-    xmp: "XMP metadata was found -- structured info such as the tool or author that created this file.",
-    iptc: "IPTC metadata was found -- often used for captions, keywords, or copyright info.",
-    png_text: "Text embedded in this PNG's own metadata chunks was found (comments, software tags, etc).",
-    comment: "A comment segment was found embedded in this file.",
-    pdf_info: "This PDF's document-info fields (Title, Author, Producer, etc.) contain data.",
-    pdf_xmp: "This PDF has an embedded XMP metadata stream.",
-    c2pa: "A C2PA/JUMBF provenance container was found. MarkMyAss's detection here is heuristic, not a full manifest validation -- see the AI Watermark Lab for details.",
+    unicode: t(
+      "Hidden or invisible characters were found in the text. These can be used to hide instructions or track where text came from.",
+      "Des caractères cachés ou invisibles ont été trouvés dans le texte. Ils peuvent servir à dissimuler des instructions ou à pister la provenance du texte."
+    ),
+    exif: t(
+      "Camera/device or export-tool metadata (EXIF) was found embedded in this image.",
+      "Des métadonnées d'appareil photo/appareil ou d'outil d'export (EXIF) ont été trouvées intégrées à cette image."
+    ),
+    xmp: t(
+      "XMP metadata was found -- structured info such as the tool or author that created this file.",
+      "Des métadonnées XMP ont été trouvées — des informations structurées telles que l'outil ou l'auteur ayant créé ce fichier."
+    ),
+    iptc: t(
+      "IPTC metadata was found -- often used for captions, keywords, or copyright info.",
+      "Des métadonnées IPTC ont été trouvées — souvent utilisées pour les légendes, mots-clés ou informations de copyright."
+    ),
+    png_text: t(
+      "Text embedded in this PNG's own metadata chunks was found (comments, software tags, etc).",
+      "Du texte intégré aux propres blocs de métadonnées de ce PNG a été trouvé (commentaires, balises logicielles, etc.)."
+    ),
+    comment: t(
+      "A comment segment was found embedded in this file.",
+      "Un segment de commentaire a été trouvé intégré à ce fichier."
+    ),
+    pdf_info: t(
+      "This PDF's document-info fields (Title, Author, Producer, etc.) contain data.",
+      "Les champs d'informations de document de ce PDF (Titre, Auteur, Producteur, etc.) contiennent des données."
+    ),
+    pdf_xmp: t(
+      "This PDF has an embedded XMP metadata stream.",
+      "Ce PDF contient un flux de métadonnées XMP intégré."
+    ),
+    c2pa: t(
+      "A C2PA/JUMBF provenance container was found. MarkMyAss's detection here is heuristic, not a full manifest validation -- see the AI Watermark Lab for details.",
+      "Un conteneur de provenance C2PA/JUMBF a été trouvé. La détection de MarkMyAss est ici heuristique, pas une validation complète du manifeste — voir le Labo des filigranes IA pour les détails."
+    ),
   };
 
   function explanationFor(detector) {
@@ -113,30 +151,51 @@
     document.querySelectorAll(".hosted-only").forEach((elm) => elm.classList.toggle("hidden", !hosted));
 
     if (hosted) {
-      const text = "Files are processed temporarily on the MarkMyAss server and automatically deleted. We do not retain uploaded files.";
-      privacyNote.textContent = text;
-      footerPrivacy.textContent = `Hosted version: files are deleted automatically after processing (max ${config.session_ttl_minutes} minutes).`;
+      privacyNote.textContent = t(
+        "Files are processed temporarily on the MarkMyAss server and automatically deleted. We do not retain uploaded files.",
+        "Les fichiers sont traités temporairement sur le serveur MarkMyAss puis automatiquement supprimés. Nous ne conservons pas les fichiers téléversés."
+      );
+      footerPrivacy.textContent = t(
+        `Hosted version: files are deleted automatically after processing (max ${config.session_ttl_minutes} minutes).`,
+        `Version hébergée : les fichiers sont supprimés automatiquement après traitement (max ${config.session_ttl_minutes} minutes).`
+      );
     } else {
-      const text = "100% local — this copy of MarkMyAss runs on your own computer. Files never leave your device.";
-      privacyNote.textContent = text;
-      footerPrivacy.textContent = "Local MarkMyAss: nothing is ever uploaded anywhere.";
+      privacyNote.textContent = t(
+        "100% local — this copy of MarkMyAss runs on your own computer. Files never leave your device.",
+        "100 % local — cette copie de MarkMyAss s'exécute sur votre propre ordinateur. Les fichiers ne quittent jamais votre appareil."
+      );
+      footerPrivacy.textContent = t(
+        "Local MarkMyAss: nothing is ever uploaded anywhere.",
+        "MarkMyAss local : rien n'est jamais téléversé où que ce soit."
+      );
     }
     if (config.max_upload_mb && config.max_text_upload_mb) {
       // Both numbers come from the server (/api/config), so this copy can
       // never drift from what the backend actually enforces.
-      uploadLimitHint.textContent = `Images & PDFs: up to ${config.max_upload_mb} MB · Text files: up to ${config.max_text_upload_mb} MB.`;
+      uploadLimitHint.textContent = t(
+        `Images & PDFs: up to ${config.max_upload_mb} MB · Text files: up to ${config.max_text_upload_mb} MB.`,
+        `Images & PDF : jusqu'à ${config.max_upload_mb} Mo · Fichiers texte : jusqu'à ${config.max_text_upload_mb} Mo.`
+      );
     } else if (config.max_upload_mb) {
-      uploadLimitHint.textContent = `Maximum file size: ${config.max_upload_mb} MB.`;
+      uploadLimitHint.textContent = t(
+        `Maximum file size: ${config.max_upload_mb} MB.`,
+        `Taille de fichier maximale : ${config.max_upload_mb} Mo.`
+      );
     }
 
     // Populate the Deep Reprocess intensity selector from the server's profile
     // catalogue (single source of truth), so labels/descriptions never drift.
     if (reprocessProfile && Array.isArray(config.reprocess_profiles)) {
       reprocessProfile.innerHTML = "";
+      const frProfiles = MMA.reprocessProfilesFr || {};
       for (const p of config.reprocess_profiles) {
         const opt = document.createElement("option");
         opt.value = p.name;
-        opt.textContent = `${p.label} — ${p.description}`;
+        // The server profile catalogue is English; swap in the French
+        // label/description (keyed by profile name) when the locale is fr-FR
+        // so the dropdown is never mixed-language.
+        const loc = isFr && frProfiles[p.name] ? frProfiles[p.name] : p;
+        opt.textContent = `${loc.label} — ${loc.description}`;
         if (p.name === "medium") opt.selected = true;
         reprocessProfile.appendChild(opt);
       }
@@ -156,7 +215,7 @@
   fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
     if (file) {
-      chosenFileName.textContent = `Selected: ${file.name}`;
+      chosenFileName.textContent = t(`Selected: ${file.name}`, `Sélectionné : ${file.name}`);
       chosenFileName.classList.remove("hidden");
     }
   });
@@ -178,7 +237,12 @@
   });
 
   function statusLabel(status) {
-    return { found: "FOUND", not_found: "NOT FOUND", unknown: "UNKNOWN" }[status] || status.toUpperCase();
+    const labels = {
+      found: t("FOUND", "TROUVÉ"),
+      not_found: t("NOT FOUND", "ABSENT"),
+      unknown: t("UNKNOWN", "INCONNU"),
+    };
+    return labels[status] || status.toUpperCase();
   }
 
   // A small spectral ghost glyph, shown briefly next to a newly-detected
@@ -228,7 +292,7 @@
       if (d.experimental) {
         const tag = document.createElement("span");
         tag.className = "experimental-tag";
-        tag.textContent = "EXPERIMENTAL / UNVERIFIED";
+        tag.textContent = t("EXPERIMENTAL / UNVERIFIED", "EXPÉRIMENTAL / NON VÉRIFIÉ");
         label.appendChild(tag);
       }
       const status = document.createElement("span");
@@ -278,16 +342,16 @@
       label.appendChild(document.createTextNode(a.label));
       const status = document.createElement("span");
       let cls = "status-not_found";
-      let text = "NOT PRESENT";
+      let text = t("NOT PRESENT", "ABSENT");
       if (a.failed) {
         cls = "status-unknown";
-        text = "FAILED";
+        text = t("FAILED", "ÉCHEC");
       } else if (a.removed) {
         cls = "status-removed";
-        text = "REMOVED";
+        text = t("REMOVED", "SUPPRIMÉ");
       } else if (a.preserved) {
         cls = "status-unverified";
-        text = "PRESERVED";
+        text = t("PRESERVED", "CONSERVÉ");
       }
       status.className = `signal-status ${cls}`;
       status.textContent = text;
@@ -300,35 +364,47 @@
   function renderExiftoolPanel(external, c2pa) {
     exiftoolPanel.innerHTML = "";
     const heading = document.createElement("h3");
-    heading.textContent = "Independent verification";
+    heading.textContent = t("Independent verification", "Vérification indépendante");
     exiftoolPanel.appendChild(heading);
 
     const body = document.createElement("div");
     const lines = [];
+    const unknownVersion = t("unknown version", "version inconnue");
 
     if (!external || !external.applicable) {
-      lines.push(external && external.note ? external.note : "ExifTool: not applicable to this input.");
+      lines.push(external && external.note ? external.note : t("ExifTool: not applicable to this input.", "ExifTool : non applicable à cette entrée."));
     } else if (!external.available) {
-      lines.push("ExifTool: unavailable. MarkMyAss's own verification above still applies, but this independent cross-check could not run.");
+      lines.push(t(
+        "ExifTool: unavailable. MarkMyAss's own verification above still applies, but this independent cross-check could not run.",
+        "ExifTool : indisponible. La vérification propre à MarkMyAss ci-dessus reste valable, mais ce contrôle croisé indépendant n'a pas pu s'exécuter."
+      ));
     } else {
-      const version = external.version || "unknown version";
-      lines.push(`Verified with ExifTool ${version}`);
+      const version = external.version || unknownVersion;
+      lines.push(t(`Verified with ExifTool ${version}`, `Vérifié avec ExifTool ${version}`));
       const remaining = Object.keys((external.tags_by_origin || {}).embedded_metadata || {});
       if (remaining.length === 0) {
-        lines.push("✓ No embedded metadata found");
+        lines.push(t("✓ No embedded metadata found", "✓ Aucune métadonnée intégrée trouvée"));
       } else {
-        lines.push(`⚠ ${remaining.length} embedded metadata tag(s) still present:`);
+        lines.push(t(
+          `⚠ ${remaining.length} embedded metadata tag(s) still present:`,
+          `⚠ ${remaining.length} balise(s) de métadonnées intégrées encore présente(s) :`
+        ));
         remaining.slice(0, 8).forEach((k) => lines.push(`&nbsp;&nbsp;${k}`));
       }
     }
 
     if (c2pa && c2pa.applicable) {
       if (!c2pa.available) {
-        lines.push("c2patool: unavailable (optional). See the AI Watermark Lab for install info.");
+        lines.push(t(
+          "c2patool: unavailable (optional). See the AI Watermark Lab for install info.",
+          "c2patool : indisponible (optionnel). Voir le Labo des filigranes IA pour l'installation."
+        ));
       } else {
-        const version = c2pa.version || "unknown version";
-        lines.push(`Verified with c2patool ${version}`);
-        lines.push(c2pa.found ? "⚠ c2patool still finds a C2PA manifest" : "✓ c2patool finds no C2PA manifest");
+        const version = c2pa.version || unknownVersion;
+        lines.push(t(`Verified with c2patool ${version}`, `Vérifié avec c2patool ${version}`));
+        lines.push(c2pa.found
+          ? t("⚠ c2patool still finds a C2PA manifest", "⚠ c2patool trouve toujours un manifeste C2PA")
+          : t("✓ c2patool finds no C2PA manifest", "✓ c2patool ne trouve aucun manifeste C2PA"));
       }
     }
 
@@ -341,11 +417,11 @@
   // (ExifTool/c2patool) was available to corroborate -- so the badge
   // says exactly that instead of a vague "UNVERIFIED".
   const VERDICT_TEXT = {
-    verified_clean: "INDEPENDENTLY VERIFIED CLEAN",
-    partial: "PARTIAL",
-    unverified: "NATIVE CLEAN — NOT INDEPENDENTLY VERIFIED",
-    not_applicable: "NOT APPLICABLE",
-    failed: "FAILED",
+    verified_clean: t("INDEPENDENTLY VERIFIED CLEAN", "PROPRE — VÉRIFIÉ DE FAÇON INDÉPENDANTE"),
+    partial: t("PARTIAL", "PARTIEL"),
+    unverified: t("NATIVE CLEAN — NOT INDEPENDENTLY VERIFIED", "PROPRE (MOTEUR NATIF) — NON VÉRIFIÉ DE FAÇON INDÉPENDANTE"),
+    not_applicable: t("NOT APPLICABLE", "NON APPLICABLE"),
+    failed: t("FAILED", "ÉCHEC"),
   };
 
   function renderVerdict(summary) {
@@ -353,7 +429,7 @@
     if (!summary) return;
 
     const heading = document.createElement("h3");
-    heading.textContent = "Result";
+    heading.textContent = t("Result", "Résultat");
     verdictPanel.appendChild(heading);
 
     const badge = document.createElement("span");
@@ -362,21 +438,33 @@
       : summary.verdict === "failed" ? ""
       : FOG_GLYPH_SVG;
     if (icon) badge.insertAdjacentHTML("beforeend", icon);
-    badge.appendChild(document.createTextNode(VERDICT_TEXT[summary.verdict] || "UNVERIFIED"));
+    badge.appendChild(document.createTextNode(VERDICT_TEXT[summary.verdict] || t("UNVERIFIED", "NON VÉRIFIÉ")));
     verdictPanel.appendChild(badge);
 
     const lines = document.createElement("div");
     lines.style.marginTop = "0.75rem";
     lines.style.fontSize = "0.9rem";
-    const detailLines = [`MarkMyAss native verification: ${summary.ghostmark_pass ? "PASS" : "FAIL"}`];
+    const pass = t("PASS", "RÉUSSI");
+    const fail = t("FAIL", "ÉCHEC");
+    const detailLines = [
+      t(`MarkMyAss native verification: ${summary.ghostmark_pass ? "PASS" : "FAIL"}`,
+        `Vérification native MarkMyAss : ${summary.ghostmark_pass ? pass : fail}`),
+    ];
     for (const verifier of summary.external_verifiers || []) {
       if (verifier.passed === null || verifier.passed === undefined) {
-        detailLines.push(`${verifier.label} verification: NOT AVAILABLE / NOT APPLICABLE`);
+        detailLines.push(t(
+          `${verifier.label} verification: NOT AVAILABLE / NOT APPLICABLE`,
+          `${verifier.label} : NON DISPONIBLE / NON APPLICABLE`
+        ));
       } else {
-        detailLines.push(`${verifier.label} verification: ${verifier.passed ? "PASS" : "FAIL"}`);
+        detailLines.push(t(
+          `${verifier.label} verification: ${verifier.passed ? "PASS" : "FAIL"}`,
+          `${verifier.label} : ${verifier.passed ? pass : fail}`
+        ));
       }
     }
-    detailLines.push(`C2PA support: ${summary.c2pa_status.toUpperCase()}`);
+    detailLines.push(t(`C2PA support: ${summary.c2pa_status.toUpperCase()}`,
+      `Prise en charge C2PA : ${summary.c2pa_status.toUpperCase()}`));
     lines.innerHTML = detailLines.join("<br>");
     verdictPanel.appendChild(lines);
   }
@@ -420,7 +508,7 @@
     arrow1.classList.add("hidden");
     arrow2.classList.add("hidden");
     arrow3.classList.add("hidden");
-    const restoreInspect = withLoadingLabel(btnInspect, "Scanning the cargo…");
+    const restoreInspect = withLoadingLabel(btnInspect, t("Scanning the cargo…", "On scanne la cargaison…"));
     try {
       let resp;
       if (state.mode === "text") {
@@ -432,7 +520,7 @@
       } else {
         const file = fileInput.files[0];
         if (!file) {
-          showError("Choose a file first.");
+          showError(t("Choose a file first.", "Choisissez d'abord un fichier."));
           return;
         }
         const form = new FormData();
@@ -441,14 +529,17 @@
       }
       if (!resp.ok) {
         const body = await safeJson(resp);
-        showError(body.detail || `Inspection failed (${resp.status}).`);
+        showError(body.detail || t(`Inspection failed (${resp.status}).`, `Échec de l'inspection (${resp.status}).`));
         return;
       }
       const data = await resp.json();
       state.sessionId = data.session_id;
       renderDetections(resultsTable, data.report.detections);
       const found = data.report.detections.filter((d) => d.status === "found");
-      resultsCount.textContent = `${found.length} supported signal${found.length === 1 ? "" : "s"} detected`;
+      resultsCount.textContent = t(
+        `${found.length} supported signal${found.length === 1 ? "" : "s"} detected`,
+        `${found.length} signal${found.length === 1 ? "" : "s"} pris en charge détecté${found.length === 1 ? "" : "s"}`
+      );
 
       explainList.innerHTML = "";
       const explanations = found.map((d) => explanationFor(d.detector)).filter(Boolean);
@@ -473,12 +564,12 @@
   }
 
   async function doClean() {
-    const restoreClean = withLoadingLabel(btnClean, "Clearing the deck…");
+    const restoreClean = withLoadingLabel(btnClean, t("Clearing the deck…", "On vide le pont…"));
     try {
       const resp = await fetch(API.clean(state.sessionId), { method: "POST" });
       if (!resp.ok) {
         const body = await safeJson(resp);
-        showError(body.detail || `Clean failed (${resp.status}).`);
+        showError(body.detail || t(`Clean failed (${resp.status}).`, `Échec du nettoyage (${resp.status}).`));
         return;
       }
       const data = await resp.json();
@@ -503,14 +594,15 @@
 
   function renderMetricRows(container, metrics, extra) {
     container.innerHTML = "";
+    const bytesWord = t("bytes", "octets");
     const rows = [
-      ["Original dimensions", `${metrics.original_dimensions[0]} × ${metrics.original_dimensions[1]}`],
-      ["Output dimensions", `${metrics.output_dimensions[0]} × ${metrics.output_dimensions[1]}`],
-      ["Original size", `${metrics.original_size_bytes.toLocaleString("en-US")} bytes`],
-      ["Output size", `${metrics.output_size_bytes.toLocaleString("en-US")} bytes`],
+      [t("Original dimensions", "Dimensions d'origine"), `${metrics.original_dimensions[0]} × ${metrics.original_dimensions[1]}`],
+      [t("Output dimensions", "Dimensions de sortie"), `${metrics.output_dimensions[0]} × ${metrics.output_dimensions[1]}`],
+      [t("Original size", "Taille d'origine"), `${num(metrics.original_size_bytes)} ${bytesWord}`],
+      [t("Output size", "Taille de sortie"), `${num(metrics.output_size_bytes)} ${bytesWord}`],
       ["SSIM", `${metrics.ssim}`],
       ["PSNR", `${metrics.psnr} dB`],
-      ["Pixels changed", `${metrics.pixel_changed_pct}%`],
+      [t("Pixels changed", "Pixels modifiés"), `${metrics.pixel_changed_pct}%`],
     ];
     if (extra) rows.push(...extra);
     for (const [label, value] of rows) {
@@ -540,13 +632,13 @@
     if (reprocessError) reprocessError.classList.add("hidden");
     const profile = reprocessProfile ? reprocessProfile.value || "medium" : "medium";
     const fmt = reprocessFormat ? reprocessFormat.value : "";
-    const restore = withLoadingLabel(btnReprocessRun, "Recutting the timber…");
+    const restore = withLoadingLabel(btnReprocessRun, t("Recutting the timber…", "On retaille le bois…"));
     try {
       const resp = await fetch(API.reprocess(state.sessionId, profile, fmt), { method: "POST" });
       if (!resp.ok) {
         const body = await safeJson(resp);
         if (reprocessError) {
-          reprocessError.textContent = body.detail || `Reprocess failed (${resp.status}).`;
+          reprocessError.textContent = body.detail || t(`Reprocess failed (${resp.status}).`, `Échec du retraitement (${resp.status}).`);
           reprocessError.classList.remove("hidden");
         }
         return;
@@ -554,9 +646,9 @@
       const data = await resp.json();
       renderDetections(reprocessFileTable, data.file_level.detections);
       const extra = [
-        ["Profile", `${data.profile} → ${data.output_format}`],
-        ["Operations", (data.operations || []).join(" → ")],
-        ["Est. compute cost", `${data.estimated_compute_cost}`],
+        [t("Profile", "Profil"), `${data.profile} → ${data.output_format}`],
+        [t("Operations", "Opérations"), (data.operations || []).join(" → ")],
+        [t("Est. compute cost", "Coût de calcul estimé"), `${data.estimated_compute_cost}`],
       ];
       renderMetricRows(reprocessMetrics, data.metrics, extra);
       reprocessResults.classList.remove("hidden");
@@ -575,12 +667,12 @@
   }
 
   async function doVerify() {
-    const restoreVerify = withLoadingLabel(btnVerify, "Signaling the second observer…");
+    const restoreVerify = withLoadingLabel(btnVerify, t("Signaling the second observer…", "On appelle le second observateur…"));
     try {
       const resp = await fetch(API.verify(state.sessionId), { method: "POST" });
       if (!resp.ok) {
         const body = await safeJson(resp);
-        showError(body.detail || `Verify failed (${resp.status}).`);
+        showError(body.detail || t(`Verify failed (${resp.status}).`, `Échec de la vérification (${resp.status}).`));
         return;
       }
       const data = await resp.json();
@@ -640,10 +732,12 @@
       const data = await resp.json();
       const total = data.files_cleaned_total;
       if (typeof total !== "number" || total < SOCIAL_PROOF_MIN_TOTAL) return; // never show 0
-      socialProofCount.textContent = total.toLocaleString("en-US");
+      socialProofCount.textContent = num(total);
       if (socialProofLabel) {
-        socialProofLabel.textContent =
-          (total === 1 ? "file" : "files") + " cleaned with MarkMyAss";
+        socialProofLabel.textContent = t(
+          (total === 1 ? "file" : "files") + " cleaned with MarkMyAss",
+          (total === 1 ? "fichier nettoyé" : "fichiers nettoyés") + " avec MarkMyAss"
+        );
       }
       socialProof.classList.remove("hidden");
     } catch {
@@ -663,7 +757,9 @@
   function syncThemeToggleLabel() {
     if (!themeToggle) return;
     const current = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
-    themeToggle.setAttribute("aria-label", current === "dark" ? "Switch to light mode" : "Switch to dark mode");
+    themeToggle.setAttribute("aria-label", current === "dark"
+      ? t("Switch to light mode", "Passer en mode clair")
+      : t("Switch to dark mode", "Passer en mode sombre"));
   }
 
   if (themeToggle) {
@@ -691,7 +787,9 @@
     if (!navBurger || !navLinks) return;
     navLinks.classList.toggle("open", open);
     navBurger.setAttribute("aria-expanded", open ? "true" : "false");
-    navBurger.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+    navBurger.setAttribute("aria-label", open
+      ? t("Close navigation", "Fermer la navigation")
+      : t("Open navigation", "Ouvrir la navigation"));
   }
 
   if (navBurger && navLinks) {

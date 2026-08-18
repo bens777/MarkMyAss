@@ -250,6 +250,44 @@ img, svg { max-width: 100%; height: auto; }
 :root[data-theme="light"] .theme-toggle .theme-icon-sun { display: none; }
 :root[data-theme="light"] .theme-toggle .theme-icon-moon { display: block; }
 
+/* Language switcher (FR | EN) in the top nav. The active locale's option
+   is highlighted; clicking the other persists the choice (localStorage
+   "markmyass-language") and reloads. */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+.lang-option {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.2rem 0.2rem;
+  cursor: pointer;
+  border-radius: 4px;
+  line-height: 1;
+}
+.lang-option:hover { color: var(--accent); }
+.lang-option.active {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lang-option:focus-visible { outline: 2px solid var(--spectral); outline-offset: 1px; }
+.lang-sep { color: var(--border); font-size: 0.8rem; user-select: none; }
+
+/* i18n anti-flash: while a non-English locale is being applied, i18n.js
+   marks <html data-i18n-pending> and this keeps the body hidden until
+   i18n-apply.js swaps the English source DOM to the target language --
+   so there is never a mixed-language flash. English (the source language)
+   never sets the attribute, so it is never hidden and pays no cost. */
+html[data-i18n-pending] body { visibility: hidden; }
+
 /* Desktop: the secondary-nav wrapper is transparent to layout, so the
    links flow exactly as they always did. Mobile turns it into a compact
    dropdown behind the hamburger (below). */
