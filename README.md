@@ -594,10 +594,27 @@ The production/hosted deployment uses the same prebuilt GHCR image -- see
 ## Development
 
 ```bash
-pip install -e ".[dev]"
-pytest
-ruff check .
+git clone https://github.com/bens777/MarkMyAss.git
+cd MarkMyAss
+pip install -e ".[dev]"   # install with dev extras (pytest, ruff, httpx)
+
+pytest                     # run the full test suite
+ruff check .               # lint
+ghostmark demo             # end-to-end smoke test
+ghostmark ui               # run locally at http://127.0.0.1:8765
 ```
+
+Configuration is entirely environment-driven and every value is optional
+for local use -- copy [`.env.example`](.env.example) to `.env` and adjust
+if you want to override defaults. There are no secrets anywhere in this
+project.
+
+Builds are reproducible: `pyproject.toml` uses loose (`>=`) ranges so the
+library stays broadly installable, while [`constraints.txt`](constraints.txt)
+pins the exact production dependency closure the test suite is green
+against. The production Docker image installs with
+`pip install . -c constraints.txt`; update `constraints.txt` deliberately
+(procedure documented at the top of the file).
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for the project layout and how to
 add a new detector or cleaner. See

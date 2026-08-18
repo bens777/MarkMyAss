@@ -1,0 +1,49 @@
+# Pinned production dependency closure for reproducible builds.
+#
+# WHY: pyproject.toml intentionally uses loose (>=) ranges so the package
+# stays installable in a wide range of environments (it is a library + CLI).
+# For the PRODUCTION container and any build that must be byte-reproducible,
+# pip resolves against THIS file so the exact same versions are installed
+# every time, regardless of what happens to be newest on PyPI that day.
+#
+# HOW IT IS USED:
+#   pip install --no-cache-dir . -c constraints.txt
+# (see Dockerfile). A constraints file only pins versions for packages that
+# actually get installed; it never forces an unused package to be installed.
+#
+# HOW TO UPDATE (do this deliberately, not incidentally):
+#   1. Recreate a clean venv and `pip install .`
+#   2. `pip freeze` and copy the resolved versions here.
+#   3. Run the full test suite (`pytest`) against the new set.
+#   4. Commit the updated constraints.txt in its own change.
+#
+# These versions are exactly the ones the committed test suite is green
+# against.
+
+annotated-doc==0.0.5
+annotated-types==0.8.0
+anyio==4.14.2
+click==8.4.2
+colorama==0.4.6
+fastapi==0.141.1
+h11==0.16.0
+idna==3.18
+lxml==6.1.1
+Markdown==3.10.3
+markdown-it-py==4.2.0
+mdurl==0.1.2
+numpy==2.5.2
+packaging==26.3
+pikepdf==10.11.0
+pillow==12.3.0
+pydantic==2.13.4
+pydantic_core==2.46.4
+Pygments==2.20.0
+python-multipart==0.0.32
+rich==15.0.0
+shellingham==1.5.4
+starlette==1.6.0
+typer==0.27.1
+typing_extensions==4.16.0
+typing-inspection==0.4.4
+uvicorn==0.52.1

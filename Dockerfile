@@ -8,7 +8,12 @@
 # official source in a throwaway Rust build stage and only the resulting
 # binary is copied into the final image -- the Rust toolchain itself
 # never ships in the image MarkMyAss actually runs.
-FROM rust:1-slim-bookworm AS c2patool-builder
+# Base images are pinned to specific minor tags (not "latest"/floating major)
+# for reproducibility. For a fully immutable build, replace each tag with its
+# sha256 digest, e.g. `FROM python:3.12.8-slim@sha256:<digest>` -- resolve the
+# current digest with `docker buildx imagetools inspect <image:tag>` and bump
+# it deliberately (see constraints.txt for the same policy on Python deps).
+FROM rust:1.83-slim-bookworm AS c2patool-builder
 # c2patool depends on openssl-sys with the "vendored" feature, which always
 # compiles its own OpenSSL from source (system libssl-dev is not enough).
 # That vendored build's Configure script needs Perl core modules (e.g.
@@ -17,9 +22,15 @@ FROM rust:1-slim-bookworm AS c2patool-builder
 RUN apt-get update \
     && apt-get install -y --no-install-recommends perl make gcc \
     && rm -rf /var/lib/apt/lists/*
-RUN cargo install c2patool
+# c2patool version pin. Leave empty to track the latest published crate, or
+# set a specific version for a fully pinned, reproducible binary, e.g.
+# `docker build --build-arg C2PATOOL_VERSION=0.9.12 .`. `--locked` builds
+# against the crate's committed Cargo.lock so transitive crate versions are
+# reproducible regardless of the version chosen.
+ARG C2PATOOL_VERSION=""
+RUN cargo install c2patool --locked ${C2PATOOL_VERSION:+--version} ${C2PATOOL_VERSION}
 
-FROM python:3.12-slim
+FROM python:3.12.8-slim
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libimage-exiftool-perl \
@@ -28,10 +39,13 @@ RUN apt-get update \
 COPY --from=c2patool-builder /usr/local/cargo/bin/c2patool /usr/local/bin/c2patool
 
 WORKDIR /app
-COPY pyproject.toml README.md LICENSE ./
+COPY pyproject.toml README.md LICENSE constraints.txt ./
 COPY src ./src
 
-RUN pip install --no-cache-dir .
+# Install against the pinned constraint set so the image's Python deps are
+# reproducible even though pyproject.toml uses loose (>=) ranges. See
+# constraints.txt for the update procedure.
+RUN pip install --no-cache-dir . -c constraints.txt
 
 # Run as a non-root user at runtime.
 RUN useradd --create-home --shell /usr/sbin/nologin ghostmark \

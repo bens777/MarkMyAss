@@ -40,6 +40,11 @@ services:
       GHOSTMARK_STATS_DB: "/data/stats.db"
     # Basic resource safeguards so one bad actor can't exhaust the host.
     mem_limit: 512m
+    # CPU-bound work (image decode/reprocess, hidden-unicode cleaning) is
+    # capped so a burst of concurrent jobs can't starve the host. Combined
+    # with GHOSTMARK_MAX_CONCURRENT and the per-job timeout, this bounds
+    # worst-case CPU pressure.
+    cpus: 1.5
     pids_limit: 256
     # Container sandbox: no privilege escalation, drop all Linux
     # capabilities, read-only root filesystem, and the ONLY writable
