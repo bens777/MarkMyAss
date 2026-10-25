@@ -2,6 +2,21 @@
 
 All notable changes to MarkMyAss (engine name: GhostMark) are documented in this file.
 
+## Unreleased
+
+### Added
+
+- Opt-in paid **batch lot** (`ghostmark.web.batch`, `GHOSTMARK_BATCH_ENABLED`,
+  off by default, hosted mode only): one Stripe Checkout payment (one-time,
+  price from `GHOSTMARK_STRIPE_PRICE_ID`, re-verified server-side against
+  `GHOSTMARK_BATCH_PRICE_CENTS` EUR) lets a visitor clean 2 to 50 images/PDFs
+  with the existing cleaners, verifiers and receipts and download every
+  success as one ZIP. No account, credits, e-mail or validity period: the
+  Stripe session is verified with Stripe's API and recorded once in a single
+  `batch_payments` table; one payment finalizes exactly one lot, and failed or
+  rejected files can be retried before that for free. The free single-file
+  tool is unchanged.
+
 ## [Unreleased]
 
 ### Added

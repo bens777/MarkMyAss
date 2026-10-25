@@ -85,15 +85,27 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     """Sliding-window rate limit per client IP, applied only to /api/ routes
     (``requests_per_minute``, from GHOSTMARK_RATE_LIMIT_PER_MINUTE)."""
 
-    def __init__(self, app, *, requests_per_minute: int, window_seconds: int = 60) -> None:
+    def __init__(
+        self,
+        app,
+        *,
+        requests_per_minute: int,
+        window_seconds: int = 60,
+        exempt_prefixes: tuple[str, ...] = (),
+    ) -> None:
         super().__init__(app)
         self._limit = requests_per_minute
         self._window = window_seconds
+        # /api/ paths that authenticate by other means (a Bearer pack token,
+        # a Stripe webhook signature) and legitimately burst above the
+        # anonymous per-IP budget -- see ghostmark.web.batch.
+        self._exempt_prefixes = exempt_prefixes
         self._hits: dict[str, deque[float]] = defaultdict(deque)
         self._lock = threading.Lock()
 
     async def dispatch(self, request: Request, call_next):
-        if not request.url.path.startswith("/api/"):
+        path = request.url.path
+        if not path.startswith("/api/") or path.startswith(self._exempt_prefixes):
             return await call_next(request)
 
         ip = _client_ip(request)

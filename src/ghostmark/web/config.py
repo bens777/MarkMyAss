@@ -45,6 +45,19 @@ class WebConfig:
     # sets GHOSTMARK_STATS_DB to a file on a dedicated writable volume so
     # the counter survives restarts (see docker-compose.prod.yml).
     stats_db_path: str | None = None
+    # --- Optional paid batch lot (see ghostmark.web.batch) -----------------
+    # Disabled by default. When enabled, both Stripe values must be set or
+    # the feature stays off (the free single-file tool is never affected
+    # either way). The secret key is read from the environment only and is
+    # never serialized by /api/config.
+    batch_enabled: bool = False
+    commerce_db_path: str | None = None
+    stripe_secret_key: str = ""
+    stripe_price_id: str = ""
+    # The server re-checks every paid Checkout Session against this amount
+    # (in EUR cents) before opening a lot -- the UI shows the same number.
+    batch_price_cents: int = 199
+    batch_max_files: int = 50
 
     @property
     def is_hosted(self) -> bool:
@@ -93,4 +106,10 @@ def load_config() -> WebConfig:
         processing_timeout_seconds=_env_int("GHOSTMARK_PROCESSING_TIMEOUT_SECONDS", 30),
         max_upload_mb=_env_int("GHOSTMARK_MAX_UPLOAD_MB", 50),
         stats_db_path=(os.environ.get("GHOSTMARK_STATS_DB", "").strip() or None),
+        batch_enabled=_env_str("GHOSTMARK_BATCH_ENABLED", "false").lower() in ("1", "true", "yes"),
+        commerce_db_path=(os.environ.get("GHOSTMARK_COMMERCE_DB", "").strip() or None),
+        stripe_secret_key=_env_str("GHOSTMARK_STRIPE_SECRET_KEY", ""),
+        stripe_price_id=_env_str("GHOSTMARK_STRIPE_PRICE_ID", ""),
+        batch_price_cents=max(1, _env_int("GHOSTMARK_BATCH_PRICE_CENTS", 199)),
+        batch_max_files=max(2, min(_env_int("GHOSTMARK_BATCH_MAX_FILES", 50), 50)),
     )

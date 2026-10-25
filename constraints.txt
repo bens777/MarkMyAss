@@ -23,6 +23,7 @@
 annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.14.2
+certifi==2026.10.23
 click==8.4.2
 colorama==0.4.6
 fastapi==0.141.1
@@ -40,10 +41,13 @@ pydantic==2.13.4
 pydantic_core==2.46.4
 Pygments==2.20.0
 python-multipart==0.0.32
+requests==2.34.2
 rich==15.0.0
 shellingham==1.5.4
 starlette==1.6.0
+stripe==15.4.0
 typer==0.27.1
 typing_extensions==4.16.0
 typing-inspection==0.4.4
+urllib3==2.8.0
 uvicorn==0.52.1

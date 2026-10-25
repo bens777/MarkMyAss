@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- English is the source language of every marker on this page; the
+       French strings live in i18n-fr.js (same dictionary as the homepage)
+       and are applied by i18n-apply.js. The title carries its own marker so
+       the shared apply script does not fall back to the homepage title. -->
+  <title data-i18n="batch.meta.title">Batch — clean 2 to 50 files at once | MarkMyAss</title>
+  <meta name="description" content="A paid shortcut: clean and verify 2 to 50 images and PDFs in one go and download everything as a ZIP. The single-file tool stays free and unlimited." />
+  <!-- Not launched yet: deliberately kept out of the sitemap and noindexed
+       until the paid lot is switched on for real. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="{{PUBLIC_URL}}/batch" />
+  <link rel="icon" href="static/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" href="static/art/markmyass-logo-64.png" sizes="64x64" />
+  <script src="static/theme-init.js"></script>
+  <script src="static/i18n.js"></script>
+  <link rel="stylesheet" href="static/style.css" />
+  <link rel="stylesheet" href="static/article.css" />
+</head>
+<body>
+  <main class="wrap article-wrap" id="main-content">
+    <header class="article-header">
+      <a href="." class="brand-link"><img src="static/art/markmyass-logo-64.png" alt="" width="22" height="22" style="vertical-align: -4px; margin-right: 0.35rem;" /> MarkMyAss</a>
+      <div class="lang-switch" role="group" aria-label="Language" data-i18n-attr="aria-label:lang.switch.aria">
+        <button type="button" class="lang-option" data-lang-set="fr-FR" lang="fr">FR</button>
+        <span class="lang-sep" aria-hidden="true">|</span>
+        <button type="button" class="lang-option" data-lang-set="en-US" lang="en">EN</button>
+      </div>
+    </header>
+
+    <article class="article">
+      <p class="article-hero">
+        <img src="static/art/page-metadata-cleaner.webp" alt="" width="440" height="295" class="hero-illustration" />
+      </p>
+      <p class="kicker" data-i18n="batch.kicker">Load the whole cargo hold.</p>
+      <h1 data-i18n="batch.h1">Clean 2 to 50 files at once</h1>
+
+      <!-- Before payment: no file picker here -- files are selected once, after Stripe -->
+      <section id="view-buy">
+        <p data-i18n="batch.buy.lead">The single-file cleaner is free, unlimited, and stays that way. This is only a shortcut when you have a stack of files: pay once, then clean <strong class="offer-range">2 to 50</strong> images or PDFs in one go and download every result as a ZIP.</p>
+        <ul>
+          <li data-i18n="batch.buy.fact1">Images (PNG, JPEG, WebP) and PDF only. One payment = one lot.</li>
+          <li data-i18n="batch.buy.fact2">Same cleaning, same independent verification, same receipts as the free tool.</li>
+          <li data-i18n="batch.buy.fact3">A file that fails or is rejected can be retried or replaced before the ZIP is built, at no extra cost.</li>
+          <li data-i18n="batch.buy.fact4">No account, no password, no subscription. Stripe handles the payment and may send you its receipt.</li>
+          <li data-i18n="batch.buy.fact5">What it removes: file metadata (EXIF, XMP, IPTC, PNG text chunks, PDF DocInfo/XMP) and supported C2PA provenance containers (JPEG, PNG). It does <em>not</em> remove visible watermarks, and it cannot guarantee the removal of statistical AI watermarks such as SynthID, which are not locally verifiable.</li>
+        </ul>
+        <p><button id="btn-buy" class="btn primary" type="button" data-i18n="batch.buy.button">Unlock batch processing — <span class="offer-price">€1.99</span></button></p>
+        <p class="hint" data-i18n="batch.buy.terms">One-time payment · No account · <span class="offer-range">2 to 50</span> images or PDFs · <span class="offer-max-file">10</span> MB max per file · <span class="offer-max-total">64</span> MB max per lot</p>
+        <p class="error hidden" id="buy-error"></p>
+        <p class="hint" data-i18n="batch.buy.freenote">Prefer free? Keep using the <a href=".">single-file cleaner</a>, or run MarkMyAss yourself with Docker — it's open source.</p>
+      </section>
+
+      <!-- Verifying the Stripe return -->
+      <section id="view-verify" class="hidden">
+        <p id="verify-status" data-i18n="batch.verify.status">Confirming your payment with Stripe…</p>
+        <p class="error hidden" id="verify-error"></p>
+        <p class="hidden" id="verify-back"><a href="batch" class="btn secondary" data-i18n="batch.verify.back">Back to the batch page</a></p>
+      </section>
+
+      <!-- After payment: the lot -->
+      <section id="view-lot" class="hidden">
+        <p class="summary" data-i18n="batch.lot.lead">Payment confirmed. Select your files (<span class="offer-range">2 to 50</span> images or PDFs) to start processing.</p>
+
+        <label id="lot-dropzone" for="lot-input" class="dropzone">
+          <span data-i18n="batch.lot.dropzone">Drop your images / PDFs here or</span>
+          <span class="btn secondary" data-i18n="batch.lot.choose">Choose files</span>
+        </label>
+        <input id="lot-input" type="file" multiple accept=".pdf,.png,.jpg,.jpeg,.webp" class="visually-hidden" />
+        <p class="hint" data-i18n="batch.lot.limits"><span class="offer-range">2 to 50</span> files · images and PDF only · up to <span class="offer-max-file">10</span> MB per file and <span class="offer-max-total">64</span> MB per lot.</p>
+        <p class="error hidden" id="lot-error"></p>
+
+        <div id="file-rows" class="signal-table"></div>
+        <p class="summary" id="lot-count"></p>
+
+        <p>
+          <button id="btn-finalize" class="btn primary" type="button" disabled data-i18n="batch.lot.finalize">Build the ZIP and finish this lot</button>
+        </p>
+        <p class="hint" data-i18n="batch.lot.finalizenote">Building the ZIP closes the lot: this payment cannot be used for another one afterwards. Failed or rejected files can still be retried or replaced before that.</p>
+        <p class="hint" data-i18n="batch.lot.statusnote">Each file is cleaned, verified, deep-cleaned only if the verification still finds removable data, then verified again. "Cleaned and verified" is shown only when the final independent verification is conclusive; otherwise the file is marked "verification incomplete" and flagged in the ZIP, and you can remove and replace it before finishing.</p>
+      </section>
+
+      <!-- Finalized -->
+      <section id="view-done" class="hidden">
+        <p class="summary" id="done-lead" data-i18n="batch.done.lead">Your lot is finished. This payment has been used; download your ZIP below (available for one hour).</p>
+        <p class="summary hidden" id="done-used" data-i18n="batch.done.used">This payment has already been used for a finalized lot. Its ZIP, if still available, can be downloaded below.</p>
+        <p><button id="btn-zip" class="btn primary" type="button" data-i18n="batch.done.zip">Download the ZIP</button></p>
+        <p class="error hidden" id="done-error"></p>
+        <p class="hint" data-i18n="batch.done.again">Need another lot? <a href="batch">Start a new one</a> (new payment).</p>
+      </section>
+    </article>
+  </main>
+  <script src="static/i18n-fr.js"></script>
+  <script src="static/i18n-apply.js"></script>
+  <script src="static/batch.js"></script>
+</body>
+</html>

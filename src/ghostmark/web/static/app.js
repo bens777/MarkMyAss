@@ -149,6 +149,9 @@
   function applyConfig(config) {
     const hosted = config.mode === "hosted";
     document.querySelectorAll(".hosted-only").forEach((elm) => elm.classList.toggle("hidden", !hosted));
+    // The paid batch link appears only when the server actually has the
+    // feature enabled and configured (see /api/config.batch_enabled).
+    document.querySelectorAll(".batch-only").forEach((elm) => elm.classList.toggle("hidden", !config.batch_enabled));
 
     if (hosted) {
       privacyNote.textContent = t(

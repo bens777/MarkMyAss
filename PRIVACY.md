@@ -51,6 +51,22 @@ If you use the hosted version instead of running MarkMyAss locally:
 - No CORS is configured and the API is not intended for cross-origin use
   by other websites.
 
+### Optional paid batch lot (only if enabled on the hosted site)
+
+The hosted site may offer a paid "batch lot": a convenience shortcut to
+clean 2 to 50 files in one go and download them as a ZIP. It changes
+nothing about the free tool and is off unless explicitly enabled. If you
+buy one:
+
+- Payment is handled entirely by Stripe (we never see your card, and
+  Stripe may send you its own receipt). The only thing we record is the
+  Stripe Checkout Session id, a status and two timestamps -- no e-mail,
+  no name, no IP address, and never any file name, content or hash. No
+  account is created and nothing is e-mailed by MarkMyAss.
+- The files of a lot are processed exactly like free sessions, in a
+  temporary directory that is deleted once the ZIP is downloaded or after
+  one hour at the latest.
+
 If you would rather not upload anything anywhere, use local MarkMyAss
 instead -- see the README's "Run MarkMyAss locally" section. Both modes
 run the exact same open-source code
@@ -62,7 +78,9 @@ processing happens.
 - Never sells or shares data with third parties (there is nothing
   collected to share).
 - Never uses uploaded content to train any model.
-- Never requires an account, email address, or payment.
+- Never requires an account, password or email address. Cleaning files
+  one at a time never requires a payment either; only the optional paid
+  batch lot above involves a payment, handled by Stripe.
 - Never adds tracking pixels, fingerprinting scripts, or ad networks.
 
 ## Independent verification (ExifTool + c2patool)

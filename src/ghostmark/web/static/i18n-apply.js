@@ -43,7 +43,9 @@
       });
     });
 
-    if (Object.prototype.hasOwnProperty.call(dict, "meta.title")) {
+    // The homepage title has no marker of its own; other pages (e.g. /batch)
+    // put a data-i18n marker on <title> and are translated above instead.
+    if (!document.querySelector("title[data-i18n]") && Object.prototype.hasOwnProperty.call(dict, "meta.title")) {
       document.title = dict["meta.title"];
     }
   }
