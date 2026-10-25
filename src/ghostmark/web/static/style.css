@@ -741,6 +741,36 @@ html[data-i18n-pending] body { visibility: hidden; }
   font-weight: 600;
 }
 .tab.active { background: var(--brand-salmon); border-color: var(--text); color: #12213d; font-weight: 700; }
+/* Paid batch upsell: a link styled like a third tab, visually distinct
+   (solid ink border + raised surface) so it reads as "go elsewhere", not as
+   a mode switch. Hidden by default; app.js reveals it when batch_enabled. */
+.tabs { flex-wrap: wrap; }
+/* With the upsell showing, size the three by their labels (none wraps) and
+   let the row break so the upsell takes its own full line when it's short
+   on room; with it hidden, the two free tabs keep their original flex: 1. */
+.tabs:has(.tab-upsell:not(.hidden)) .tab { flex: 1 1 auto; }
+.tab-upsell {
+  padding: 0.6rem 0.9rem;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.25;
+  text-decoration: none;
+  border-color: var(--text);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-btn);
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.tab-upsell:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--text); }
+.tab-upsell:focus-visible { outline: 2px solid var(--spectral); outline-offset: 2px; }
+@media (max-width: 640px) {
+  /* The two free tabs share the first row exactly as without the upsell;
+     the upsell always wraps onto its own full-width row. */
+  .tabs:has(.tab-upsell:not(.hidden)) .tab { flex: 1; }
+  .tabs:has(.tab-upsell:not(.hidden)) .tab-upsell { flex-basis: 100%; }
+}
 
 .skip-link {
   position: absolute;

@@ -49,6 +49,7 @@
     "tool.flavor.input": "Voyons ce qui se cache à l'intérieur.",
     "tool.tab.text": "Coller du texte",
     "tool.tab.file": "Téléverser un fichier",
+    "tool.tab.batch": "Traiter 2 à 50 fichiers — 1,99 €",
     "tool.formats": "Formats acceptés : TXT · MD · JSON · CSV · JPG · JPEG · PNG · WEBP · PDF",
     "tool.placeholder": "Collez le texte à inspecter...",
     "tool.dropzone.drag": "Glissez un fichier ici",

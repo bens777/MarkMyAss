@@ -167,6 +167,10 @@
       <div class="tabs">
         <button id="tab-text" class="tab active" type="button" data-i18n="tool.tab.text">Paste Text</button>
         <button id="tab-file" class="tab" type="button" data-i18n="tool.tab.file">Upload File</button>
+        <!-- Paid batch upsell: a plain link to /batch, revealed by app.js only
+             when /api/config reports batch_enabled=true (same .batch-only
+             switch as the nav link). The free single-file flow is unchanged. -->
+        <a id="tab-batch" href="batch" class="tab tab-upsell batch-only hidden" data-i18n="tool.tab.batch">Process 2–50 files — €1.99</a>
       </div>
       <!-- Kept in lockstep with ghostmark.security.SUPPORTED_EXTENSIONS
            (and this file input's accept attribute below). -->
