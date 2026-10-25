@@ -29,6 +29,8 @@ I18N_FR_JS = STATIC / "i18n-fr.js"
 I18N_APPLY_JS = STATIC / "i18n-apply.js"
 
 INDEX_HTML = INDEX.read_text(encoding="utf-8")
+# /batch shares the same dictionary and apply script (see tests/test_batch_i18n.py).
+BATCH_HTML = (STATIC / "batch.html").read_text(encoding="utf-8")
 I18N_JS_SRC = I18N_JS.read_text(encoding="utf-8")
 I18N_FR_SRC = I18N_FR_JS.read_text(encoding="utf-8")
 
@@ -36,10 +38,12 @@ I18N_FR_SRC = I18N_FR_JS.read_text(encoding="utf-8")
 # --- helpers ----------------------------------------------------------------------------
 
 
-def _dom_i18n_keys() -> set[str]:
-    """Every translation key referenced by index.html (content + attributes)."""
-    keys = set(re.findall(r'data-i18n="([^"]+)"', INDEX_HTML))
-    for spec in re.findall(r'data-i18n-attr="([^"]+)"', INDEX_HTML):
+def _dom_i18n_keys(html: str = INDEX_HTML + BATCH_HTML) -> set[str]:
+    """Every translation key referenced by the given HTML (content + attributes).
+
+    Defaults to every page that uses the shared dictionary (homepage + /batch)."""
+    keys = set(re.findall(r'data-i18n="([^"]+)"', html))
+    for spec in re.findall(r'data-i18n-attr="([^"]+)"', html):
         for pair in spec.split(";"):
             if ":" in pair:
                 keys.add(pair.split(":", 1)[1].strip())
@@ -99,8 +103,9 @@ def test_french_dict_has_no_orphan_keys():
     """Guard against dead dictionary entries drifting out of sync with the DOM."""
     dom = _dom_i18n_keys()
     fr = _fr_dict_keys()
-    # meta.title is applied to document.title, not to a DOM marker.
-    orphans = sorted(fr - dom - {"meta.title"})
+    # meta.title is applied to document.title, not to a DOM marker; the
+    # batch.err.* entries translate API error codes at runtime (batch.js).
+    orphans = sorted(k for k in fr - dom - {"meta.title"} if not k.startswith("batch.err."))
     assert not orphans, f"French keys with no matching marker: {orphans}"
 
 

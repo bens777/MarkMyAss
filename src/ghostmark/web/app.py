@@ -2,7 +2,9 @@
 public markmyass.com hosted deployment share this same app.
 
 Design constraints enforced here:
-  - No route ever proxies or fetches anything over the network.
+  - No route ever proxies or fetches anything over the network -- with one
+    opt-in exception: the paid batch lot (ghostmark.web.batch, off by
+    default) talks to Stripe's API, and only when explicitly enabled.
   - Uploaded files are stored only in a per-session temp directory under the
     OS temp dir, with a randomized session id and a sanitized filename.
   - Sessions (and their temp files) are cleaned up after a TTL (10-15
@@ -64,7 +66,7 @@ from ghostmark.security import (
     suffix_of,
 )
 from ghostmark.verifier import verify_file, verify_text
-from ghostmark.web import lab_data
+from ghostmark.web import batch, lab_data
 from ghostmark.web.benchmarks import run_benchmarks, to_markdown_table, to_summary_markdown
 from ghostmark.web.concurrency import BoundedRunner, ProcessingTimeoutError, ServerBusyError
 from ghostmark.web.config import WebConfig, load_config
@@ -352,7 +354,9 @@ async def _read_upload_bounded(file: UploadFile, max_bytes: int) -> bytes:
     return b"".join(chunks)
 
 
-def create_app(config: WebConfig | None = None) -> FastAPI:
+def create_app(config: WebConfig | None = None, *, batch_gateway: Any = None) -> FastAPI:
+    # batch_gateway exists so tests can inject a fake Stripe client;
+    # production leaves it None and builds the real one.
     config = config or load_config()
 
     # openapi_url=None also disables the raw schema at /openapi.json (docs
@@ -391,6 +395,9 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
     def _sweep_loop() -> None:
         while not stop_sweeper.wait(TTL_SWEEP_INTERVAL_SECONDS):
             store.sweep_expired()
+            feature = getattr(app.state, "batch", None)
+            if feature is not None:
+                feature.sweep()
 
     sweeper_thread = threading.Thread(target=_sweep_loop, daemon=True, name="ghostmark-session-ttl-sweeper")
     sweeper_thread.start()
@@ -399,7 +406,11 @@ def create_app(config: WebConfig | None = None) -> FastAPI:
     # No CORS middleware is added intentionally: the frontend is served
     # same-origin by this app, so there is no legitimate cross-origin
     # caller and no Access-Control-Allow-Origin should ever be sent.
-    app.add_middleware(RateLimitMiddleware, requests_per_minute=config.rate_limit_per_minute)
+    app.add_middleware(
+        RateLimitMiddleware,
+        requests_per_minute=config.rate_limit_per_minute,
+        exempt_prefixes=batch.RATE_LIMIT_EXEMPT_PREFIXES if config.batch_enabled else (),
+    )
     app.add_middleware(SecurityHeadersMiddleware)
 
     @app.exception_handler(Exception)
@@ -774,6 +785,9 @@ Proof, not promises.
             "c2patool_version": c2patool_verifier.version(),
             "ghostmark_version": __version__,
             "reprocess_profiles": profiles_dict(),
+            # True only when the paid batch lot is enabled AND fully
+            # configured (see ghostmark.web.batch.install). Never any secret.
+            "batch_enabled": getattr(app.state, "batch", None) is not None,
         }
 
     # Public, aggregate-only social-proof numbers. No personal data, no
@@ -1086,5 +1100,25 @@ Proof, not promises.
     def delete_session(session_id: str) -> dict[str, bool]:
         store.drop(session_id)
         return {"ok": True}
+
+    # --- Paid batch lot (opt-in, hosted only) -----------------------------------------
+    # Everything above is the unchanged free tool. The batch lot is an
+    # additive module mounted only when GHOSTMARK_BATCH_ENABLED is set and
+    # fully configured; it reuses the same runner, cleaners, verifiers,
+    # receipts and public counter rather than re-implementing any of them.
+    app.state.batch = None
+    if config.batch_enabled and config.is_hosted:
+        _batch_html = _inject_base_href(
+            inject_context((STATIC_DIR / "batch.html").read_text(encoding="utf-8"), {"PUBLIC_URL": config.public_url}),
+            config.base_path,
+        )
+        app.state.batch = batch.install(
+            app,
+            config=config,
+            run=runner.run,
+            record_public_clean=stats.record_clean,
+            page_html=_batch_html,
+            gateway=batch_gateway,
+        )
 
     return app

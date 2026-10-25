@@ -6,6 +6,10 @@
 
 .article-header {
   margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 .article-header .brand-link {
   font-size: 1.1rem;

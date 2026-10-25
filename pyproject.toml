@@ -49,6 +49,13 @@ dependencies = [
   # Reprocess feature. Small, pure-C wheel -- NOT an ML/torch dependency; keeps
   # the production image lightweight (no CUDA/diffusion).
   "numpy>=1.26",
+  # Stripe SDK: used ONLY by the opt-in paid batch lot (ghostmark.web.batch,
+  # off by default) to create Checkout Sessions and re-verify them as paid.
+  # Pinned to the 15.x line that constraints.txt (and therefore the Docker
+  # image) installs: stripe-python >= 13 returns StripeObject (no longer a
+  # dict), which ghostmark.web.batch handles via to_dict(); a bare
+  # `pip install -e .` must not drift to another major with other surprises.
+  "stripe>=15.4,<16",
 ]
 
 [project.optional-dependencies]
