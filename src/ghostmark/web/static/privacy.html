@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- English is the source language of every marker on this page; the
+       French strings live in i18n-fr.js (same dictionary as the homepage)
+       and are applied by i18n-apply.js. Every statement below describes
+       what the shipped code actually does -- nothing more, nothing less. -->
+  <title data-i18n="privacy.meta.title">Privacy Policy | MarkMyAss</title>
+  <meta name="description" content="How MarkMyAss handles your files, the paid batch, Stripe payments, aggregate statistics, your GDPR rights and browser storage. No cookies, no tracking." data-i18n-attr="content:privacy.meta.desc" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="{{PUBLIC_URL}}/privacy" />
+  <link rel="icon" href="static/favicon.ico" sizes="48x48" />
+  <link rel="icon" type="image/png" href="static/art/markmyass-logo-64.png" sizes="64x64" />
+  <script src="static/theme-init.js"></script>
+  <script src="static/i18n.js"></script>
+  <link rel="stylesheet" href="static/style.css" />
+  <link rel="stylesheet" href="static/article.css" />
+</head>
+<body>
+  <main class="wrap article-wrap" id="main-content">
+    <header class="article-header">
+      <a href="." class="brand-link"><img src="static/art/markmyass-logo-64.png" alt="" width="22" height="22" style="vertical-align: -4px; margin-right: 0.35rem;" /> MarkMyAss</a>
+      <div class="lang-switch" role="group" aria-label="Language" data-i18n-attr="aria-label:lang.switch.aria">
+        <button type="button" class="lang-option" data-lang-set="fr-FR" lang="fr">FR</button>
+        <span class="lang-sep" aria-hidden="true">|</span>
+        <button type="button" class="lang-option" data-lang-set="en-US" lang="en">EN</button>
+      </div>
+    </header>
+
+    <article class="article legal-page">
+      <p class="kicker" data-i18n="privacy.kicker">Nothing to hide, nothing kept.</p>
+      <h1 data-i18n="privacy.h1">Privacy Policy</h1>
+      <p class="legal-updated" data-i18n="privacy.updated">Last updated: 25 October 2026.</p>
+      <p data-i18n="privacy.intro">This policy covers the hosted MarkMyAss service at markmyass.com. MarkMyAss is also open source and can be run entirely on your own computer, in which case nothing is ever sent anywhere.</p>
+
+      <h2 data-i18n="privacy.s1.h">1. Data controller</h2>
+      <p data-i18n="privacy.s1.who">Mr Benoit Sartre, sole proprietor (<em>entrepreneur individuel</em>, EI)</p>
+      <address class="legal-address">66 Avenue des Champs-Élysées
+75008 Paris
+France</address>
+      <p data-i18n="privacy.s1.ids"><strong>SIREN:</strong> 915 385 124 · <strong>RCS:</strong> Paris 915 385 124</p>
+      <p data-i18n="privacy.s1.contact"><strong>Contact e-mail:</strong> to be completed. Until then, privacy questions can be sent through the project's public repository: <a href="https://github.com/bens777/MarkMyAss/issues" rel="noopener">github.com/bens777/MarkMyAss/issues</a>.</p>
+
+      <h2 data-i18n="privacy.s2.h">2. How files are processed</h2>
+      <ul>
+        <li data-i18n="privacy.s2.i1">Files and pasted text are processed only to provide the service you asked for: inspecting, cleaning and verifying them.</li>
+        <li data-i18n="privacy.s2.i2">Files and results are stored temporarily, in an isolated per-session directory on the server, never in a database.</li>
+        <li data-i18n="privacy.s2.i3">They are deleted automatically. A free single-file session is deleted a few minutes after processing; the exact delay is shown at the bottom of the tool page.</li>
+        <li data-i18n="privacy.s2.i4">For the paid batch, intermediate results and the ZIP are kept for one hour at most.</li>
+        <li data-i18n="privacy.s2.i5">The content of your files is never used for advertising, profiling or training any artificial intelligence.</li>
+        <li data-i18n="privacy.s2.i6">Application logs record only technical events (errors and warnings). They never contain file names, file contents, IP addresses or payment identifiers.</li>
+      </ul>
+
+      <h2 data-i18n="privacy.s3.h">3. Paid batch data</h2>
+      <p data-i18n="privacy.s3.p1">For the paid batch, the commerce database keeps only the technical information needed to deliver one batch per payment:</p>
+      <ul>
+        <li data-i18n="privacy.s3.i1">the Stripe Checkout Session identifier;</li>
+        <li data-i18n="privacy.s3.i2">the status of the batch (paid, processing, finalized);</li>
+        <li data-i18n="privacy.s3.i3">the payment date, as reported by Stripe;</li>
+        <li data-i18n="privacy.s3.i4">the technical creation and finalization timestamps.</li>
+      </ul>
+      <p data-i18n="privacy.s3.p2">No file name, no uploaded content, no e-mail address and no IP address is stored in this commerce database.</p>
+
+      <h2 data-i18n="privacy.s4.h">4. Stripe payments</h2>
+      <ul>
+        <li data-i18n="privacy.s4.i1">Stripe processes the information needed for the payment, on its own payment page.</li>
+        <li data-i18n="privacy.s4.i2">MarkMyAss never receives or stores full card numbers.</li>
+        <li data-i18n="privacy.s4.i3">Stripe's processing is also governed by Stripe's own privacy policy: <a href="https://stripe.com/privacy" rel="noopener">stripe.com/privacy</a>.</li>
+      </ul>
+
+      <h2 data-i18n="privacy.s5.h">5. Statistics</h2>
+      <p data-i18n="privacy.s5.p1">MarkMyAss keeps aggregate statistics only: a lifetime count of files cleaned and, for each successful clean, a timestamp kept for 24 hours to compute a rolling 24-hour count. They are shown on the homepage and only measure the overall use of the service.</p>
+      <p data-i18n="privacy.s5.p2">These statistics contain no file name, no content, no IP address and no identifier of any kind. There is no analytics service, no advertising tool and no third-party tracker on the site.</p>
+
+      <h2 data-i18n="privacy.s6.h">6. Legal basis and retention</h2>
+      <ul>
+        <li data-i18n="privacy.s6.i1"><strong>Processing your files:</strong> performance of the service you request. Retention: a few minutes for a free session (delay shown on the tool page), one hour at most for batch results and ZIPs.</li>
+        <li data-i18n="privacy.s6.i2"><strong>Payment and paid batch:</strong> performance of the contract. The batch record (Stripe session identifier, status, dates) is currently kept without automatic deletion, as the technical record of the transaction.</li>
+        <li data-i18n="privacy.s6.i3"><strong>Aggregate statistics and security:</strong> legitimate interest in measuring overall use and protecting the service. For rate limiting, the server keeps each caller's IP address in memory for about one minute only; it is never written to disk.</li>
+        <li data-i18n="privacy.s6.i4"><strong>Legal obligations:</strong> billing and accounting data that Stripe or the business may be required to retain are kept for the periods set by applicable law.</li>
+      </ul>
+
+      <h2 data-i18n="privacy.s7.h">7. Your rights (GDPR)</h2>
+      <p data-i18n="privacy.s7.p1">Under the General Data Protection Regulation you have the right to access, rectify and erase your data, to restrict its processing, to object to it where applicable, and to data portability where applicable. You can exercise them through the contact above; a batch can only be identified by its Stripe session identifier or Stripe receipt, since nothing else is stored.</p>
+      <p data-i18n="privacy.s7.p2">You can also lodge a complaint with the French data protection authority, the CNIL: <a href="https://www.cnil.fr/" rel="noopener">www.cnil.fr</a>.</p>
+
+      <h2 data-i18n="privacy.s8.h">8. Cookies and browser storage</h2>
+      <p data-i18n="privacy.s8.p1">MarkMyAss sets no cookies. The site only uses your browser's local storage for two preferences: the theme (<code>markmyass-theme</code>) and the language (<code>markmyass-language</code>). They stay in your browser, are never sent to the server, and are strictly necessary to remember your choice, so no consent banner is needed.</p>
+      <p data-i18n="privacy.s8.p2">The payment page is hosted by Stripe on its own domain and may use Stripe's own cookies, governed by Stripe's policy linked above.</p>
+      <p data-i18n="privacy.s8.legal">Publisher details and terms of sale are in the <a href="legal">legal notice</a>.</p>
+    </article>
+
+    <footer>
+      <nav class="footer-sitemap footer-legal" aria-label="Legal pages" data-i18n-attr="aria-label:footer.legal.aria">
+        <a href="legal" data-i18n="footer.legal">Legal &amp; Terms</a>
+        <a href="privacy" data-i18n="footer.privacy">Privacy</a>
+      </nav>
+    </footer>
+  </main>
+  <script src="static/i18n-fr.js"></script>
+  <script src="static/i18n-apply.js"></script>
+</body>
+</html>

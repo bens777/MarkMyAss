@@ -29,8 +29,10 @@ I18N_FR_JS = STATIC / "i18n-fr.js"
 I18N_APPLY_JS = STATIC / "i18n-apply.js"
 
 INDEX_HTML = INDEX.read_text(encoding="utf-8")
-# /batch shares the same dictionary and apply script (see tests/test_batch_i18n.py).
+# /batch, /legal and /privacy share the same dictionary and apply script
+# (see tests/test_batch_i18n.py and tests/test_legal_pages.py).
 BATCH_HTML = (STATIC / "batch.html").read_text(encoding="utf-8")
+LEGAL_HTML = (STATIC / "legal.html").read_text(encoding="utf-8") + (STATIC / "privacy.html").read_text(encoding="utf-8")
 I18N_JS_SRC = I18N_JS.read_text(encoding="utf-8")
 I18N_FR_SRC = I18N_FR_JS.read_text(encoding="utf-8")
 
@@ -38,10 +40,11 @@ I18N_FR_SRC = I18N_FR_JS.read_text(encoding="utf-8")
 # --- helpers ----------------------------------------------------------------------------
 
 
-def _dom_i18n_keys(html: str = INDEX_HTML + BATCH_HTML) -> set[str]:
+def _dom_i18n_keys(html: str = INDEX_HTML + BATCH_HTML + LEGAL_HTML) -> set[str]:
     """Every translation key referenced by the given HTML (content + attributes).
 
-    Defaults to every page that uses the shared dictionary (homepage + /batch)."""
+    Defaults to every page that uses the shared dictionary (homepage, /batch,
+    /legal, /privacy)."""
     keys = set(re.findall(r'data-i18n="([^"]+)"', html))
     for spec in re.findall(r'data-i18n-attr="([^"]+)"', html):
         for pair in spec.split(";"):

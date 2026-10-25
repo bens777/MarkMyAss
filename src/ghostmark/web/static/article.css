@@ -102,6 +102,21 @@
   color: var(--text);
 }
 
+/* /legal and /privacy: deliberately plain pages. The postal address keeps
+   its line breaks; the "last updated" line is quiet. */
+.legal-address {
+  font-style: normal;
+  white-space: pre-line;
+  margin: 0 0 1rem;
+  color: var(--text);
+}
+.legal-updated {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+/* Legal links: the same quiet footer row as the sitemap links. */
+.footer-legal { margin-top: 0.4rem; }
+
 .article a {
   color: var(--accent);
 }

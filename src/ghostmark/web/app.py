@@ -447,6 +447,9 @@ def create_app(config: WebConfig | None = None, *, batch_gateway: Any = None) ->
       <p><a href="." class="btn primary">Back to the cleaner</a></p>
       <p><a href="lab">AI Watermark Lab</a> · <a href="benchmarks">Benchmarks</a> · <a href="run-ai-locally">Run Models Locally</a></p>
     </article>
+    <footer>
+      <nav class="footer-sitemap footer-legal" aria-label="Legal pages"><a href="legal">Legal &amp; Terms</a><a href="privacy">Privacy</a></nav>
+    </footer>
   </main>
 </body>
 </html>
@@ -482,6 +485,26 @@ def create_app(config: WebConfig | None = None, *, batch_gateway: Any = None) ->
     @app.get("/", response_class=HTMLResponse)
     def index() -> HTMLResponse:
         return HTMLResponse(_index_html)
+
+    # Legal notice + terms of sale and privacy policy: plain static pages
+    # (same i18n system as the homepage), always served, linked from every
+    # footer. Rendered once per process like the homepage.
+    _legal_html = _inject_base_href(
+        inject_context((STATIC_DIR / "legal.html").read_text(encoding="utf-8"), {"PUBLIC_URL": config.public_url}),
+        config.base_path,
+    )
+    _privacy_html = _inject_base_href(
+        inject_context((STATIC_DIR / "privacy.html").read_text(encoding="utf-8"), {"PUBLIC_URL": config.public_url}),
+        config.base_path,
+    )
+
+    @app.get("/legal", response_class=HTMLResponse)
+    def legal_page() -> HTMLResponse:
+        return HTMLResponse(_legal_html)
+
+    @app.get("/privacy", response_class=HTMLResponse)
+    def privacy_page() -> HTMLResponse:
+        return HTMLResponse(_privacy_html)
 
     # Rendered once per process -- the content is a static file, not
     # per-request state, so there's no reason to re-run the Markdown

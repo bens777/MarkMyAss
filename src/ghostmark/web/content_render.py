@@ -89,6 +89,10 @@ def render_article_page(
         '<p class="footer-ecosystem"><a href="https://magicconnect.ai/?utm_source=markmyass'
         '&amp;utm_medium=footer&amp;utm_campaign=ecosystem" rel="noopener">MagicConnect.ai</a>'
         ' — AI customer conversations, automated.</p>'
+        # Legal notice / terms of sale and privacy policy, on every page.
+        # These article pages are English-only, hence the English labels.
+        '<nav class="footer-sitemap footer-legal" aria-label="Legal pages">'
+        '<a href="legal">Legal &amp; Terms</a><a href="privacy">Privacy</a></nav>'
     )
 
     return f"""<!doctype html>

@@ -101,3 +101,8 @@ service, and no data is sent anywhere by using them.
 
 See `SECURITY.md` for how to report a security issue, or open a GitHub
 issue for a general privacy question.
+
+The hosted site publishes a bilingual (FR/EN) privacy policy at
+https://markmyass.com/privacy and its legal notice / terms of sale at
+https://markmyass.com/legal (`src/ghostmark/web/static/privacy.html` and
+`legal.html`); this file is the developer-facing summary.
