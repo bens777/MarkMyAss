@@ -46,10 +46,11 @@
           <li data-i18n="batch.buy.fact2">Same cleaning, same independent verification, same receipts as the free tool.</li>
           <li data-i18n="batch.buy.fact3">A file that fails or is rejected can be retried or replaced before the ZIP is built, at no extra cost.</li>
           <li data-i18n="batch.buy.fact4">No account, no password, no subscription. Stripe handles the payment and may send you its receipt.</li>
+          <li data-i18n="batch.buy.fact6">You have <strong><span class="offer-window">24</span> hours after payment</strong> to process and finish your lot, coming back to the same page as often as you like; past that, the payment is no longer usable. Once built, the ZIP stays downloadable for <span class="offer-zip-hours">1</span> hour.</li>
           <li data-i18n="batch.buy.fact5">What it removes: file metadata (EXIF, XMP, IPTC, PNG text chunks, PDF DocInfo/XMP) and supported C2PA provenance containers (JPEG, PNG). It does <em>not</em> remove visible watermarks, and it cannot guarantee the removal of statistical AI watermarks such as SynthID, which are not locally verifiable.</li>
         </ul>
         <p><button id="btn-buy" class="btn primary" type="button" data-i18n="batch.buy.button">Unlock batch processing — <span class="offer-price">€1.99</span></button></p>
-        <p class="hint" data-i18n="batch.buy.terms">One-time payment · No account · <span class="offer-range">2 to 50</span> images or PDFs · <span class="offer-max-file">10</span> MB max per file · <span class="offer-max-total">64</span> MB max per lot</p>
+        <p class="hint" data-i18n="batch.buy.terms">One-time payment · No account · <span class="offer-range">2 to 50</span> images or PDFs · <span class="offer-max-file">10</span> MB max per file · <span class="offer-max-total">64</span> MB max per lot · <span class="offer-window">24</span> hours after payment to finish the lot</p>
         <p class="error hidden" id="buy-error"></p>
         <p class="hint" data-i18n="batch.buy.freenote">Prefer free? Keep using the <a href=".">single-file cleaner</a>, or run MarkMyAss yourself with Docker — it's open source.</p>
       </section>
@@ -64,6 +65,7 @@
       <!-- After payment: the lot -->
       <section id="view-lot" class="hidden">
         <p class="summary" data-i18n="batch.lot.lead">Payment confirmed. Select your files (<span class="offer-range">2 to 50</span> images or PDFs) to start processing.</p>
+        <p class="hint" id="lot-window" data-i18n="batch.lot.window">You have 24 hours after payment to complete this batch.</p>
 
         <label id="lot-dropzone" for="lot-input" class="dropzone">
           <span data-i18n="batch.lot.dropzone">Drop your images / PDFs here or</span>
@@ -79,7 +81,7 @@
         <p>
           <button id="btn-finalize" class="btn primary" type="button" disabled data-i18n="batch.lot.finalize">Build the ZIP and finish this lot</button>
         </p>
-        <p class="hint" data-i18n="batch.lot.finalizenote">Building the ZIP closes the lot: this payment cannot be used for another one afterwards. Failed or rejected files can still be retried or replaced before that.</p>
+        <p class="hint" data-i18n="batch.lot.finalizenote">Building the ZIP closes the lot: this payment cannot be used for another one afterwards, and the ZIP stays downloadable for one hour. Failed or rejected files can still be retried or replaced before that. If you leave and come back with the same link within the 24 hours, you can select your files again.</p>
         <p class="hint" data-i18n="batch.lot.statusnote">Each file is cleaned, verified, deep-cleaned only if the verification still finds removable data, then verified again. "Cleaned and verified" is shown only when the final independent verification is conclusive; otherwise the file is marked "verification incomplete" and flagged in the ZIP, and you can remove and replace it before finishing.</p>
       </section>
 

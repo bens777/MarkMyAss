@@ -8,9 +8,16 @@ Reprocess and receipts, and downloads every result in one ZIP.
 
 Deliberately minimal (this is an MVP to test whether visitors pay):
 
-- No account, no credits, no validity period, no e-mail, no private link.
-  The Stripe Checkout Session id (``cs_...``, returned to the browser by
-  Stripe's own success redirect) is the temporary proof of payment.
+- No account, no credits, no e-mail, no private link. The Stripe Checkout
+  Session id (``cs_...``, returned to the browser by Stripe's own success
+  redirect) is the proof of payment AND the way back to the lot: the same
+  URL can be reopened at any time within the processing window.
+- Time window: the customer has 24 hours after the Stripe payment to
+  process and finalize the lot. The window starts at the ``created`` time
+  of the Stripe-verified Checkout Session (never at the first upload, the
+  first visit, or any date sent by the browser). Past it, every lot route
+  answers HTTP 410. Once the ZIP exists it stays downloadable for one hour
+  from its creation; then HTTP 410 as well.
 - It is NEVER trusted on its own: before a lot is opened the server asks
   Stripe's API that the session exists, is ``paid``, and matches this offer
   (amount, currency and the metadata we stamped at creation). Only then is
@@ -20,9 +27,13 @@ Deliberately minimal (this is an MVP to test whether visitors pay):
   two lots; finalizing is a guarded UPDATE, so only one ZIP can ever close
   the lot. Failed or incomplete files can be replaced or retried for free
   until the ZIP exists; afterwards the payment is spent.
-- Nothing but the session id, a status and two timestamps is stored. File
-  names, contents, hashes, e-mails, IPs or full Stripe objects never reach
-  the database, and the session id never reaches the logs.
+- Nothing but the session id, a status and three timestamps (lot opened,
+  Stripe payment date, finalized) is stored. File names, contents, hashes,
+  e-mails, IPs or full Stripe objects never reach the database, and the
+  session id never reaches the logs.
+- If the container restarts and the temporary files vanish before the ZIP,
+  the payment is not lost: within the 24 hours the customer simply selects
+  the files again and the lot restarts. A finalized lot is never reopened.
 
 Per-file pipeline (every step is an existing free-tool function, driven by
 the browser one request at a time so the UI can show real progress):
@@ -92,6 +103,11 @@ BATCH_CURRENCY = "eur"
 # production, shared with the free tool) until the ZIP is built, and the ZIP
 # is roughly the same size again, so 64 MB keeps the worst case under 140 MB.
 BATCH_MAX_TOTAL_MB = 64
+# How long a customer has, after the Stripe payment, to process and finalize
+# the lot -- measured from the Checkout Session's own `created` time.
+BATCH_WINDOW_HOURS = 24
+BATCH_WINDOW_SECONDS = BATCH_WINDOW_HOURS * 60 * 60
+# How long the finished ZIP (and any intermediate result) stays on disk.
 RESULT_TTL_SECONDS = 60 * 60
 WORKDIR_PREFIX = "ghostmark-batch-"
 SESSION_HEADER = "x-batch-session"
@@ -141,21 +157,35 @@ class PaymentStore:
                 "  stripe_session_id TEXT NOT NULL UNIQUE,"
                 "  status TEXT NOT NULL CHECK (status IN ('paid', 'processing', 'finalized')),"
                 "  created_at REAL NOT NULL,"
-                "  finalized_at REAL)"
+                "  finalized_at REAL,"
+                "  paid_at REAL)"
             )
+            # Migration (backward compatible, additive only): databases created
+            # before the 24-hour window lack `paid_at` (the Stripe payment
+            # date). Existing rows are kept untouched; their window falls back
+            # to `created_at` until a verification backfills the Stripe value.
+            cols = {r["name"] for r in conn.execute("PRAGMA table_info(batch_payments)")}
+            if "paid_at" not in cols:
+                conn.execute("ALTER TABLE batch_payments ADD COLUMN paid_at REAL")
 
-    def open_lot(self, stripe_session_id: str, now: float | None = None) -> sqlite3.Row:
+    def open_lot(self, stripe_session_id: str, paid_at: float, now: float | None = None) -> sqlite3.Row:
         """Register a Stripe-verified payment and return its row.
 
         INSERT OR IGNORE on the UNIQUE session id: concurrent calls for the
         same payment all land on the same single row (one payment, one lot).
+        `paid_at` is the Checkout Session's `created` time as reported by
+        Stripe; a pre-migration row without it is backfilled here.
         """
 
         now = time.time() if now is None else now
         with self._lock, closing(self._connect()) as conn, conn:
             conn.execute(
-                "INSERT OR IGNORE INTO batch_payments (stripe_session_id, status, created_at) VALUES (?, 'paid', ?)",
-                (stripe_session_id, now),
+                "INSERT OR IGNORE INTO batch_payments (stripe_session_id, status, created_at, paid_at) VALUES (?, 'paid', ?, ?)",
+                (stripe_session_id, now, paid_at),
+            )
+            conn.execute(
+                "UPDATE batch_payments SET paid_at = ? WHERE stripe_session_id = ? AND paid_at IS NULL",
+                (paid_at, stripe_session_id),
             )
             return conn.execute("SELECT * FROM batch_payments WHERE stripe_session_id = ?", (stripe_session_id,)).fetchone()
 
@@ -234,6 +264,9 @@ def session_fields(session: Any) -> dict[str, Any]:
         "amount_total": s.get("amount_total"),
         "currency": s.get("currency"),
         "metadata": dict(s.get("metadata") or {}),
+        # Unix time the Checkout Session was created, from Stripe itself: the
+        # origin of the 24-hour processing window.
+        "created": s.get("created"),
     }
 
 
@@ -339,12 +372,13 @@ class SessionIn(BaseModel):
 
 class BatchFeature:
     def __init__(self, *, config: WebConfig, store: PaymentStore, gateway: Any, run: Callable[..., Any],
-                 record_public_clean: Callable[[], Any]) -> None:
+                 record_public_clean: Callable[[], Any], clock: Callable[[], float] = time.time) -> None:
         self.config = config
         self.store = store
         self.gateway = gateway
         self._run = run  # the app's BoundedRunner.run (timeout + concurrency cap)
         self._record_public_clean = record_public_clean
+        self._now = clock  # server time only; the browser never supplies a date
         self._tmp = Path(tempfile.gettempdir())
         self._locks: dict[int, threading.Lock] = {}
         self._locks_guard = threading.Lock()
@@ -394,7 +428,40 @@ class BatchFeature:
             or (s.get("metadata") or {}).get("markmyass") != _CHECKOUT_METADATA["markmyass"]
         ):
             raise _err(409, "offer_mismatch", "This payment does not match the batch offer.")
-        return self.store.open_lot(session_id)
+        now = self._now()
+        created = s.get("created")
+        if not isinstance(created, int | float) or isinstance(created, bool) or created <= 0:
+            # Stripe always sets `created`; if it ever did not, the window
+            # starts now (server time) -- never from anything the browser sent.
+            log.warning("batch: Stripe session without a usable 'created' time; window starts now")
+            created = now
+        return self.store.open_lot(session_id, paid_at=float(created), now=now)
+
+    # -- the 24-hour window --------------------------------------------------------------
+
+    @staticmethod
+    def paid_at(row: sqlite3.Row) -> float:
+        """Origin of the window: Stripe's `created` (pre-migration rows fall
+        back to the time their lot was opened, which is never earlier)."""
+
+        return float(row["paid_at"] if row["paid_at"] is not None else row["created_at"])
+
+    def seconds_left(self, row: sqlite3.Row) -> float:
+        return self.paid_at(row) + BATCH_WINDOW_SECONDS - self._now()
+
+    def gate(self, row: sqlite3.Row, *, allow_finalized: bool) -> sqlite3.Row:
+        """The two states in which a lot cannot be worked on: spent, or past
+        its 24 hours without a finalized ZIP (HTTP 410)."""
+
+        if row["status"] == "finalized":
+            if not allow_finalized:
+                raise _err(409, "already_used", "This payment has already been used for a finalized lot.")
+        elif self.seconds_left(row) < 0:
+            raise _err(
+                410, "payment_expired",
+                f"This payment has expired. The lot had to be processed within {BATCH_WINDOW_HOURS} hours of payment.",
+            )
+        return row
 
     def _authenticate(self, request: Request, *, allow_finalized: bool = False) -> sqlite3.Row:
         """Routes after verification: the lot must already be open in the DB,
@@ -404,9 +471,7 @@ class BatchFeature:
         row = self.store.get(session_id) if session_id.startswith("cs_") else None
         if row is None:
             raise _err(402, "not_verified", "Payment not verified. Reload the page from Stripe's confirmation.")
-        if row["status"] == "finalized" and not allow_finalized:
-            raise _err(409, "already_used", "This payment has already been used for a finalized lot.")
-        return row
+        return self.gate(row, allow_finalized=allow_finalized)
 
     def lot_payload(self, row: sqlite3.Row) -> dict[str, Any]:
         workdir = self._workdir(int(row["id"]))
@@ -415,9 +480,25 @@ class BatchFeature:
             "min_files": BATCH_MIN_FILES,
             "max_files": self.config.batch_max_files,
             "max_upload_mb": self.config.max_upload_mb,
+            "window_hours": BATCH_WINDOW_HOURS,
+            "seconds_left": max(0, int(self.seconds_left(row))),
+            # Results still on disk (none after a restart that wiped the temp
+            # files: the customer then simply selects the files again).
             "results": [st.public() for st in self._results(workdir)],
-            "zip_available": any(p.suffix == ".zip" for p in workdir.iterdir()),
+            "zip_available": self._zip(row) is not None,
         }
+
+    def _zip(self, row: sqlite3.Row) -> Path | None:
+        """The lot's ZIP while it is still downloadable: it exists on disk and
+        the lot was finalized less than one hour ago."""
+
+        workdir = self._workdir(int(row["id"]))
+        zips = sorted(workdir.glob("*.zip"), key=lambda p: p.stat().st_mtime)
+        if not zips or row["status"] != "finalized":
+            return None
+        if self._now() - float(row["finalized_at"] or 0) > RESULT_TTL_SECONDS:
+            return None
+        return zips[-1]
 
     # -- temp-file lifecycle -------------------------------------------------------------
 
@@ -624,17 +705,18 @@ class BatchFeature:
     def finalize(self, request: Request) -> dict[str, Any]:
         """Build the ZIP of every finished result (+ receipts), then spend the
         payment. If the ZIP cannot be built, nothing is spent and the lot can
-        be retried; once spent, the ZIP stays downloadable for an hour."""
+        be retried; once spent, the ZIP stays downloadable for one hour from
+        its creation (then 410), and the payment is never reusable."""
 
         row = self._authenticate(request, allow_finalized=True)
         payment_id = int(row["id"])
         workdir = self._workdir(payment_id)
         with self._lock(payment_id):
-            existing = sorted(workdir.glob("*.zip"), key=lambda p: p.stat().st_mtime)
             if row["status"] == "finalized":
-                if not existing:
+                existing = self._zip(row)
+                if existing is None:
                     raise _err(410, "zip_expired", "This payment was already used; its ZIP has expired.")
-                return {"status": "finalized", "zip_name": existing[-1].name}
+                return {"status": "finalized", "zip_name": existing.name}
             results = self._results(workdir)
             if not results:
                 raise _err(409, "no_results", "No successfully cleaned file yet.")
@@ -646,7 +728,7 @@ class BatchFeature:
                 zip_path.unlink(missing_ok=True)
                 log.warning("batch lot id=%s: ZIP build failed (%s)", payment_id, exc.__class__.__name__)
                 raise _err(500, "zip_failed", "Could not build the ZIP. Please try again.") from exc
-            if not self.store.finalize(payment_id):
+            if not self.store.finalize(payment_id, now=self._now()):
                 raise _err(409, "already_used", "This payment has already been used for a finalized lot.")
             for st in self._states(workdir):
                 self._discard(workdir, st.key)
@@ -698,15 +780,16 @@ class BatchFeature:
 
     def download_zip(self, request: Request) -> FileResponse:
         row = self._authenticate(request, allow_finalized=True)
-        workdir = self._workdir(int(row["id"]))
-        zips = sorted(workdir.glob("*.zip"), key=lambda p: p.stat().st_mtime)
-        if not zips:
-            raise _err(404, "no_zip", "No ZIP for this lot (finalize it first, or it has expired).")
+        if row["status"] != "finalized":
+            raise _err(404, "no_zip", "No ZIP for this lot yet: finalize it first.")
+        zip_path = self._zip(row)
+        if zip_path is None:
+            raise _err(410, "zip_expired", "This payment was already used; its ZIP has expired.")
         return FileResponse(
-            zips[-1],
-            filename=zips[-1].name,
+            zip_path,
+            filename=zip_path.name,
             media_type="application/zip",
-            headers={"Content-Disposition": f'attachment; filename="{zips[-1].name}"'},
+            headers={"Content-Disposition": f'attachment; filename="{zip_path.name}"'},
         )
 
 
@@ -765,6 +848,8 @@ def install(
             "max_files": config.batch_max_files,
             "max_upload_mb": config.max_upload_mb,
             "max_total_mb": BATCH_MAX_TOTAL_MB,
+            "window_hours": BATCH_WINDOW_HOURS,
+            "zip_hours": RESULT_TTL_SECONDS // 3600,
         }
 
     @router.post("/api/batch/checkout")
@@ -787,9 +872,9 @@ def install(
     @router.post("/api/batch/verify")
     def verify_session(body: SessionIn) -> dict[str, Any]:
         row = feature.verify_payment(body.session_id)
-        if row["status"] == "finalized":
-            raise _err(409, "already_used", "This payment has already been used for a finalized lot.")
-        return feature.lot_payload(row)
+        # Spent -> 409 (the page then offers the ZIP while it lasts); past the
+        # 24 hours without a ZIP -> 410.
+        return feature.lot_payload(feature.gate(row, allow_finalized=False))
 
     @router.post("/api/batch/files")
     async def upload(request: Request, file: UploadFile = File(...)) -> dict[str, Any]:

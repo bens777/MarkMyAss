@@ -11,11 +11,15 @@ All notable changes to MarkMyAss (engine name: GhostMark) are documented in this
   price from `GHOSTMARK_STRIPE_PRICE_ID`, re-verified server-side against
   `GHOSTMARK_BATCH_PRICE_CENTS` EUR) lets a visitor clean 2 to 50 images/PDFs
   with the existing cleaners, verifiers and receipts and download every
-  success as one ZIP. No account, credits, e-mail or validity period: the
-  Stripe session is verified with Stripe's API and recorded once in a single
-  `batch_payments` table; one payment finalizes exactly one lot, and failed or
-  rejected files can be retried before that for free. The free single-file
-  tool is unchanged.
+  success as one ZIP. No account, credits or e-mail: the Stripe session is
+  verified with Stripe's API and recorded once in a single `batch_payments`
+  table; one payment finalizes exactly one lot, and failed or rejected files
+  can be retried before that for free. The customer has 24 hours after the
+  Stripe payment (the Checkout Session's own `created` time, stored as
+  `paid_at`; the column is added to existing databases automatically) to
+  process and finalize the lot, reopening the same confirmation link as
+  needed -- past that, HTTP 410. The ZIP stays downloadable for one hour
+  from its creation, then 410. The free single-file tool is unchanged.
 
 ## [Unreleased]
 

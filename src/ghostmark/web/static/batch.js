@@ -6,6 +6,11 @@
 // The Stripe session id is the temporary proof of payment; it travels in a
 // request header (never a URL the server logs).
 //
+// The lot can be reopened with the same URL for 24 hours after the Stripe
+// payment (the server measures it from Stripe's own session time); results
+// still on the server are listed again, otherwise files are simply selected
+// again. Past the window every lot call answers 410 and the page says so.
+//
 // Per-file pipeline, one request per step so the row shows real progress:
 //   upload+clean -> verify -> [deep clean -> verify again] -> done
 // The server decides whether the deep clean is needed (from the structured
@@ -38,7 +43,7 @@
   };
   const ALLOWED = /\.(pdf|png|jpe?g|webp)$/i;
 
-  let offer = { price_cents: 199, currency: "eur", min_files: 2, max_files: 50, max_upload_mb: 10, max_total_mb: 64 };
+  let offer = { price_cents: 199, currency: "eur", min_files: 2, max_files: 50, max_upload_mb: 10, max_total_mb: 64, window_hours: 24, zip_hours: 1 };
   let sessionId = null;
   // key -> {name, status} for finished files; drives counts and the finalize button.
   const results = new Map();
@@ -93,6 +98,8 @@
     set("offer-price", fmtPrice());
     set("offer-max-file", String(offer.max_upload_mb));
     set("offer-max-total", String(offer.max_total_mb));
+    set("offer-window", String(offer.window_hours));
+    set("offer-zip-hours", String(offer.zip_hours));
   }
 
   // --- buy ------------------------------------------------------------------------
@@ -274,6 +281,11 @@
     const row = addRow(file.name, "cleaning");
     const fail = (resp, data) => {
       setRow(row, "failed", { detail: errText(resp, data, "") });
+      if (resp && resp.status === 410) {
+        // The 24 hours after payment ran out mid-lot: nothing more can be processed.
+        showError(el("lot-error"), errText(resp, data, t("This payment has expired.", "Ce paiement a expiré.")));
+        return "stop";
+      }
       return resp && (resp.status === 409 || resp.status === 402) && resp.headers.get("x-batch-error") !== "lot_full" ? "stop" : "next";
     };
     try {

@@ -123,7 +123,7 @@ def test_every_batch_marker_has_a_french_translation_that_differs_from_english()
         assert fr[key].strip(), key
         assert _strip(fr[key]) != _strip(en), f"{key}: French equals English source"
         # offer placeholders must survive translation so batch.js can fill them.
-        for cls in ("offer-range", "offer-price", "offer-max-file", "offer-max-total"):
+        for cls in ("offer-range", "offer-price", "offer-max-file", "offer-max-total", "offer-window", "offer-zip-hours"):
             assert (cls in en) == (cls in fr[key]), f"{key}: placeholder {cls} lost in translation"
 
 

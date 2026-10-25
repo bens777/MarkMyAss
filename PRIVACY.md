@@ -60,12 +60,17 @@ buy one:
 
 - Payment is handled entirely by Stripe (we never see your card, and
   Stripe may send you its own receipt). The only thing we record is the
-  Stripe Checkout Session id, a status and two timestamps -- no e-mail,
-  no name, no IP address, and never any file name, content or hash. No
-  account is created and nothing is e-mailed by MarkMyAss.
+  Stripe Checkout Session id, a status and three timestamps (the Stripe
+  payment date, when the lot was opened, when it was finalized) -- no
+  e-mail, no name, no IP address, and never any file name, content or
+  hash. No account is created and nothing is e-mailed by MarkMyAss.
+- A paid lot must be processed and finalized within 24 hours of the
+  Stripe payment (reopening the same confirmation link as often as
+  needed); afterwards the payment is no longer usable.
 - The files of a lot are processed exactly like free sessions, in a
-  temporary directory that is deleted once the ZIP is downloaded or after
-  one hour at the latest.
+  temporary directory that is deleted once the ZIP is built; the ZIP itself
+  is deleted one hour after its creation at the latest, and intermediate
+  results after one hour as well.
 
 If you would rather not upload anything anywhere, use local MarkMyAss
 instead -- see the README's "Run MarkMyAss locally" section. Both modes

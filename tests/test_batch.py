@@ -188,7 +188,7 @@ def test_valid_paid_session_opens_a_lot(env):
     assert _status(db) == "paid" and _count(db) == 1
     with sqlite3.connect(db) as conn:
         cols = {r[1] for r in conn.execute("PRAGMA table_info(batch_payments)")}
-        assert cols == {"id", "stripe_session_id", "status", "created_at", "finalized_at"}
+        assert cols == {"id", "stripe_session_id", "status", "created_at", "finalized_at", "paid_at"}
         assert [r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")] == ["batch_payments"]
 
 
@@ -302,9 +302,9 @@ def test_finalized_session_cannot_be_used_again(env):
     assert again.status_code == 200 and again.json()["status"] == "finalized"  # idempotent, no second lot
     assert _status(db) == "finalized" and _count(db) == 1
 
-    # After the ZIP expires the payment stays spent.
+    # After the ZIP expires (swept from disk) the payment stays spent.
     client.app.state.batch.sweep(now=__import__("time").time() + 3601)
-    assert client.get("/api/batch/zip", headers=_hdr()).status_code == 404
+    assert client.get("/api/batch/zip", headers=_hdr()).status_code == 410
     assert client.post("/api/batch/finalize", headers=_hdr()).status_code == 410
 
 
@@ -347,10 +347,14 @@ def test_free_single_file_flow_unchanged_with_feature_on(env):
     assert page.status_code == 200 and "noindex" in page.text
     # No file picker before payment; the only picker belongs to the paid lot view.
     assert "buy-input" not in page.text and 'id="lot-input"' in page.text
-    assert "select your files again" not in page.text.lower()
+    buy_view = page.text.split('id="view-buy"')[1].split("</section>")[0]
+    assert "select your files again" not in buy_view.lower()  # no re-selection warning before payment
     assert "/batch" not in client.get("/sitemap.xml").text
     offer = client.get("/api/batch/offer").json()
-    assert offer == {"price_cents": 199, "currency": "eur", "min_files": 2, "max_files": 50, "max_upload_mb": 10, "max_total_mb": 64}
+    assert offer == {
+        "price_cents": 199, "currency": "eur", "min_files": 2, "max_files": 50, "max_upload_mb": 10, "max_total_mb": 64,
+        "window_hours": 24, "zip_hours": 1,
+    }
 
 
 def test_feature_off_by_default_exposes_nothing(tmp_path):

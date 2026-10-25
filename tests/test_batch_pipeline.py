@@ -393,7 +393,7 @@ class FakeStripeObject:
 
 
 _RAW = {"id": CS, "object": "checkout.session", "mode": "payment", "payment_status": "paid",
-        "amount_total": 199, "currency": "eur", "metadata": {"markmyass": "batch"}}
+        "amount_total": 199, "currency": "eur", "metadata": {"markmyass": "batch"}, "created": 1_800_000_000}
 
 
 def test_session_fields_converts_a_stripe_object_with_to_dict_and_no_get():
@@ -401,7 +401,10 @@ def test_session_fields_converts_a_stripe_object_with_to_dict_and_no_get():
     assert not hasattr(obj, "get")  # the previous implementation called s.get(...) -> AttributeError
     with pytest.raises(AttributeError):
         obj.get("mode")  # type: ignore[attr-defined]
-    assert session_fields(obj) == {"id": CS, "mode": "payment", "payment_status": "paid", "amount_total": 199, "currency": "eur", "metadata": {"markmyass": "batch"}}
+    assert session_fields(obj) == {
+        "id": CS, "mode": "payment", "payment_status": "paid", "amount_total": 199, "currency": "eur",
+        "metadata": {"markmyass": "batch"}, "created": 1_800_000_000,  # Stripe's own time: origin of the 24-hour window
+    }
     assert session_fields(dict(_RAW)) == session_fields(obj)  # plain dicts (tests, fakes) still work
 
 
