@@ -36,7 +36,7 @@ mdurl==0.1.2
 numpy==2.5.2
 packaging==26.3
 pikepdf==10.11.0
-pillow==12.3.0
+pillow==13.0.0
 pydantic==2.13.4
 pydantic_core==2.46.4
 Pygments==2.20.0
