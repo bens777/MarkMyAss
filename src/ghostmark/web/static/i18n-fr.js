@@ -273,7 +273,7 @@
     "legal.s1.office.label": "<strong>Siège social :</strong>",
     "legal.s1.director": "<strong>Directeur de la publication :</strong> Monsieur Benoit Sartre",
     "legal.s1.ids": "<strong>SIREN :</strong> 915 385 124 · <strong>RCS :</strong> Paris 915 385 124",
-    "legal.s1.contact": "<strong>Adresse e-mail de contact :</strong> à compléter. En attendant, les questions et demandes d'assistance peuvent être adressées via le dépôt public du projet : <a href='https://github.com/bens777/MarkMyAss/issues' rel='noopener'>github.com/bens777/MarkMyAss/issues</a>.",
+    "legal.s1.contact": "<strong>Adresse e-mail de contact :</strong> <a href='mailto:support@markmyass.com'>support@markmyass.com</a>",
     "legal.s1.host": "<strong>Hébergeur :</strong> Hetzner Online GmbH.",
     "legal.s2.h": "2. Conditions générales de vente",
     "legal.s2.intro": "Ces conditions s'appliquent à l'option payante de MarkMyAss, service édité par l'entrepreneur individuel désigné ci-dessus. L'utilisation de l'outil gratuit n'implique aucun achat.",
@@ -301,7 +301,6 @@
     "legal.s5.h": "5. Droit applicable et litiges",
     "legal.s5.i1": "Droit applicable : droit français.",
     "legal.s5.i2": "Juridictions compétentes : selon les règles légales applicables.",
-    "legal.s5.i3": "Médiateur de la consommation : à compléter.",
     "legal.s5.privacy": "Le traitement des données personnelles et des fichiers est décrit dans la <a href='privacy'>politique de confidentialité</a>.",
 
     // --- /privacy (politique de confidentialité).
@@ -314,7 +313,7 @@
     "privacy.s1.h": "1. Responsable du traitement",
     "privacy.s1.who": "Monsieur Benoit Sartre, entrepreneur individuel (EI)",
     "privacy.s1.ids": "<strong>SIREN :</strong> 915 385 124 · <strong>RCS :</strong> Paris 915 385 124",
-    "privacy.s1.contact": "<strong>Adresse e-mail de contact :</strong> à compléter. En attendant, les questions relatives à la confidentialité peuvent être adressées via le dépôt public du projet : <a href='https://github.com/bens777/MarkMyAss/issues' rel='noopener'>github.com/bens777/MarkMyAss/issues</a>.",
+    "privacy.s1.contact": "<strong>Adresse e-mail de contact :</strong> <a href='mailto:support@markmyass.com'>support@markmyass.com</a>",
     "privacy.s2.h": "2. Traitement des fichiers",
     "privacy.s2.i1": "Les fichiers et le texte collé sont traités uniquement pour fournir le service demandé : les inspecter, les nettoyer et les vérifier.",
     "privacy.s2.i2": "Les fichiers et les résultats sont stockés temporairement, dans un répertoire isolé propre à chaque session sur le serveur, jamais dans une base de données.",

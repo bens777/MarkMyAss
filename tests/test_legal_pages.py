@@ -139,13 +139,18 @@ def test_legal_notice_facts():
     assert "<strong>Hosting provider:</strong> Hetzner Online GmbH." in LEGAL_HTML
     assert fr["legal.s1.host"] == "<strong>Hébergeur :</strong> Hetzner Online GmbH."
     assert not re.search(r"Gunzenhausen|Industriestr|91710", LEGAL_HTML + I18N_FR_SRC)
-    # Contact e-mail: none exists in the project, so it is an explicit placeholder, never an invented address.
-    assert "<strong>Contact e-mail:</strong> to be completed" in LEGAL_HTML
-    assert fr["legal.s1.contact"].startswith("<strong>Adresse e-mail de contact :</strong> à compléter")
-    assert "@" not in _strip(LEGAL_HTML.split("<body>")[1]) and "mailto:" not in LEGAL_HTML
-    # Consumer mediator: explicit placeholder, none invented.
-    assert "Consumer mediator: to be completed." in LEGAL_HTML
-    assert fr["legal.s5.i3"] == "Médiateur de la consommation : à compléter."
+    # Contact e-mail: support@markmyass.com, clickable, on both pages and in both languages.
+    contact_en = '<strong>Contact email:</strong> <a href="mailto:support@markmyass.com">support@markmyass.com</a>'
+    contact_fr = "<strong>Adresse e-mail de contact :</strong> <a href='mailto:support@markmyass.com'>support@markmyass.com</a>"
+    assert f'<p data-i18n="legal.s1.contact">{contact_en}</p>' in LEGAL_HTML
+    assert f'<p data-i18n="privacy.s1.contact">{contact_en}</p>' in PRIVACY_HTML
+    assert fr["legal.s1.contact"] == contact_fr and fr["privacy.s1.contact"] == contact_fr
+    for text in (LEGAL_HTML, PRIVACY_HTML, I18N_FR_SRC):
+        assert "to be completed" not in text and "à compléter" not in text
+        assert set(re.findall(r"[\w.+-]+@[\w-]+\.[\w.]+", text)) <= {"support@markmyass.com"}
+    # No consumer mediator mention at all (none exists; none invented).
+    assert "legal.s5.i3" not in LEGAL_HTML and "legal.s5.i3" not in I18N_FR_SRC
+    assert not re.search(r"\bmediator\b|médiateur|médiation", LEGAL_HTML + PRIVACY_HTML + I18N_FR_SRC, re.IGNORECASE)
 
 
 def test_terms_of_sale_state_the_offer_exactly():
